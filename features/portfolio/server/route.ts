@@ -15,6 +15,10 @@ import {
   sanitizeLivePreviewProjectIds,
 } from "@/lib/live-preview";
 import {
+  normalizeHidden,
+  normalizeOrder,
+} from "@/features/templates/section-order";
+import {
   ContentValidationError,
   MAX_CUSTOM_SECTION_ITEMS,
   MAX_CUSTOM_SECTIONS,
@@ -284,6 +288,29 @@ export const portfolio = new Elysia({ prefix: "/portfolio" })
             ) ?? "",
           };
         }
+        if (customization?.sectionLayout !== undefined) {
+          const sectionLayout = customization.sectionLayout;
+          if (
+            sectionLayout === null ||
+            typeof sectionLayout !== "object" ||
+            Array.isArray(sectionLayout)
+          ) {
+            throw new ContentValidationError(
+              "Section layout must be an object",
+            );
+          }
+          normalizedCustomization = {
+            ...normalizedCustomization,
+            sectionLayout: {
+              order: normalizeOrder(
+                (sectionLayout as { order?: unknown }).order,
+              ),
+              hidden: normalizeHidden(
+                (sectionLayout as { hidden?: unknown }).hidden,
+              ),
+            },
+          };
+        }
         if (normalizedCustomization) {
           normalizedCustomization = validateCustomSectionItems(
             [normalizedCustomization],
@@ -450,6 +477,16 @@ export const portfolio = new Elysia({ prefix: "/portfolio" })
             ),
             heroTagline: t.Optional(
               t.String({ maxLength: MAX_SHORT_LABEL_CHARS }),
+            ),
+            sectionLayout: t.Optional(
+              t.Object({
+                order: t.Optional(
+                  t.Array(t.String({ maxLength: 64 }), { maxItems: 32 }),
+                ),
+                hidden: t.Optional(
+                  t.Array(t.String({ maxLength: 64 }), { maxItems: 32 }),
+                ),
+              }),
             ),
           }),
         }),

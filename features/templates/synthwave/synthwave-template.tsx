@@ -21,7 +21,6 @@ import {
   PROJECTS_GRID_2,
   SocialPills,
   SPLIT_CARD_ROW,
-  STACKED_SECTIONS,
   TEMPLATE_CONTAINER,
   TemplateNavbar,
   getSectionLabels,
@@ -29,6 +28,12 @@ import {
 import { CollapsibleList } from "../collapsible-list";
 import { formatDateRange, groupSkillsByCategory } from "../utils";
 import { TemplateProjectPreview } from "@/components/template-project-preview";
+import { getTemplateSectionLayout } from "../section-layouts";
+import {
+  renderSections,
+  resolveSectionLayout,
+  type ReorderableSectionKey,
+} from "../section-order";
 
 
 export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
@@ -60,73 +65,16 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
       ? [...featuredProjects, ...projects.filter((p) => !p.featured)]
       : projects;
   const { hasProfiles, navbarEnabled, sections } = buildTemplateSections(data);
+  const resolved = resolveSectionLayout(
+    getTemplateSectionLayout("synthwave"),
+    portfolio.customization,
+  );
 
-  return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#0d0221] text-[#00f0ff] font-sans selection:bg-[#ff007f] selection:text-white overflow-hidden relative pb-20")}>
-      {/* Synthwave Sun & Grid Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[60vw] max-w-[600px] aspect-square rounded-full bg-linear-to-b from-[#ff007f] via-[#ff7700] to-transparent opacity-80 blur-[2px]"
-          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%, 0 55%, 100% 55%, 100% 60%, 0 60%, 0 65%, 100% 65%, 100% 72%, 0 72%, 0 80%, 100% 80%, 100% 100%, 0 100%)' }} />
 
-        <div className="absolute bottom-0 left-0 right-0 h-[50vh] bg-linear-to-t from-[#26004c] to-transparent" />
+  const blocks: Partial<Record<ReorderableSectionKey, React.ReactNode>> = {
+    about: portfolio.summary ? (
+      <section key="about" id="about" className="scroll-mt-32">
 
-        <div className="absolute bottom-0 left-[-50%] right-[-50%] h-[50vh]"
-          style={{
-            backgroundImage: `linear-gradient(#ff007f 2px, transparent 2px), linear-gradient(90deg, #ff007f 2px, transparent 2px)`,
-            backgroundSize: '40px 40px',
-            transform: 'perspective(500px) rotateX(60deg) translateY(100px) translateZ(200px)',
-            opacity: 0.5
-          }}
-        />
-      </div>
-
-      <div className="mx-auto max-w-5xl px-4 py-12 relative z-10 space-y-20">
-
-        {navbarEnabled && (
-          <div className="sticky top-6 z-50 mb-16 flex min-w-0 w-full justify-center px-2">
-            <TemplateNavbar
-              items={sections}
-              className="w-full max-w-full @md:w-auto rounded-full border border-[#ff007f] bg-[#0d0221]/80 p-2 shadow-[0_0_15px_rgba(255,0,127,0.5)] backdrop-blur-md"
-              linkClassName="px-4 py-2 text-xs @md:px-5 @md:text-sm font-bold text-[#00f0ff] hover:bg-[#ff007f] hover:text-white transition-all rounded-full uppercase tracking-widest"
-            />
-          </div>
-        )}
-
-        <header className="flex flex-col items-center text-center max-w-4xl mx-auto pt-10">
-          <h1 className="min-w-0 text-balance [overflow-wrap:anywhere] text-2xl @sm:text-4xl @md:text-6xl @lg:text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-[#00f0ff] to-[#ff007f] mb-4 tracking-tighter drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" style={{ WebkitTextStroke: '1px #ffffff' }}>
-            {portfolio.title}
-          </h1>
-
-          {portfolio.headline && (
-            <p className="text-base @md:text-xl @lg:text-3xl text-[#ffbc00] font-bold mb-10 tracking-widest uppercase drop-shadow-[0_0_8px_rgba(255,188,0,0.8)]">
-              {portfolio.headline}
-            </p>
-          )}
-
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <ContactChips
-              portfolio={portfolio}
-              chipClassName="bg-[#26004c]/80 border border-[#00f0ff] hover:bg-[#00f0ff] hover:text-[#0d0221] px-6 py-3 rounded-none text-sm font-bold text-[#00f0ff] transition-all shadow-[0_0_10px_rgba(0,240,255,0.3)] uppercase tracking-widest"
-            />
-            <HeroProfileButtons
-              profiles={socialProfiles}
-              className="bg-[#ff007f] text-white px-8 py-3 rounded-none text-sm font-bold transition-all shadow-[0_0_15px_rgba(255,0,127,0.6)] hover:bg-white hover:text-[#ff007f] uppercase tracking-widest border border-[#ff007f]"
-            />
-          </div>
-
-          {socialProfiles.length > 0 && (
-            <div className="mt-4">
-              <SocialPills
-                profiles={socialProfiles}
-                showUsername
-                className="text-sm font-bold text-[#ffbc00] hover:text-white transition-colors px-4 py-2 bg-[#26004c]/50 border border-[#ffbc00]/30 rounded-full"
-              />
-            </div>
-          )}
-        </header>
-
-        {portfolio.summary && (
-          <section id="about" className="scroll-mt-32">
             <div className="bg-[#1a0b2e]/80 backdrop-blur-md border-l-4 border-[#ff007f] p-8 md:p-12 shadow-[0_0_20px_rgba(255,0,127,0.2)]">
               <SectionHeading icon={<Sun className="w-6 h-6 text-[#ffbc00]" />}>{labels.about}</SectionHeading>
               <DescriptionBlock
@@ -135,11 +83,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                 listClassName="space-y-3 pl-6 text-lg md:text-xl leading-relaxed text-[#e0e0e0] font-medium marker:text-[#00f0ff]"
               />
             </div>
-          </section>
-        )}
+      </section>
+    ) : null,
 
-        {visibleProjects.length > 0 && (
-          <section id="work" className="scroll-mt-32">
+    projects: visibleProjects.length > 0 ? (
+      <section key="projects" id="work" className="scroll-mt-32">
+
             <SectionHeading icon={<Zap className="w-6 h-6 text-[#00f0ff]" />}>{labels.projects}</SectionHeading>
             <CollapsibleList
               initial={4}
@@ -205,12 +154,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                 </article>
               ))}
             </CollapsibleList>
-          </section>
-        )}
+      </section>
+    ) : null,
 
-        <div className="flex flex-col gap-12">
-          {experiences.length > 0 && (
-            <section id="experience" className="scroll-mt-32">
+    experience: experiences.length > 0 ? (
+      <section key="experience" id="experience" className="scroll-mt-32">
+
               <SectionHeading icon={<Music className="w-5 h-5 text-[#ff007f]" />}>{labels.experience}</SectionHeading>
               <CollapsibleList
                 initial={4}
@@ -238,12 +187,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                   </article>
                 ))}
               </CollapsibleList>
-            </section>
-          )}
+      </section>
+    ) : null,
 
-          <div className="space-y-12">
-            {skills.length > 0 && (
-              <section>
+    skills: skills.length > 0 ? (
+      <section key="skills">
+
                 <SectionHeading>{labels.skills}</SectionHeading>
                 <div className="bg-[#1a0b2e]/80 border border-[#ff007f]/50 p-8 shadow-[0_0_15px_rgba(255,0,127,0.1)]">
                   <div className="space-y-8">
@@ -263,11 +212,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                     ))}
                   </div>
                 </div>
-              </section>
-            )}
+      </section>
+    ) : null,
 
-            {educations.length > 0 && (
-              <section>
+    education: educations.length > 0 ? (
+      <section key="education">
+
                 <SectionHeading>{labels.education}</SectionHeading>
                 <CollapsibleList
                   initial={3}
@@ -287,15 +237,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                     </article>
                   ))}
                 </CollapsibleList>
-              </section>
-            )}
-          </div>
-        </div>
+      </section>
+    ) : null,
 
-        {(certifications.length > 0 || achievements.length > 0) && (
-          <div className={STACKED_SECTIONS}>
-            {certifications.length > 0 && (
-              <section>
+    certifications: certifications.length > 0 ? (
+      <section key="certifications">
+
                 <SectionHeading>{labels.certifications}</SectionHeading>
                 <CollapsibleList
                   initial={4}
@@ -324,11 +271,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                     </article>
                   ))}
                 </CollapsibleList>
-              </section>
-            )}
+      </section>
+    ) : null,
 
-            {achievements.length > 0 && (
-              <section>
+    achievements: achievements.length > 0 ? (
+      <section key="achievements">
+
                 <SectionHeading>{labels.achievements}</SectionHeading>
                 <CollapsibleList
                   initial={4}
@@ -351,13 +299,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                     </article>
                   ))}
                 </CollapsibleList>
-              </section>
-            )}
-          </div>
-        )}
+      </section>
+    ) : null,
 
-        {articles.length > 0 && (
-          <section id="writing" className="scroll-mt-32">
+    articles: articles.length > 0 ? (
+      <section key="articles" id="writing" className="scroll-mt-32">
+
             <SectionHeading>{labels.articles}</SectionHeading>
             <CollapsibleList
               initial={4}
@@ -385,25 +332,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                 </article>
               ))}
             </CollapsibleList>
-          </section>
-        )}
+      </section>
+    ) : null,
 
-        {customSections.length > 0 && customSections.map((cs) => (
-          <section key={cs.id} className="scroll-mt-32">
-            <SectionHeading>{cs.label}</SectionHeading>
-            <div className="bg-[#1a0b2e]/80 border border-[#ff007f]/50 p-8 shadow-[0_0_15px_rgba(255,0,127,0.1)]">
-              <CustomSectionItems
-                items={cs.items}
-                titleClassName="text-lg font-black text-white uppercase tracking-wider mb-1 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]"
-                textClassName="text-[#d0d0d0] text-sm font-medium leading-relaxed"
-                chipClassName="bg-[#0d0221] border border-[#00f0ff]/50 text-[#00f0ff] text-[10px] font-bold px-2 py-1 uppercase tracking-widest"
-              />
-            </div>
-          </section>
-        ))}
+    profiles: hasProfiles ? (
+      <section key="profiles" id="profiles" className="scroll-mt-32">
 
-        {hasProfiles && (
-          <section id="profiles" className="scroll-mt-32">
             <div className="bg-[#1a0b2e]/90 border-2 border-[#ff007f] p-10 md:p-14 text-center shadow-[0_0_30px_rgba(255,0,127,0.3)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-full h-1 bg-linear-to-r from-transparent via-[#00f0ff] to-transparent" />
               <div className="absolute bottom-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#ffbc00] to-transparent" />
@@ -419,11 +353,12 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                 />
               </div>
             </div>
-          </section>
-        )}
+      </section>
+    ) : null,
 
-        {contributionCalendar && (
-          <section className="scroll-mt-32">
+    github: contributionCalendar ? (
+      <section key="github" className="scroll-mt-32">
+
             <SectionHeading>{labels.github}</SectionHeading>
             <div className="bg-[#1a0b2e]/80 border border-[#00f0ff]/50 p-8 shadow-[0_0_15px_rgba(0,240,255,0.1)] overflow-x-auto custom-scrollbar">
               <GitHubContributionHeatmap
@@ -434,8 +369,90 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                 label="Commits"
               />
             </div>
-          </section>
+      </section>
+    ) : null,
+  };
+
+  return (
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#0d0221] text-[#00f0ff] font-sans selection:bg-[#ff007f] selection:text-white overflow-hidden relative pb-20")}>
+      {/* Synthwave Sun & Grid Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[60vw] max-w-[600px] aspect-square rounded-full bg-linear-to-b from-[#ff007f] via-[#ff7700] to-transparent opacity-80 blur-[2px]"
+          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%, 0 55%, 100% 55%, 100% 60%, 0 60%, 0 65%, 100% 65%, 100% 72%, 0 72%, 0 80%, 100% 80%, 100% 100%, 0 100%)' }} />
+
+        <div className="absolute bottom-0 left-0 right-0 h-[50vh] bg-linear-to-t from-[#26004c] to-transparent" />
+
+        <div className="absolute bottom-0 left-[-50%] right-[-50%] h-[50vh]"
+          style={{
+            backgroundImage: `linear-gradient(#ff007f 2px, transparent 2px), linear-gradient(90deg, #ff007f 2px, transparent 2px)`,
+            backgroundSize: '40px 40px',
+            transform: 'perspective(500px) rotateX(60deg) translateY(100px) translateZ(200px)',
+            opacity: 0.5
+          }}
+        />
+      </div>
+
+      <div className="mx-auto max-w-5xl px-4 py-12 relative z-10 space-y-20">
+
+        {navbarEnabled && (
+          <div className="sticky top-6 z-50 mb-16 flex min-w-0 w-full justify-center px-2">
+            <TemplateNavbar
+              items={sections}
+              className="w-full max-w-full @md:w-auto rounded-full border border-[#ff007f] bg-[#0d0221]/80 p-2 shadow-[0_0_15px_rgba(255,0,127,0.5)] backdrop-blur-md"
+              linkClassName="px-4 py-2 text-xs @md:px-5 @md:text-sm font-bold text-[#00f0ff] hover:bg-[#ff007f] hover:text-white transition-all rounded-full uppercase tracking-widest"
+            />
+          </div>
         )}
+
+        <header className="flex flex-col items-center text-center max-w-4xl mx-auto pt-10">
+          <h1 className="min-w-0 text-balance [overflow-wrap:anywhere] text-2xl @sm:text-4xl @md:text-6xl @lg:text-8xl font-black text-transparent bg-clip-text bg-linear-to-b from-[#00f0ff] to-[#ff007f] mb-4 tracking-tighter drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" style={{ WebkitTextStroke: '1px #ffffff' }}>
+            {portfolio.title}
+          </h1>
+
+          {portfolio.headline && (
+            <p className="text-base @md:text-xl @lg:text-3xl text-[#ffbc00] font-bold mb-10 tracking-widest uppercase drop-shadow-[0_0_8px_rgba(255,188,0,0.8)]">
+              {portfolio.headline}
+            </p>
+          )}
+
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <ContactChips
+              portfolio={portfolio}
+              chipClassName="bg-[#26004c]/80 border border-[#00f0ff] hover:bg-[#00f0ff] hover:text-[#0d0221] px-6 py-3 rounded-none text-sm font-bold text-[#00f0ff] transition-all shadow-[0_0_10px_rgba(0,240,255,0.3)] uppercase tracking-widest"
+            />
+            <HeroProfileButtons
+              profiles={socialProfiles}
+              className="bg-[#ff007f] text-white px-8 py-3 rounded-none text-sm font-bold transition-all shadow-[0_0_15px_rgba(255,0,127,0.6)] hover:bg-white hover:text-[#ff007f] uppercase tracking-widest border border-[#ff007f]"
+            />
+          </div>
+
+          {socialProfiles.length > 0 && (
+            <div className="mt-4">
+              <SocialPills
+                profiles={socialProfiles}
+                showUsername
+                className="text-sm font-bold text-[#ffbc00] hover:text-white transition-colors px-4 py-2 bg-[#26004c]/50 border border-[#ffbc00]/30 rounded-full"
+              />
+            </div>
+          )}
+        </header>
+
+        {renderSections(resolved, "full", blocks)}
+
+        {customSections.length > 0 && customSections.map((cs) => (
+          <section key={cs.id} className="scroll-mt-32">
+            <SectionHeading>{cs.label}</SectionHeading>
+            <div className="bg-[#1a0b2e]/80 border border-[#ff007f]/50 p-8 shadow-[0_0_15px_rgba(255,0,127,0.1)]">
+              <CustomSectionItems
+                items={cs.items}
+                titleClassName="text-lg font-black text-white uppercase tracking-wider mb-1 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]"
+                textClassName="text-[#d0d0d0] text-sm font-medium leading-relaxed"
+                chipClassName="bg-[#0d0221] border border-[#00f0ff]/50 text-[#00f0ff] text-[10px] font-bold px-2 py-1 uppercase tracking-widest"
+              />
+            </div>
+          </section>
+        ))}
+
       </div>
     </div>
   );

@@ -27,6 +27,12 @@ import {
 import { CollapsibleList } from "../collapsible-list";
 import { formatDateRange, groupSkillsByCategory } from "../utils";
 import { TemplateProjectPreview } from "@/components/template-project-preview";
+import { getTemplateSectionLayout } from "../section-layouts";
+import {
+  renderSections,
+  resolveSectionLayout,
+  type ReorderableSectionKey,
+} from "../section-order";
 
 
 export function VibrantTemplate({ data }: { data: PortfolioData }) {
@@ -58,65 +64,16 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
       ? [...featuredProjects, ...projects.filter((p) => !p.featured)]
       : projects;
   const { hasProfiles, navbarEnabled, sections } = buildTemplateSections(data);
+  const resolved = resolveSectionLayout(
+    getTemplateSectionLayout("vibrant"),
+    portfolio.customization,
+  );
 
-  return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-fuchsia-500/30 selection:text-fuchsia-200 overflow-hidden relative")}>
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-fuchsia-600/20 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/20 blur-[120px]" />
-        <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-violet-600/20 blur-[100px]" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-      </div>
 
-      <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 md:px-8 md:pb-24 md:pt-16 relative z-10">
-        {navbarEnabled && (
-          <div className="mb-12 flex justify-center sticky top-6 z-50">
-            <TemplateNavbar
-              items={sections}
-              className="rounded-full bg-slate-900/60 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] px-2 py-2"
-              linkClassName="px-5 py-2 text-sm font-medium text-slate-300 transition-all hover:text-white hover:bg-white/10 rounded-full"
-            />
-          </div>
-        )}
-
-        <header className="relative flex flex-col items-center text-center mb-20 md:mb-32">
-          <h1 className="min-w-0 text-balance [overflow-wrap:anywhere] text-2xl @sm:text-4xl @md:text-5xl @lg:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-white via-slate-200 to-slate-400 mb-6">
-            {portfolio.title}
-          </h1>
-
-          {portfolio.headline && (
-            <p className="text-base @md:text-lg @lg:text-2xl text-slate-400 font-medium max-w-3xl mb-10 leading-relaxed">
-              {portfolio.headline}
-            </p>
-          )}
-
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <ContactChips
-              portfolio={portfolio}
-              chipClassName="rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-6 py-3 text-sm font-medium text-slate-200 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-            />
-            <HeroProfileButtons
-              profiles={socialProfiles}
-              className="rounded-full bg-linear-to-r from-fuchsia-600 to-violet-600 px-8 py-3 text-sm font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-105"
-            />
-          </div>
-
-          {socialProfiles.length > 0 && (
-            <div className="mt-8">
-              <SocialPills
-                profiles={socialProfiles}
-                showUsername
-                className="rounded-full border border-white/5 bg-transparent px-4 py-2 text-sm font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
-              />
-            </div>
-          )}
-        </header>
-
-        <div className="space-y-24 md:space-y-32">
-          {portfolio.summary && (
-            <section id="about" className="scroll-mt-32">
-              <div className="rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl relative overflow-hidden">
+  const blocks: Partial<Record<ReorderableSectionKey, React.ReactNode>> = {
+    about: portfolio.summary ? (
+      <section key="about" id="about" className="scroll-mt-32">
+<div className="rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
                 <SectionHeading>{labels.about}</SectionHeading>
                 <DescriptionBlock
@@ -125,12 +82,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                   listClassName="space-y-2 pl-5 text-lg leading-relaxed text-slate-300 marker:text-cyan-400"
                 />
               </div>
-            </section>
-          )}
+      </section>
+    ) : null,
 
-          {visibleProjects.length > 0 && (
-            <section id="work" className="scroll-mt-32">
-              <SectionHeading>{labels.projects}</SectionHeading>
+    projects: visibleProjects.length > 0 ? (
+      <section key="projects" id="work" className="scroll-mt-32">
+<SectionHeading>{labels.projects}</SectionHeading>
               <CollapsibleList
                 initial={4}
                 wrapperClassName={cn(PROJECTS_GRID_2, "gap-8")}
@@ -191,13 +148,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                   </article>
                 ))}
               </CollapsibleList>
-            </section>
-          )}
+      </section>
+    ) : null,
 
-          <div className="flex flex-col gap-8 lg:gap-12">
-            {experiences.length > 0 && (
-              <section id="experience" className="scroll-mt-32">
-                <SectionHeading>{labels.experience}</SectionHeading>
+    experience: experiences.length > 0 ? (
+      <section key="experience" id="experience" className="scroll-mt-32">
+<SectionHeading>{labels.experience}</SectionHeading>
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-6"
@@ -234,13 +190,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                     </article>
                   ))}
                 </CollapsibleList>
-              </section>
-            )}
+      </section>
+    ) : null,
 
-            <div className="space-y-12">
-              {skills.length > 0 && (
-                <section>
-                  <SectionHeading>{labels.skills}</SectionHeading>
+    skills: skills.length > 0 ? (
+      <section key="skills">
+<SectionHeading>{labels.skills}</SectionHeading>
                   <div className="rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8">
                     <div className="space-y-8">
                       {Object.entries(groupedSkills).map(([category, names]) => (
@@ -262,12 +217,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                       ))}
                     </div>
                   </div>
-                </section>
-              )}
+      </section>
+    ) : null,
 
-              {educations.length > 0 && (
-                <section>
-                  <SectionHeading>{labels.education}</SectionHeading>
+    education: educations.length > 0 ? (
+      <section key="education">
+<SectionHeading>{labels.education}</SectionHeading>
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="space-y-4"
@@ -294,17 +249,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                       </article>
                     ))}
                   </CollapsibleList>
-                </section>
-              )}
-            </div>
-          </div>
+      </section>
+    ) : null,
 
-          {/* Certifications and Achievements */}
-          {(certifications.length > 0 || achievements.length > 0) && (
-            <div className="flex flex-col gap-8 lg:gap-12">
-              {certifications.length > 0 && (
-                <section>
-                  <SectionHeading>{labels.certifications}</SectionHeading>
+    certifications: certifications.length > 0 ? (
+      <section key="certifications">
+<SectionHeading>{labels.certifications}</SectionHeading>
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="space-y-4"
@@ -335,12 +285,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                       </article>
                     ))}
                   </CollapsibleList>
-                </section>
-              )}
+      </section>
+    ) : null,
 
-              {achievements.length > 0 && (
-                <section>
-                  <SectionHeading>{labels.achievements}</SectionHeading>
+    achievements: achievements.length > 0 ? (
+      <section key="achievements">
+<SectionHeading>{labels.achievements}</SectionHeading>
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="space-y-4"
@@ -365,14 +315,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                       </article>
                     ))}
                   </CollapsibleList>
-                </section>
-              )}
-            </div>
-          )}
+      </section>
+    ) : null,
 
-          {articles.length > 0 && (
-            <section id="writing" className="scroll-mt-32">
-              <SectionHeading>{labels.articles}</SectionHeading>
+    articles: articles.length > 0 ? (
+      <section key="articles" id="writing" className="scroll-mt-32">
+<SectionHeading>{labels.articles}</SectionHeading>
               <CollapsibleList
                 initial={4}
                 wrapperClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -413,8 +361,100 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                   </article>
                 ))}
               </CollapsibleList>
-            </section>
+      </section>
+    ) : null,
+
+    profiles: hasProfiles ? (
+      <section key="profiles" id="profiles" className="scroll-mt-32">
+<div className="rounded-3xl bg-linear-to-br from-fuchsia-600/20 to-violet-600/20 backdrop-blur-xl border border-white/10 p-12 text-center shadow-2xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+                <h2 className="text-3xl font-bold text-white mb-8 relative z-10">{labels.profiles}</h2>
+                <div className="flex justify-center relative z-10">
+                  <ProfileLinksSection
+                    portfolio={portfolio}
+                    profiles={socialProfiles}
+                    chipClassName="rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-6 py-3 text-sm font-medium text-slate-200 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                    pillClassName="rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-6 py-3 text-sm font-medium text-slate-200 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                    titleClassName="text-white font-bold"
+                    textClassName="text-slate-400"
+                  />
+                </div>
+              </div>
+      </section>
+    ) : null,
+
+    github: contributionCalendar ? (
+      <section key="github" className="scroll-mt-32">
+<SectionHeading>{labels.github}</SectionHeading>
+              <div className="rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 overflow-x-auto custom-scrollbar">
+                <GitHubContributionHeatmap
+                  calendar={contributionCalendar}
+                  profileUrl={githubProfile?.url}
+                  username={githubProfile?.username}
+                  variant="modern"
+                  label={labels.github}
+                />
+              </div>
+      </section>
+    ) : null,
+  };
+
+  return (
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-fuchsia-500/30 selection:text-fuchsia-200 overflow-hidden relative")}>
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-fuchsia-600/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/20 blur-[120px]" />
+        <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-violet-600/20 blur-[100px]" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      </div>
+
+      <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 md:px-8 md:pb-24 md:pt-16 relative z-10">
+        {navbarEnabled && (
+          <div className="mb-12 flex justify-center sticky top-6 z-50">
+            <TemplateNavbar
+              items={sections}
+              className="rounded-full bg-slate-900/60 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] px-2 py-2"
+              linkClassName="px-5 py-2 text-sm font-medium text-slate-300 transition-all hover:text-white hover:bg-white/10 rounded-full"
+            />
+          </div>
+        )}
+
+        <header className="relative flex flex-col items-center text-center mb-20 md:mb-32">
+          <h1 className="min-w-0 text-balance [overflow-wrap:anywhere] text-2xl @sm:text-4xl @md:text-5xl @lg:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-white via-slate-200 to-slate-400 mb-6">
+            {portfolio.title}
+          </h1>
+
+          {portfolio.headline && (
+            <p className="text-base @md:text-lg @lg:text-2xl text-slate-400 font-medium max-w-3xl mb-10 leading-relaxed">
+              {portfolio.headline}
+            </p>
           )}
+
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <ContactChips
+              portfolio={portfolio}
+              chipClassName="rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-6 py-3 text-sm font-medium text-slate-200 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+            />
+            <HeroProfileButtons
+              profiles={socialProfiles}
+              className="rounded-full bg-linear-to-r from-fuchsia-600 to-violet-600 px-8 py-3 text-sm font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-105"
+            />
+          </div>
+
+          {socialProfiles.length > 0 && (
+            <div className="mt-8">
+              <SocialPills
+                profiles={socialProfiles}
+                showUsername
+                className="rounded-full border border-white/5 bg-transparent px-4 py-2 text-sm font-medium text-slate-400 transition-all hover:text-white hover:bg-white/5"
+              />
+            </div>
+          )}
+        </header>
+
+        <div className="space-y-24 md:space-y-32">
+          {renderSections(resolved, "full", blocks)}
 
           {customSections.length > 0 && customSections.map((cs) => (
             <section key={cs.id} className="scroll-mt-32">
@@ -429,41 +469,6 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
               </div>
             </section>
           ))}
-
-          {hasProfiles && (
-            <section id="profiles" className="scroll-mt-32">
-              <div className="rounded-3xl bg-linear-to-br from-fuchsia-600/20 to-violet-600/20 backdrop-blur-xl border border-white/10 p-12 text-center shadow-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-                <h2 className="text-3xl font-bold text-white mb-8 relative z-10">{labels.profiles}</h2>
-                <div className="flex justify-center relative z-10">
-                  <ProfileLinksSection
-                    portfolio={portfolio}
-                    profiles={socialProfiles}
-                    chipClassName="rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-6 py-3 text-sm font-medium text-slate-200 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                    pillClassName="rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-6 py-3 text-sm font-medium text-slate-200 transition-all hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                    titleClassName="text-white font-bold"
-                    textClassName="text-slate-400"
-                  />
-                </div>
-              </div>
-            </section>
-          )}
-
-          {contributionCalendar && (
-            <section className="scroll-mt-32">
-              <SectionHeading>{labels.github}</SectionHeading>
-              <div className="rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 overflow-x-auto custom-scrollbar">
-                <GitHubContributionHeatmap
-                  calendar={contributionCalendar}
-                  profileUrl={githubProfile?.url}
-                  username={githubProfile?.username}
-                  variant="modern"
-                  label={labels.github}
-                />
-              </div>
-            </section>
-          )}
-
         </div>
       </div>
     </div>

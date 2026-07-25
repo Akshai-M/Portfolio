@@ -12,6 +12,7 @@ import {
   getSectionLabel,
   NAVBAR_SECTION_TO_KEY,
 } from "./section-labels";
+import { getStoredSectionLayout, normalizeHidden, type ReorderableSectionKey } from "./section-order";
 import { getPlatformIcon } from "./utils";
 import { CollapsibleList } from "./collapsible-list";
 
@@ -115,8 +116,15 @@ export function buildTemplateSections(data: PortfolioData) {
   ].filter((section): section is TemplateSectionId => Boolean(section));
 
   const customization = data.portfolio.customization;
+  const hiddenSections = new Set<ReorderableSectionKey>(
+    normalizeHidden(getStoredSectionLayout(customization).hidden),
+  );
   const sections = availableSections
     .filter((section) => navbar.sections?.[section] !== false)
+    .filter((section) => {
+      const key = NAVBAR_SECTION_TO_KEY[section];
+      return !hiddenSections.has(key as ReorderableSectionKey);
+    })
     .slice(0, 4)
     .map((section) => ({
       id: section,
