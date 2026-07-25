@@ -103,12 +103,12 @@ export function AiryTemplate({ data }: { data: PortfolioData }) {
                           </div>
                           <div className="flex gap-3">
                             {project.liveUrl && (
-                              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-600">
+                              <a href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-600">
                                 View Live
                               </a>
                             )}
                             {project.sourceUrl && (
-                              <a href={project.sourceUrl} target="_blank" rel="noreferrer" className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">
+                              <a href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200">
                                 Source
                               </a>
                             )}
@@ -219,7 +219,7 @@ export function AiryTemplate({ data }: { data: PortfolioData }) {
                   <h2 className="mb-8 text-3xl font-bold text-slate-800 px-2">{labels.articles}</h2>
                   <CollapsibleList initial={3} wrapperClassName="grid gap-6 md:grid-cols-2" buttonClassName="mt-6 mx-auto bg-white border border-sky-100 text-sky-600 px-6 py-2 rounded-full font-medium hover:bg-sky-50 transition-colors">
                     {articles.map((article) => (
-                      <a key={article.id} href={article.url} target="_blank" rel="noreferrer" className="block rounded-3xl bg-white border border-slate-100 p-6 shadow-xs hover:border-sky-200 hover:shadow-md transition-all">
+                      <a key={article.id} href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noreferrer" className="block rounded-3xl bg-white border border-slate-100 p-6 shadow-xs hover:border-sky-200 hover:shadow-md transition-all">
                         <h3 className="text-xl font-bold text-slate-800 mb-2">{article.title}</h3>
                         {article.description && <p className="text-slate-600 text-sm mb-4 line-clamp-2">{article.description}</p>}
                         <div className="flex flex-wrap gap-2 mb-4">

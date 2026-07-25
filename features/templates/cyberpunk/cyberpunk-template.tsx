@@ -145,6 +145,8 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                       <ProjectActions
                         liveUrl={project.liveUrl}
                         sourceUrl={project.sourceUrl}
+                        label={project.title}
+                        projectId={project.id}
                         liveClassName="text-xs font-bold uppercase tracking-widest bg-[#00ff00] text-black px-4 py-2 hover:bg-white transition-colors mr-3 shadow-[0_0_10px_rgba(0,255,0,0.4)]"
                         sourceClassName="text-xs font-bold uppercase tracking-widest border border-[#00ff00] text-[#00ff00] px-4 py-2 hover:bg-[#00ff00] hover:text-black transition-colors"
                       />
@@ -312,7 +314,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
               {articles.map((article) => (
                 <article key={article.id} className="border border-[#00ffff]/30 p-5 bg-[#00ffff]/5 hover:border-[#00ffff] transition-colors group flex flex-col">
                   <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-3 group-hover:text-[#00ffff] transition-colors">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer">
+                    <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
                       {article.title}
                     </a>
                   </h3>

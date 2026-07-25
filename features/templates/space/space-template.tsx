@@ -117,6 +117,8 @@ export function SpaceTemplate({ data }: { data: PortfolioData }) {
                             <ProjectActions
                               liveUrl={project.liveUrl}
                               sourceUrl={project.sourceUrl}
+                              label={project.title}
+                              projectId={project.id}
                               liveClassName="rounded-full bg-cyan-600/20 p-2 text-cyan-400 hover:bg-cyan-500 hover:text-white transition-colors border border-cyan-500/30"
                               sourceClassName="rounded-full bg-white/5 p-2 text-slate-300 hover:bg-white/20 transition-colors border border-white/10"
                             />
@@ -323,7 +325,7 @@ export function SpaceTemplate({ data }: { data: PortfolioData }) {
                       >
                         <h3 className="text-lg font-bold text-white mb-3">
                           <a
-                            href={article.url}
+                            href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-cyan-400 transition-colors flex items-center justify-between group"

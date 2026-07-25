@@ -103,12 +103,12 @@ export function TerracottaTemplate({ data }: { data: PortfolioData }) {
                           </div>
                           <div className="flex gap-6">
                             {project.liveUrl && (
-                              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest font-semibold border-b border-[#3D405B] pb-1 hover:text-[#E07A5F] hover:border-[#E07A5F] transition-all">
+                              <a href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest font-semibold border-b border-[#3D405B] pb-1 hover:text-[#E07A5F] hover:border-[#E07A5F] transition-all">
                                 Visit Site
                               </a>
                             )}
                             {project.sourceUrl && (
-                              <a href={project.sourceUrl} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest font-semibold border-b border-transparent pb-1 hover:text-[#3D405B] hover:border-[#3D405B] transition-all text-[#3D405B]/60">
+                              <a href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="text-sm uppercase tracking-widest font-semibold border-b border-transparent pb-1 hover:text-[#3D405B] hover:border-[#3D405B] transition-all text-[#3D405B]/60">
                                 Source
                               </a>
                             )}
@@ -235,7 +235,7 @@ export function TerracottaTemplate({ data }: { data: PortfolioData }) {
                   </h2>
                   <CollapsibleList initial={3} wrapperClassName="space-y-12" buttonClassName="mt-12 mx-auto block uppercase tracking-widest text-sm font-semibold border-b border-[#E07A5F] text-[#E07A5F] pb-1 hover:text-[#3D405B] hover:border-[#3D405B] transition-colors">
                     {articles.map((article) => (
-                      <a key={article.id} href={article.url} target="_blank" rel="noreferrer" className="block group">
+                      <a key={article.id} href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noreferrer" className="block group">
                         <h3 className="text-2xl font-medium text-[#3D405B] group-hover:text-[#E07A5F] transition-colors mb-3">{article.title}</h3>
                         {article.description && <p className="text-lg font-light text-[#3D405B]/80 mb-4">{article.description}</p>}
                         <div className="flex items-center gap-4 text-sm uppercase tracking-widest font-semibold text-[#E07A5F]">

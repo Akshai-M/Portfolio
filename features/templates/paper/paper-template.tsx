@@ -128,6 +128,8 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                           <ProjectActions
                             liveUrl={project.liveUrl}
                             sourceUrl={project.sourceUrl}
+                            label={project.title}
+                            projectId={project.id}
                             liveClassName="text-xs font-sans uppercase tracking-widest border-b border-[#2c2c2c] pb-1 hover:text-[#888] hover:border-[#888] transition-colors mr-6"
                             sourceClassName="text-xs font-sans uppercase tracking-widest border-b border-[#2c2c2c] pb-1 hover:text-[#888] hover:border-[#888] transition-colors"
                           />
@@ -270,7 +272,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                   {articles.map((article) => (
                     <article key={article.id} className="border-t border-[#2c2c2c] pt-4">
                       <h3 className="text-xl font-bold mb-2 hover:underline underline-offset-4">
-                        <a href={article.url} target="_blank" rel="noopener noreferrer">
+                        <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
                           {article.title}
                         </a>
                       </h3>

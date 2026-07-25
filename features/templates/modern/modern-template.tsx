@@ -142,6 +142,8 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                     <ProjectActions
                       liveUrl={project.liveUrl}
                       sourceUrl={project.sourceUrl}
+                      label={project.title}
+                      projectId={project.id}
                       liveClassName="rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-900 transition-colors hover:bg-zinc-200"
                       sourceClassName="rounded-full border border-white/12 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-white/[0.08]"
                     />
@@ -250,7 +252,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
             >
               <h3 className="text-lg font-semibold text-white">
                 <a
-                  href={article.url}
+                  href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-cyan-300"

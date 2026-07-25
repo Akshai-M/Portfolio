@@ -130,6 +130,8 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
                       <ProjectActions
                         liveUrl={project.liveUrl}
                         sourceUrl={project.sourceUrl}
+                        label={project.title}
+                        projectId={project.id}
                         liveClassName="win95-button px-2 py-1 text-xs font-bold mr-2"
                         sourceClassName="win95-button px-2 py-1 text-xs"
                       />
@@ -285,7 +287,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
             >
               {articles.map((article) => (
                 <div key={article.id} className="win95-inset bg-white p-3 text-sm flex flex-col">
-                  <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-[#0000ff] underline hover:text-[#ff0000] font-bold mb-2">
+                  <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer" className="text-[#0000ff] underline hover:text-[#ff0000] font-bold mb-2">
                     {article.title}
                   </a>
                   {article.description && (

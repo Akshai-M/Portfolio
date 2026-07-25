@@ -193,7 +193,7 @@ export default function DeveloperTemplate({ data }: { data: PortfolioData }) {
                         <div className="mt-4 flex items-center gap-4">
                           {project.sourceUrl && (
                             <a
-                              href={project.sourceUrl}
+                              href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-green-600 underline decoration-green-900 hover:text-green-400 transition-colors"
@@ -203,7 +203,7 @@ export default function DeveloperTemplate({ data }: { data: PortfolioData }) {
                           )}
                           {project.liveUrl && (
                             <a
-                              href={project.liveUrl}
+                              href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-green-600 underline decoration-green-900 hover:text-green-400 transition-colors"

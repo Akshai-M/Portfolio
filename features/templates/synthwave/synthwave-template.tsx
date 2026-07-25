@@ -145,6 +145,8 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
                         <ProjectActions
                           liveUrl={project.liveUrl}
                           sourceUrl={project.sourceUrl}
+                          label={project.title}
+                          projectId={project.id}
                           liveClassName="bg-[#00f0ff] text-[#0d0221] text-xs font-bold px-5 py-2 hover:bg-white transition-colors mr-3 uppercase tracking-widest shadow-[0_0_10px_rgba(0,240,255,0.5)]"
                           sourceClassName="border border-[#00f0ff] text-[#00f0ff] text-xs font-bold px-5 py-2 hover:bg-[#00f0ff] hover:text-[#0d0221] transition-colors uppercase tracking-widest"
                         />
@@ -314,7 +316,7 @@ export function SynthwaveTemplate({ data }: { data: PortfolioData }) {
               {articles.map((article) => (
                 <article key={article.id} className="bg-[#1a0b2e]/80 border-t-4 border-[#00f0ff] p-6 shadow-[0_0_15px_rgba(0,240,255,0.1)] hover:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all flex flex-col group">
                   <h3 className="text-lg font-black text-white uppercase tracking-wider mb-4 group-hover:text-[#ff007f] transition-colors leading-tight drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer">
+                    <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
                       {article.title}
                     </a>
                   </h3>

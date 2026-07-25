@@ -129,6 +129,8 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                   <ProjectActions
                     liveUrl={project.liveUrl}
                     sourceUrl={project.sourceUrl}
+                    label={project.title}
+                    projectId={project.id}
                     liveClassName="rounded-full bg-stone-950 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-stone-800"
                     sourceClassName="rounded-full border border-rose-200 bg-white px-4 py-2 text-xs font-medium text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
                   />
@@ -236,7 +238,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
             >
               <h3 className="text-lg font-semibold text-stone-950">
                 <a
-                  href={article.url}
+                  href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-rose-500"

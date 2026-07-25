@@ -226,6 +226,8 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
                         <ProjectActions
                           liveUrl={project.liveUrl}
                           sourceUrl={project.sourceUrl}
+                          label={project.title}
+                          projectId={project.id}
                           liveClassName="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-zinc-800"
                           sourceClassName="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900"
                         />
@@ -354,7 +356,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
               >
                 {articles.map((article) => (
                   <article key={article.id} className="group">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-2xl hover:bg-zinc-50 transition-colors border border-transparent hover:border-zinc-200/60">
+                    <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer" className="block p-4 rounded-2xl hover:bg-zinc-50 transition-colors border border-transparent hover:border-zinc-200/60">
                       <h3 className="font-bold text-zinc-900 group-hover:text-green-600 transition-colors flex items-center justify-between">
                         <span className="truncate pr-4">{article.title}</span>
                         <ArrowUpRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-green-600" />

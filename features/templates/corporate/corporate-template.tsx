@@ -177,6 +177,8 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
                   <ProjectActions
                     liveUrl={project.liveUrl}
                     sourceUrl={project.sourceUrl}
+                    label={project.title}
+                    projectId={project.id}
                     liveClassName="rounded-full bg-sky-700 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-sky-800"
                     sourceClassName="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-400 hover:text-slate-900"
                   />
@@ -255,7 +257,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
             >
               <h3 className="text-base font-semibold text-slate-900">
                 <a
-                  href={article.url}
+                  href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-sky-700"

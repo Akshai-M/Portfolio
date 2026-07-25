@@ -146,6 +146,8 @@ export function ArtDecoTemplate({ data }: { data: PortfolioData }) {
                       <ProjectActions
                         liveUrl={project.liveUrl}
                         sourceUrl={project.sourceUrl}
+                        label={project.title}
+                        projectId={project.id}
                         liveClassName="bg-[#d4af37] text-[#0b132b] text-xs font-bold px-6 py-2 hover:bg-white transition-colors mr-4 uppercase tracking-[0.15em]"
                         sourceClassName="border border-[#d4af37] text-[#d4af37] text-xs font-bold px-6 py-2 hover:bg-[#d4af37] hover:text-[#0b132b] transition-colors uppercase tracking-[0.15em]"
                       />
@@ -316,7 +318,7 @@ export function ArtDecoTemplate({ data }: { data: PortfolioData }) {
                 <article key={article.id} className="bg-[#111c3d] border border-[#d4af37]/20 p-8 hover:border-[#d4af37] transition-all flex flex-col text-center items-center">
                   <Award className="w-6 h-6 text-[#d4af37] mb-6" />
                   <h3 className="text-xl font-serif text-[#d4af37] uppercase tracking-wider mb-4 leading-snug">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                       {article.title}
                     </a>
                   </h3>

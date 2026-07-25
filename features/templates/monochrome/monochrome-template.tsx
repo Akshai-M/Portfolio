@@ -140,6 +140,8 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
                   <ProjectActions
                     liveUrl={project.liveUrl}
                     sourceUrl={project.sourceUrl}
+                    label={project.title}
+                    projectId={project.id}
                     liveClassName="text-sm font-bold uppercase tracking-widest border-b-2 border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors flex items-center gap-2"
                     sourceClassName="text-sm font-bold uppercase tracking-widest border-b-2 border-gray-300 pb-1 text-gray-500 hover:text-black hover:border-black transition-colors"
                   />
@@ -295,7 +297,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
           {articles.map((article) => (
             <article key={article.id} className="group flex flex-col">
               <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 leading-tight">
-                <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4 flex items-start justify-between">
+                <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4 flex items-start justify-between">
                   {article.title}
                   <ArrowRight className="w-6 h-6 shrink-0 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </a>

@@ -142,6 +142,8 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                       <ProjectActions
                         liveUrl={project.liveUrl}
                         sourceUrl={project.sourceUrl}
+                        label={project.title}
+                        projectId={project.id}
                         liveClassName="bg-[#bae1ff] text-[#0066b3] text-sm font-bold px-5 py-2.5 rounded-full hover:bg-[#a0d4ff] transition-colors mr-3"
                         sourceClassName="bg-gray-100 text-gray-600 text-sm font-bold px-5 py-2.5 rounded-full hover:bg-gray-200 transition-colors"
                       />
@@ -310,7 +312,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
               {articles.map((article) => (
                 <article key={article.id} className="bg-white rounded-[2.5rem] p-8 shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_35px_rgba(255,179,186,0.15)] transition-all flex flex-col group">
                   <h3 className="text-xl font-extrabold text-[#2d2d2d] mb-4 group-hover:text-[#6aabdf] transition-colors leading-tight">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer">
+                    <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
                       {article.title}
                     </a>
                   </h3>

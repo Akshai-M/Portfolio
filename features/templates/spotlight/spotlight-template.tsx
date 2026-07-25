@@ -332,7 +332,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                     {articles.map((article) => (
                       <a
                         key={article.id}
-                        href={article.url}
+                        href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[hsl(45,100%,60%)]"
@@ -697,7 +697,7 @@ function ProjectCard({
         <div className="mt-auto flex items-center gap-2 pt-1">
           {project.liveUrl ? (
             <a
-              href={project.liveUrl}
+              href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center rounded-md bg-gray-950 px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-85"
@@ -707,7 +707,7 @@ function ProjectCard({
           ) : null}
           {project.sourceUrl ? (
             <a
-              href={project.sourceUrl}
+              href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-800 transition-colors hover:border-gray-300"

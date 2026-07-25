@@ -149,6 +149,8 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                       <ProjectActions
                         liveUrl={project.liveUrl}
                         sourceUrl={project.sourceUrl}
+                        label={project.title}
+                        projectId={project.id}
                         liveClassName="text-[10px] font-bold uppercase tracking-widest bg-white text-[#003366] px-4 py-2 hover:bg-transparent hover:text-white border border-white transition-colors"
                         sourceClassName="text-[10px] font-bold uppercase tracking-widest border border-white/50 px-4 py-2 hover:border-white transition-colors"
                       />
@@ -321,7 +323,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                 <article key={article.id} className="border-2 border-white/50 p-6 bg-[#003366]/80 backdrop-blur-sm hover:bg-white/10 transition-colors flex flex-col relative">
                   <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/50" />
                   <h3 className="text-base font-bold uppercase tracking-wider mb-4 leading-snug">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer">
+                    <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
                       {article.title}
                     </a>
                   </h3>

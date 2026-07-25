@@ -142,6 +142,8 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
                     <ProjectActions
                       liveUrl={project.liveUrl}
                       sourceUrl={project.sourceUrl}
+                      label={project.title}
+                      projectId={project.id}
                       liveClassName="border-2 border-black bg-[#23a094] px-4 py-2 text-xs font-bold uppercase text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
                       sourceClassName="border-2 border-black bg-white px-4 py-2 text-xs font-bold uppercase text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
                     />
@@ -252,7 +254,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
             >
               <h3 className="font-sans text-lg font-black uppercase text-black">
                 <a
-                  href={article.url}
+                  href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline"

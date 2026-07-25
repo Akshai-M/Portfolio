@@ -110,12 +110,12 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                           </div>
                           <div className="flex gap-6 mt-auto">
                             {project.liveUrl && (
-                              <a href={project.liveUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#8C2727] text-[#8C2727] hover:text-[#2B2B2B] hover:border-[#2B2B2B] transition-colors pb-1">
+                              <a href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#8C2727] text-[#8C2727] hover:text-[#2B2B2B] hover:border-[#2B2B2B] transition-colors pb-1">
                                 Examine
                               </a>
                             )}
                             {project.sourceUrl && (
-                              <a href={project.sourceUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#2B2B2B] text-[#2B2B2B] hover:text-[#8C2727] hover:border-[#8C2727] transition-colors pb-1">
+                              <a href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#2B2B2B] text-[#2B2B2B] hover:text-[#8C2727] hover:border-[#8C2727] transition-colors pb-1">
                                 Manuscript
                               </a>
                             )}
@@ -242,7 +242,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                   </div>
                   <CollapsibleList initial={3} wrapperClassName="grid md:grid-cols-2 gap-8" buttonClassName="mt-12 mx-auto block uppercase tracking-[0.2em] font-bold border-2 border-[#2B2B2B] px-8 py-3 hover:bg-[#2B2B2B] hover:text-[#F1EEDC] transition-colors">
                     {articles.map((article) => (
-                      <a key={article.id} href={article.url} target="_blank" rel="noreferrer" className="block border-2 border-[#2B2B2B] p-8 hover:bg-[#2B2B2B] hover:text-[#F1EEDC] transition-all group">
+                      <a key={article.id} href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noreferrer" className="block border-2 border-[#2B2B2B] p-8 hover:bg-[#2B2B2B] hover:text-[#F1EEDC] transition-all group">
                         <h3 className="text-2xl font-black uppercase mb-4 group-hover:text-[#8C2727] transition-colors">{article.title}</h3>
                         {article.description && <p className="text-lg leading-relaxed mb-6 font-normal group-hover:text-[#F1EEDC]/80">{article.description}</p>}
                         <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
