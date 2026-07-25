@@ -135,9 +135,7 @@ export const portfolio = new Elysia({ prefix: "/portfolio" })
   // Get current user's portfolio
   .get("/", async (ctx) => {
     try {
-      console.log("[GET /api/portfolio] start");
       const session = await getSession(ctx.request);
-      console.log("[GET /api/portfolio] session", session ? { userId: session.userId } : null);
       if (!session) {
         ctx.set.status = 401;
         return { error: "Unauthorized" };
@@ -147,7 +145,6 @@ export const portfolio = new Elysia({ prefix: "/portfolio" })
         where: { userId: session.userId },
         include: portfolioInclude,
       });
-      console.log("[GET /api/portfolio] portfolio", existing ? { id: existing.id } : null);
 
       if (!existing) {
         ctx.set.status = 404;
