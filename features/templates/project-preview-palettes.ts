@@ -306,6 +306,58 @@ export const TEMPLATE_PROJECT_PREVIEW: Record<string, TemplateProjectPreviewConf
     },
     variant: "default",
   },
+  ledger: {
+    palette: {
+      bg: "#0a0c10",
+      bgAlt: "#111418",
+      primary: "#3b82f6",
+      secondary: "#60a5fa",
+      accent: "#22d3ee",
+      surface: "#111827",
+      muted: "#334155",
+      stroke: "#1e293b",
+    },
+    variant: "dark",
+  },
+  pulse: {
+    palette: {
+      bg: "#0a0a0a",
+      bgAlt: "#111111",
+      primary: "#3b82f6",
+      secondary: "#64748b",
+      accent: "#10b981",
+      surface: "#171717",
+      muted: "#262626",
+      stroke: "rgba(255,255,255,0.1)",
+    },
+    variant: "dark",
+  },
+  maximalist: {
+    palette: {
+      bg: "#0a0a0b",
+      bgAlt: "#000000",
+      primary: "#3b82f6",
+      secondary: "#ffffff",
+      accent: "#60a5fa",
+      surface: "#111111",
+      muted: "#334155",
+      stroke: "#ffffff",
+    },
+    variant: "dark",
+  },
+  bluish: {
+    palette: {
+      bg: "#0a0a0a",
+      bgAlt: "#111111",
+      primary: "#3b82f6",
+      secondary: "#64748b",
+      accent: "#10b981",
+      surface: "#171717",
+      muted: "#262626",
+      stroke: "rgba(255,255,255,0.1)",
+    },
+    variant: "dark",
+  },
 };
 
 export function getTemplateProjectPreviewConfig(

@@ -1,38 +1,109 @@
-'use client';
-import React, { useState, useEffect, useMemo } from 'react';
+"use client";
+
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Inter,
   JetBrains_Mono,
   Playfair_Display,
   Space_Grotesk,
-} from 'next/font/google';
+} from "next/font/google";
 import {
   GithubIcon as Github,
   LinkedinIcon as Linkedin,
-} from '@/components/icons';
-import { TemplateProjectPreview } from '@/components/template-project-preview';
+} from "@/components/icons";
+import { TemplateProjectPreview } from "@/components/template-project-preview";
+import { cn } from "@/lib/utils";
 import {
-  Terminal, Cpu, MessageSquare, MapPin, Phone, Globe, Copy, Check, Server, Database, ChevronRight,
-  Briefcase, GraduationCap, Calendar, Award, Search, Star, Layers, Cloud, GitFork,
-  ExternalLink, Play, CheckCircle2, RotateCcw, Network, ShieldCheck, FileText,
-  Target, Zap, Sparkles, Send, Inbox, Clock, Trash2, RefreshCw, Mail, Code, Menu, X
-} from 'lucide-react';
-import type { PortfolioData, PortfolioCustomization } from '../types';
-import styles from './pulse-template.module.css';
+  formatDate,
+  formatDateRange,
+  groupSkillsByCategory,
+} from "@/features/templates/utils";
+import type {
+  PortfolioData,
+  PortfolioCustomization,
+} from "@/features/templates/types";
+import {
+  GitHubContributionHeatmap,
+  parseContributionCalendar,
+} from "@/features/templates/github-contribution-heatmap";
+import {
+  buildTemplateSections,
+  ContactChips,
+  CustomSectionItems,
+  DescriptionBlock,
+  HeroProfileButtons,
+  ProfileLinksSection,
+  ProjectActions,
+  PROJECT_CARD,
+  PROJECT_CARD_BODY,
+  PROJECT_CARD_HEADER,
+  PROJECT_CARD_META,
+  PROJECT_CARD_TITLE,
+  HERO_HEADER_COLUMN,
+  HERO_HEADLINE_SCALE,
+  HERO_TITLE_BASE,
+  HERO_TITLE_SCALE_7XL,
+  SocialPills,
+  PROJECTS_GRID_2,
+  TEMPLATE_CONTAINER,
+  getSectionLabels,
+} from "@/features/templates/shared";
+import { CollapsibleList } from "@/features/templates/collapsible-list";
+import { getTemplateSectionLayout } from "@/features/templates/section-layouts";
+import {
+  renderSections,
+  resolveSectionLayout,
+  type ReorderableSectionKey,
+} from "@/features/templates/section-order";
+import styles from "./pulse-template.module.css";
+import {
+  Terminal,
+  Cpu,
+  MessageSquare,
+  MapPin,
+  Phone,
+  Globe,
+  Copy,
+  Check,
+  Server,
+  Database,
+  ChevronRight,
+  Briefcase,
+  GraduationCap,
+  Calendar,
+  Award,
+  Trophy,
+  Star,
+  GitFork,
+  ExternalLink,
+  Play,
+  CheckCircle2,
+  RotateCcw,
+  Network,
+  Zap,
+  Send,
+  Inbox,
+  Clock,
+  Trash2,
+  RefreshCw,
+  Mail,
+  Menu,
+  X,
+} from "lucide-react";
 
 // ==========================================
 // 1. TYPES (derived from the shared PortfolioData contract)
 // ==========================================
-type PortfolioMeta = PortfolioData['portfolio'];
-type Experience = PortfolioData['experiences'][number];
-type Education = PortfolioData['educations'][number];
-type Skill = PortfolioData['skills'][number];
-type Project = PortfolioData['projects'][number];
-type Article = PortfolioData['articles'][number];
-type SocialProfile = PortfolioData['socialProfiles'][number];
-type Certification = PortfolioData['certifications'][number];
-type Achievement = PortfolioData['achievements'][number];
-type CustomSection = PortfolioData['customSections'][number];
+type PortfolioMeta = PortfolioData["portfolio"];
+type Experience = PortfolioData["experiences"][number];
+type Education = PortfolioData["educations"][number];
+type Skill = PortfolioData["skills"][number];
+type Project = PortfolioData["projects"][number];
+type Article = PortfolioData["articles"][number];
+type SocialProfile = PortfolioData["socialProfiles"][number];
+type Certification = PortfolioData["certifications"][number];
+type Achievement = PortfolioData["achievements"][number];
+type CustomSection = PortfolioData["customSections"][number];
 
 interface AppProps {
   data: PortfolioData;
@@ -42,42 +113,37 @@ interface AppProps {
 // SHARED HELPERS (null-safety for fields that are optional on the real data)
 // ==========================================
 const FALLBACK_AVATAR =
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb';
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-bluish-sans',
+  subsets: ["latin"],
+  variable: "--font-bluish-sans",
 });
 
 const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-bluish-display',
+  subsets: ["latin"],
+  variable: "--font-bluish-display",
 });
 
 const playfairDisplay = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-bluish-serif',
+  subsets: ["latin"],
+  variable: "--font-bluish-serif",
 });
 
 const jetBrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-bluish-mono',
+  subsets: ["latin"],
+  variable: "--font-bluish-mono",
 });
 
-/** Formats an ISO-ish date string as "Mon YYYY"; returns a fallback for null/invalid input. */
-function formatMonthYear(dateStr: string | null, fallback = 'N/A'): string {
-  if (!dateStr) return fallback;
-  const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return dateStr;
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+function displayDate(dateStr: string | null, fallback = "N/A"): string {
+  return formatDate(dateStr) || fallback;
 }
 
-/** Extracts just the year from a date string, falling back gracefully. */
-function formatYear(dateStr: string | null): string {
-  if (!dateStr) return 'N/A';
+function displayYear(dateStr: string | null, fallback = "N/A"): string {
+  if (!dateStr) return fallback;
   const date = new Date(dateStr);
   if (!Number.isNaN(date.getTime())) return String(date.getFullYear());
-  return dateStr.split('-')[0] || 'N/A';
+  return dateStr.split("-")[0] || fallback;
 }
 
 /** experiences/educations duration calc — guards against a missing start date. */
@@ -117,21 +183,6 @@ function getSkillLevelInfo(level: number | null): { label: string; value: number
   return { label: 'Familiar', value: 50, color: 'from-slate-500 to-slate-400' };
 }
 
-/** Best-effort label/description extraction from a generic custom-section item. */
-function getCustomItemFields(item: Record<string, unknown>): { name: string; description: string } {
-  const name =
-    (typeof item.name === 'string' && item.name) ||
-    (typeof item.title === 'string' && item.title) ||
-    (typeof item.label === 'string' && item.label) ||
-    'Untitled';
-  const description =
-    (typeof item.description === 'string' && item.description) ||
-    (typeof item.summary === 'string' && item.summary) ||
-    (typeof item.value === 'string' && item.value) ||
-    '';
-  return { name, description };
-}
-
 /** cachedStats is Record<string, unknown> | null; read known fields safely. */
 function getStat(stats: Record<string, unknown> | null, key: string): number {
   if (!stats) return 0;
@@ -144,6 +195,7 @@ function getStat(stats: Record<string, unknown> | null, key: string): number {
 // ==========================================
 interface HeaderProps {
   portfolioTitle: string;
+  navItems: Array<{ id: string; label: string }>;
   activeSection: string;
   setActiveSection: (section: string) => void;
   primaryColor: string;
@@ -153,6 +205,7 @@ interface HeaderProps {
 
 function Header({
   portfolioTitle,
+  navItems,
   activeSection,
   setActiveSection,
   primaryColor,
@@ -160,14 +213,6 @@ function Header({
   setPrimaryColor,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navItems = [
-    { id: 'about', label: 'About' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'achievements', label: 'Credentials' },
-    { id: 'contact', label: 'Connect' },
-  ];
 
   const handleScroll = (id: string) => {
     setActiveSection(id);
@@ -189,7 +234,7 @@ function Header({
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 @sm:px-6 @lg:px-8">
         {/* Logo/Brand */}
         <div
-          onClick={() => handleScroll('about')}
+          onClick={() => handleScroll(navItems[0]?.id ?? 'about')}
           className="flex cursor-pointer items-center gap-2.5 font-display text-lg font-bold tracking-tight text-white hover:opacity-95"
           id="header-brand-logo"
         >
@@ -208,11 +253,10 @@ function Header({
             <button
               key={item.id}
               onClick={() => handleScroll(item.id)}
-              className={`relative px-4 py-2 font-mono text-xs uppercase tracking-wider font-semibold transition-colors duration-200 rounded-md hover:text-white ${
-                activeSection === item.id
+              className={`relative px-4 py-2 font-mono text-xs uppercase tracking-wider font-semibold transition-colors duration-200 rounded-md hover:text-white ${activeSection === item.id
                   ? 'text-white bg-white/5'
                   : 'text-slate-400'
-              }`}
+                }`}
               id={`nav-item-${item.id}`}
             >
               {item.label}
@@ -235,11 +279,10 @@ function Header({
                 <button
                   key={color.name}
                   onClick={() => setPrimaryColor(color.hex)}
-                  className={`h-4 w-4 rounded-full border transition-all ${
-                    primaryColor === color.hex
+                  className={`h-4 w-4 rounded-full border transition-all ${primaryColor === color.hex
                       ? 'scale-125 border-white ring-2 ring-slate-950'
                       : 'border-transparent opacity-60 hover:opacity-100 hover:scale-110'
-                  }`}
+                    }`}
                   style={{ backgroundColor: color.hex }}
                   title={`${color.name} Accent`}
                   id={`accent-picker-${color.name.toLowerCase()}`}
@@ -257,19 +300,21 @@ function Header({
             <span>Connect</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="@md:hidden flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
-            aria-label="Toggle navigation"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
+          {navItems.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="@md:hidden flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+              aria-label="Toggle navigation"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          )}
         </div>
       </div>
 
-      {mobileMenuOpen && (
+      {mobileMenuOpen && navItems.length > 0 && (
         <nav className="border-t border-white/10 bg-[#0a0a0a]/95 px-4 py-3 @md:hidden">
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2">
             {navItems.map((item) => (
@@ -277,11 +322,10 @@ function Header({
                 key={item.id}
                 type="button"
                 onClick={() => handleScroll(item.id)}
-                className={`rounded-lg px-3 py-2.5 text-left font-mono text-xs font-semibold uppercase tracking-wider ${
-                  activeSection === item.id
+                className={`rounded-lg px-3 py-2.5 text-left font-mono text-xs font-semibold uppercase tracking-wider ${activeSection === item.id
                     ? 'bg-white/10 text-white'
                     : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                }`}
+                  }`}
               >
                 {item.label}
               </button>
@@ -298,10 +342,12 @@ function Header({
 // ==========================================
 interface HeroProps {
   portfolio: PortfolioMeta;
+  socialProfiles: SocialProfile[];
   primaryColor: string;
+  showSummary?: boolean;
 }
 
-function Hero({ portfolio, primaryColor }: HeroProps) {
+function Hero({ portfolio, socialProfiles, primaryColor, showSummary = true }: HeroProps) {
   const [copied, setCopied] = useState(false);
   const [simulatedLoad, setSimulatedLoad] = useState(12);
   const [activeTab, setActiveTab] = useState<'details' | 'runtime'>('details');
@@ -313,15 +359,6 @@ function Hero({ portfolio, primaryColor }: HeroProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownloadJSON = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolio, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `${portfolio.title.toLowerCase().replace(/\s+/g, '_')}_profile.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -351,32 +388,48 @@ function Hero({ portfolio, primaryColor }: HeroProps) {
 
           {/* Left Column: Core Bio */}
           <div className="@lg:col-span-7 space-y-8" id="hero-bio-container">
-            {/* Availability Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>Available for Core Engineering Roles</span>
-            </div>
 
-            <div className="space-y-4">
-              <h1 className="font-serif text-3xl @sm:text-5xl @lg:text-6xl font-normal italic tracking-tight text-white leading-tight break-words">
+
+            <div className={cn(HERO_HEADER_COLUMN, "space-y-4")}>
+              <h1
+                className={cn(
+                  HERO_TITLE_BASE,
+                  HERO_TITLE_SCALE_7XL,
+                  "font-serif font-normal italic tracking-tight text-white leading-tight"
+                )}
+              >
                 Hi, I&apos;m <span className="block mt-1 relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400 not-italic font-sans font-bold">
                   {portfolio.title}
                 </span>
               </h1>
 
-              <h2
-                className="font-display text-xl @sm:text-2xl font-medium tracking-tight"
-                style={{ color: primaryColor }}
-              >
-                {portfolio.headline}
-              </h2>
+              {portfolio.headline && (
+                <h2
+                  className={cn(HERO_HEADLINE_SCALE, "font-display font-medium tracking-tight")}
+                  style={{ color: primaryColor }}
+                >
+                  {portfolio.headline}
+                </h2>
+              )}
 
-              <p className="font-sans text-base @sm:text-lg text-slate-400 leading-relaxed max-w-2xl">
-                {portfolio.summary}
-              </p>
+              {showSummary && portfolio.summary && (
+                <DescriptionBlock
+                  text={portfolio.summary}
+                  paragraphClassName="font-sans text-base @sm:text-lg text-slate-400 leading-relaxed max-w-2xl"
+                  listClassName="space-y-2 pl-5 font-sans text-base @sm:text-lg text-slate-400 leading-relaxed max-w-2xl marker:text-slate-500"
+                />
+              )}
+
+              <ContactChips
+                portfolio={portfolio}
+                chipClassName="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-mono text-slate-300"
+              />
+              <div id="hero-profiles" className="scroll-mt-24 space-y-3">
+                <HeroProfileButtons
+                  profiles={socialProfiles}
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10 transition-colors"
+                />
+              </div>
             </div>
 
             {/* Quick Contact Specs */}
@@ -423,179 +476,7 @@ function Hero({ portfolio, primaryColor }: HeroProps) {
                 </div>
               )}
             </div>
-
-            {/* CTAs */}
-            {/* <div className="flex flex-col @sm:flex-row @sm:flex-wrap items-stretch @sm:items-center gap-3 @sm:gap-4 pt-4" id="hero-cta-buttons">
-              <button
-                onClick={() => {
-                  const el = document.getElementById('contact');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full @sm:w-auto justify-center px-6 py-3.5 rounded-xl text-sm font-semibold font-display bg-white hover:bg-slate-100 text-slate-950 shadow-lg shadow-white/5 transition-all flex items-center gap-2 group hover:scale-[1.02]"
-                id="hero-cta-hire"
-              >
-                <span>Hire {portfolio.title.split(' ')[0]}</span>
-                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </button>
-
-              <button
-                onClick={handleDownloadJSON}
-                className="w-full @sm:w-auto justify-center px-6 py-3.5 rounded-xl text-sm font-semibold font-display bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all flex items-center gap-2 hover:scale-[1.02]"
-                id="hero-cta-json-download"
-              >
-                <Terminal className="h-4 w-4 text-slate-500" style={{ color: primaryColor }} />
-                <span>Export Profile Schema</span>
-              </button>
-            </div> */}
           </div>
-
-          {/* Right Column: Avatar Frame & Interactive Virtual Server Panel */}
-          <div className="@lg:col-span-5 flex flex-col items-center justify-center" id="hero-interactive-column">
-
-            {/* Frame Box */}
-            <div className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#0a0a0a]/60 p-5 shadow-2xl backdrop-blur-sm">
-
-              {/* Tab Selector */}
-              <div className="flex border-b border-white/10 mb-5 text-xs font-mono">
-                <button
-                  onClick={() => setActiveTab('details')}
-                  className={`flex-1 pb-2.5 font-medium transition-colors border-b ${
-                    activeTab === 'details'
-                      ? 'text-white'
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                  style={{ borderBottomColor: activeTab === 'details' ? primaryColor : 'transparent' }}
-                  id="tab-hero-avatar"
-                >
-                  ENGINEER PROFILE
-                </button>
-                <button
-                  onClick={() => setActiveTab('runtime')}
-                  className={`flex-1 pb-2.5 font-medium transition-colors border-b ${
-                    activeTab === 'runtime'
-                      ? 'text-white'
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                  style={{ borderBottomColor: activeTab === 'runtime' ? primaryColor : 'transparent' }}
-                  id="tab-hero-runtime"
-                >
-                  SYSTEM STATS
-                </button>
-              </div>
-
-              {/* Tab Content 1: Avatar Profile */}
-              {activeTab === 'details' && (
-                <div className="space-y-5 animate-fadeIn">
-                  {/* Avatar wrapper */}
-                  {/* <div className="relative mx-auto h-48 w-48 rounded-2xl overflow-hidden group">
-                    <div
-                      className="absolute inset-0 rounded-2xl border-2 transition-all duration-300 pointer-events-none z-10 opacity-70 group-hover:opacity-100"
-                      style={{ borderColor: primaryColor, boxShadow: `0 0 20px ${primaryColor}20` }}
-                    />
-                    <img
-                      src={portfolio.avatarUrl ?? FALLBACK_AVATAR}
-                      alt={portfolio.title}
-                      referrerPolicy="no-referrer"
-                      className="h-full w-full object-cover grayscale brightness-95 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
-                    />
-                    <div className="absolute bottom-3 left-3 right-3 bg-[#0a0a0a]/90 border border-white/10 rounded px-2.5 py-1 text-[10px] font-mono text-center text-slate-300 z-20">
-                      SYS_OP_POOL_OK
-                    </div>
-                  </div> */}
-
-                  {/* Profile Metadata Spec Table */}
-                  <div className="space-y-2.5 font-mono text-xs text-slate-400 bg-white/5 p-3.5 rounded-xl border border-white/10">
-                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                      <span className="text-slate-500">ENGINE</span>
-                      <span className="text-white font-medium">Bun v1.1.20</span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                      <span className="text-slate-500">PRIMARY_STACK</span>
-                      <span className="text-white font-medium">TypeScript, NextJS</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">CORE_VIBE</span>
-                      <span className="font-semibold px-1.5 py-0.5 rounded text-[10px]" style={{ color: primaryColor, backgroundColor: `${primaryColor}15` }}>
-                        BACKEND_FIRST
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab Content 2: Runtime Sandbox Stats */}
-              {activeTab === 'runtime' && (
-                <div className="space-y-4 font-mono text-xs animate-fadeIn">
-
-                  {/* CPU Load Indicator */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-slate-400 flex items-center gap-1.5">
-                        <Cpu className="h-3.5 w-3.5" style={{ color: primaryColor }} />
-                        Node Event Pool
-                      </span>
-                      <span className="text-white font-semibold">{simulatedLoad}%</span>
-                    </div>
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
-                      <div
-                        className="h-full rounded-full transition-all duration-1000"
-                        style={{ width: `${simulatedLoad}%`, backgroundColor: primaryColor }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Caching / DB index visualizer */}
-                  <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 space-y-2.5">
-                    <div className="flex items-center gap-2 text-slate-300 border-b border-white/5 pb-2 text-[11px] font-bold">
-                      <Server className="h-3.5 w-3.5 text-slate-500" />
-                      <span>Redis Caching Cache HITs</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Total Queries</span>
-                      <span className="text-white">4.8k / sec</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Cache Hit Rate</span>
-                      <span className="text-emerald-400 font-medium">98.42%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Index Lookup Latency</span>
-                      <span className="text-white">~0.42ms</span>
-                    </div>
-                  </div>
-
-                  {/* Microservices Status Indicator */}
-                  <div className="bg-white/5 p-3.5 rounded-xl border border-white/10 space-y-2 text-[11px]">
-                    <div className="flex items-center gap-2 text-slate-300 border-b border-white/5 pb-2 font-bold">
-                      <Database className="h-3.5 w-3.5 text-slate-500" />
-                      <span>Workspace Gateway</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">Webhook Sync Queue</span>
-                      <span className="text-emerald-500 font-medium flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Operational
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">TCP Pool Handshakes</span>
-                      <span className="text-emerald-500 font-medium flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Healthy
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Bottom decorative stats bar */}
-              <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-[10px] font-mono text-slate-500">
-                <span>PORT: 3000 // STABLE</span>
-                <span>{portfolio.location ?? 'Remote'}</span>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
@@ -607,188 +488,182 @@ function Hero({ portfolio, primaryColor }: HeroProps) {
 // ==========================================
 interface TimelineProps {
   experiences: Experience[];
-  educations: Education[];
   primaryColor: string;
+  labels: ReturnType<typeof getSectionLabels>;
 }
 
-function Timeline({ experiences, educations, primaryColor }: TimelineProps) {
+function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
+  if (experiences.length === 0) return null;
+
   return (
-    <section className="py-20 bg-transparent" id="experience">
+    <section key="experience" className="py-20 bg-transparent" id="experience">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Section Heading */}
-        <div className="text-center @md:text-left mb-16 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
-            <span>Milestones & Journeys</span>
-          </div>
-          <h2 className="font-serif text-3xl @sm:text-4xl font-normal italic tracking-tight text-white">
-            Professional History
-          </h2>
-          <p className="font-sans text-sm @sm:text-base text-slate-400 max-w-xl">
-            A comprehensive track record of leading complex backend architectures, full-stack deployment setups, and high-concurrency systems.
-          </p>
+        <div className="mb-8">
+          <SectionHeading>{labels.experience}</SectionHeading>
         </div>
 
-        <div className="grid grid-cols-1 @lg:grid-cols-12 gap-16">
+        <div className="space-y-16">
 
-          {/* Work Experience: Left Column (7/12) */}
-          {experiences.length > 0 && (
-            <div className="@lg:col-span-7 space-y-10" id="timeline-experience-list">
-              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                <div
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                  style={{ color: primaryColor }}
+          {/* Work Experience */}
+          <div className="space-y-10" id="timeline-experience-list">
+              <div className="relative border-l border-white/10 pl-6 ml-5">
+                <CollapsibleList
+                  initial={4}
+                  wrapperClassName="space-y-12"
+                  buttonClassName="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
-                  <Briefcase className="h-5 w-5" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-white">Engineering Experience</h3>
-              </div>
+                  {experiences.map((exp) => {
+                    const bulletPoints = (exp.description ?? "")
+                      .split("\n")
+                      .filter((p) => p.trim().length > 0);
+                    const duration = getDuration(exp.startDate, exp.endDate);
+                    return (
+                      <div key={exp.id} className="relative group" id={`experience-card-${exp.id}`}>
 
-              <div className="relative border-l border-white/10 pl-6 ml-5 space-y-12">
-                {experiences.map((exp) => {
-                  const bulletPoints = exp.description.split('\n').filter(p => p.trim().length > 0);
-                  const duration = getDuration(exp.startDate, exp.endDate);
-                  return (
-                    <div key={exp.id} className="relative group" id={`experience-card-${exp.id}`}>
+                        {/* Timeline Node Point */}
+                        <div
+                          className="absolute -left-[31px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0a0a0a] border-2 transition-all group-hover:scale-125"
+                          style={{
+                            borderColor: primaryColor,
+                            boxShadow: `0 0 10px ${primaryColor}40`
+                          }}
+                        />
 
-                      {/* Timeline Node Point */}
-                      <div
-                        className="absolute -left-[31px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0a0a0a] border-2 transition-all group-hover:scale-125"
-                        style={{
-                          borderColor: primaryColor,
-                          boxShadow: `0 0 10px ${primaryColor}40`
-                        }}
-                      />
+                        <div className="space-y-4">
+                          {/* Title & Metadata Card Header */}
+                          <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-2">
+                            <div>
+                              <h4 className="font-display text-lg font-bold text-white group-hover:text-slate-200 transition-colors">
+                                {exp.role}
+                              </h4>
+                              <span
+                                className="font-sans text-sm font-semibold transition-colors"
+                                style={{ color: primaryColor }}
+                              >
+                                {exp.company}
+                              </span>
+                            </div>
 
-                      <div className="space-y-4">
-                        {/* Title & Metadata Card Header */}
-                        <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-2">
-                          <div>
-                            <h4 className="font-display text-lg font-bold text-white group-hover:text-slate-200 transition-colors">
-                              {exp.role}
-                            </h4>
-                            <span
-                              className="font-sans text-sm font-semibold transition-colors"
-                              style={{ color: primaryColor }}
+                            {/* Period Tag */}
+                            <div className="flex items-center gap-2 text-xs font-mono text-slate-500 bg-white/5 border border-white/10 px-2.5 py-1 rounded-md self-start @sm:self-center">
+                              <Calendar className="h-3 w-3" />
+                              <span>
+                                {formatDateRange(exp.startDate, exp.endDate) || "N/A"}
+                              </span>
+                              {duration && (
+                                <>
+                                  <span className="text-white/10">|</span>
+                                  <span className="text-slate-400">{duration}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Location details */}
+                          {exp.location && (
+                            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500">
+                              <MapPin className="h-3 w-3" />
+                              <span>{exp.location}</span>
+                            </div>
+                          )}
+
+                          {/* Decoded Bullet Points */}
+                          {bulletPoints.length > 0 && (
+                            <CollapsibleList
+                              initial={3}
+                              wrapperClassName="space-y-3 pt-1"
+                              buttonClassName="mt-1 text-xs font-mono text-slate-400 hover:text-white transition-colors"
                             >
-                              {exp.company}
-                            </span>
-                          </div>
-
-                          {/* Period Tag */}
-                          <div className="flex items-center gap-2 text-xs font-mono text-slate-500 bg-white/5 border border-white/10 px-2.5 py-1 rounded-md self-start @sm:self-center">
-                            <Calendar className="h-3 w-3" />
-                            <span>{formatMonthYear(exp.startDate)} – {exp.endDate ? formatMonthYear(exp.endDate) : 'Present'}</span>
-                            {duration && (
-                              <>
-                                <span className="text-white/10">|</span>
-                                <span className="text-slate-400">{duration}</span>
-                              </>
-                            )}
-                          </div>
+                              {bulletPoints.map((point, pIdx) => (
+                                <div key={pIdx} className="flex gap-3 text-sm text-slate-400 leading-relaxed">
+                                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-700 group-hover:bg-slate-400 transition-colors" />
+                                  <span>{point}</span>
+                                </div>
+                              ))}
+                            </CollapsibleList>
+                          )}
                         </div>
-
-                        {/* Location details */}
-                        {exp.location && (
-                          <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500">
-                            <MapPin className="h-3 w-3" />
-                            <span>{exp.location}</span>
-                          </div>
-                        )}
-
-                        {/* Decoded Bullet Points */}
-                        <ul className="space-y-3 pt-1" id={`experience-bullets-${exp.id}`}>
-                          {bulletPoints.map((point, pIdx) => (
-                            <li key={pIdx} className="flex gap-3 text-sm text-slate-400 leading-relaxed">
-                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-700 group-hover:bg-slate-400 transition-colors" />
-                              <span>{point}</span>
-                            </li>
-                          ))}
-                        </ul>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </CollapsibleList>
               </div>
             </div>
-          )}
 
-          {/* Education: Right Column (5/12) */}
-          {educations.length > 0 && (
-            <div className="@lg:col-span-5 space-y-10" id="timeline-education-list">
-              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                <div
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                  style={{ color: primaryColor }}
-                >
-                  <GraduationCap className="h-5 w-5" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-white">Academic Foundation</h3>
-              </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-              <div className="space-y-8">
-                {educations.map((edu) => (
-                  <div
-                    key={edu.id}
-                    className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all shadow-xl space-y-4"
-                    id={`education-card-${edu.id}`}
-                  >
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between items-start gap-4">
-                        <h4 className="font-display text-base font-bold text-white">
-                          {edu.degree}
-                        </h4>
-                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 bg-[#0a0a0a]/80 px-2 py-0.5 rounded border border-white/10">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatYear(edu.startDate)} – {formatYear(edu.endDate)}</span>
-                        </div>
-                      </div>
-                      {edu.field && (
-                        <p className="font-sans text-sm text-slate-400 font-medium">
-                          {edu.field}
-                        </p>
-                      )}
-                      <p
-                        className="font-display text-xs font-semibold"
-                        style={{ color: primaryColor }}
-                      >
-                        {edu.institution}
-                      </p>
+interface EducationSectionProps {
+  educations: Education[];
+  primaryColor: string;
+  labels: ReturnType<typeof getSectionLabels>;
+}
+
+function EducationSection({ educations, primaryColor, labels }: EducationSectionProps) {
+  if (educations.length === 0) return null;
+
+  return (
+    <section key="education" className="py-20 bg-transparent" id="education">
+      <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
+        <div className="space-y-10" id="timeline-education-list">
+          <SectionHeading>{labels.education}</SectionHeading>
+
+          <CollapsibleList
+            initial={4}
+            wrapperClassName="grid grid-cols-1 @md:grid-cols-2 gap-8"
+            buttonClassName="@md:col-span-2 mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            {educations.map((edu) => (
+              <div
+                key={edu.id}
+                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all shadow-xl space-y-4"
+                id={`education-card-${edu.id}`}
+              >
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-start gap-4">
+                    <h4 className="font-display text-base font-bold text-white">
+                      {edu.degree}
+                    </h4>
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 bg-[#0a0a0a]/80 px-2 py-0.5 rounded border border-white/10">
+                      <Calendar className="h-3 w-3" />
+                      <span>
+                        {displayYear(edu.endDate)}
+                      </span>
                     </div>
-
-                    {/* GPA Visualizer */}
-                    {edu.gpa && (
-                      <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-                        <span className="text-slate-500">Cumulative GPA Score:</span>
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-6 items-center gap-1 bg-[#0a0a0a]/85 px-2.5 py-0.5 rounded border border-white/10 text-white font-bold">
-                            <Award className="h-3.5 w-3.5 text-amber-500" />
-                            <span>{edu.gpa}</span>
-                            <span className="text-slate-500 font-normal">/ 10</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
-                ))}
-              </div>
-
-              {/* Micro details panel */}
-              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-xs font-mono text-slate-400 space-y-3.5">
-                <span className="text-slate-300 font-bold tracking-wider uppercase block">Research Interests</span>
-                <p className="leading-relaxed text-[11px] text-slate-500">
-                  Focused on runtime architecture performance benchmarks, compiler extensions, and memory profiling within V8 & Bun runtimes during university capstone projects.
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <span className="px-2 py-1 rounded bg-[#0a0a0a] border border-white/10 text-[10px]">Event Loop Pools</span>
-                  <span className="px-2 py-1 rounded bg-[#0a0a0a] border border-white/10 text-[10px]">Data Indexing</span>
-                  <span className="px-2 py-1 rounded bg-[#0a0a0a] border border-white/10 text-[10px]">System Telemetry</span>
+                  {edu.field && (
+                    <p className="font-sans text-sm text-slate-400 font-medium">
+                      {edu.field}
+                    </p>
+                  )}
+                  <p
+                    className="font-display text-xs font-semibold"
+                    style={{ color: primaryColor }}
+                  >
+                    {edu.institution}
+                  </p>
                 </div>
-              </div>
-            </div>
-          )}
 
+                {edu.gpa && (
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+                    <span className="text-slate-500">Cumulative GPA Score:</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-6 items-center gap-1 bg-[#0a0a0a]/85 px-2.5 py-0.5 rounded border border-white/10 text-white font-bold">
+                        <Award className="h-3.5 w-3.5 text-amber-500" />
+                        <span>{edu.gpa}</span>
+                        <span className="text-slate-500 font-normal">/ 10</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </CollapsibleList>
         </div>
       </div>
     </section>
@@ -801,145 +676,66 @@ function Timeline({ experiences, educations, primaryColor }: TimelineProps) {
 interface SkillsMatrixProps {
   skills: Skill[];
   primaryColor: string;
+  labels: ReturnType<typeof getSectionLabels>;
 }
 
-function SkillsMatrix({ skills, primaryColor }: SkillsMatrixProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+function SkillsMatrix({ skills, primaryColor, labels }: SkillsMatrixProps) {
+  const groupedSkills = useMemo(() => groupSkillsByCategory(skills), [skills]);
 
-  const categories = useMemo(() => {
-    const list = new Set(skills.map(s => s.category));
-    return ['All', ...Array.from(list)];
+  const skillLevelByName = useMemo(() => {
+    const map = new Map<string, number | null>();
+    skills.forEach((skill) => map.set(`${skill.category}::${skill.name}`, skill.level));
+    return map;
   }, [skills]);
-
-  const getCategoryIcon = (category: string) => {
-    switch (category.toLowerCase()) {
-      case 'languages':
-        return <Code className="h-4 w-4" />;
-      case 'runtimes':
-        return <Cpu className="h-4 w-4" />;
-      case 'frameworks':
-        return <Layers className="h-4 w-4" />;
-      case 'databases':
-      case 'orms':
-        return <Database className="h-4 w-4" />;
-      case 'cloud':
-        return <Cloud className="h-4 w-4" />;
-      default:
-        return <Star className="h-4 w-4" />;
-    }
-  };
-
-  const filteredSkills = useMemo(() => {
-    return skills.filter(skill => {
-      const levelLabel = getSkillLevelInfo(skill.level).label;
-      const matchesSearch = skill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            levelLabel.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || skill.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [skills, searchQuery, selectedCategory]);
 
   return (
     <section className="py-20 bg-transparent border-y border-white/10" id="skills">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
-        {/* Header Grid */}
-        <div className="flex flex-col @md:flex-row @md:items-end justify-between gap-8 mb-12">
-          <div className="space-y-3 text-center @md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
-              <span>Full-Stack Capabilities</span>
-            </div>
-            <h2 className="font-serif text-3xl @sm:text-4xl font-normal italic tracking-tight text-white">
-              Technical Skill Matrix
-            </h2>
-            <p className="font-sans text-sm @sm:text-base text-slate-400 max-w-xl">
-              A detailed categorization of my technical stack with real proficiency scores and execution domains.
-            </p>
-          </div>
-
-          {/* Search Input Filter */}
-          <div className="relative w-full max-w-sm shrink-0 mx-auto @md:mx-0" id="skill-search-container">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Search stack (e.g. Bun, Elysia, PostgreSQL)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 text-white pl-10 pr-4 py-2.5 rounded-xl text-sm font-sans placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-700 focus:border-slate-700 transition-all"
-              id="skills-search-input"
-            />
-          </div>
+        {/* Header */}
+        <div className="mb-12">
+          <SectionHeading>{labels.skills}</SectionHeading>
         </div>
 
-        {/* Category Tabs Scroll */}
-        <div className="flex overflow-x-auto gap-2 pb-6 scrollbar-thin border-b border-white/10 mb-10" id="skills-category-tabs">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4.5 py-2 rounded-xl text-xs font-mono font-medium tracking-wide uppercase transition-all whitespace-nowrap border flex items-center gap-2 ${
-                selectedCategory === cat
-                  ? 'bg-white text-slate-950 border-white'
-                  : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20 hover:text-white'
-              }`}
-              id={`skills-tab-${cat.toLowerCase()}`}
-            >
-              {cat !== 'All' && getCategoryIcon(cat)}
-              <span>{cat}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Dynamic Grid Layout */}
-        <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-6" id="skills-matrix-grid">
-          {filteredSkills.map((skill) => {
-            const prof = getSkillLevelInfo(skill.level);
-            return (
-              <div
-                key={skill.id}
-                className="relative min-h-36 overflow-hidden p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 flex flex-col justify-between gap-4 group"
-                id={`skill-card-${skill.id}`}
-              >
-                <div className="flex justify-between items-start">
-                  <div className="min-w-0 space-y-1">
-                    <span className="block break-words text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">
-                      {skill.category}
-                    </span>
-                    <h4 className="line-clamp-2 break-words font-display text-base font-bold text-white group-hover:text-white">
-                      {skill.name}
-                    </h4>
-                  </div>
-                  <div
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0a0a0a] border border-white/10 text-slate-400 group-hover:text-white transition-colors"
-                  >
-                    {getCategoryIcon(skill.category)}
-                  </div>
-                </div>
-
-                {/* Meter Visualizer */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-mono">
-                    <span className="text-slate-500">Execution proficiency:</span>
-                    <span className="text-slate-300 font-bold">{prof.label}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full bg-gradient-to-r ${prof.color} transition-all duration-500`}
-                      style={{ width: `${prof.value}%` }}
-                    />
-                  </div>
-                </div>
+        {/* Category-wise Skill Groups */}
+        <div className="space-y-12" id="skills-matrix-grid">
+          {Object.entries(groupedSkills).map(([category, names]) => (
+            <div key={category} className="space-y-5">
+              <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+                <span
+                  className="h-1.5 w-1.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: primaryColor }}
+                />
+                <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-slate-400">
+                  {category}
+                </h3>
               </div>
-            );
-          })}
 
-          {filteredSkills.length === 0 && (
-            <div className="col-span-full py-16 text-center text-slate-500 font-mono text-xs">
-              No specific technology matching &quot;{searchQuery}&quot; located in the skills record.
+              <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-6">
+                {names.map((name) => {
+                  const prof = getSkillLevelInfo(skillLevelByName.get(`${category}::${name}`) ?? null);
+                  return (
+                    <div
+                      key={`${category}-${name}`}
+                      className="relative min-h-auto overflow-hidden p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 flex flex-col justify-between gap-4 group"
+                      id={`skill-card-${category}-${name}`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="min-w-0 space-y-1">
+                          <span className="block break-words text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">
+                            {category}
+                          </span>
+                          <h4 className="line-clamp-2 break-words font-display text-base font-bold text-white group-hover:text-white">
+                            {name}
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          )}
+          ))}
         </div>
 
       </div>
@@ -954,12 +750,14 @@ interface ProjectsShowcaseProps {
   projects: Project[];
   primaryColor: string;
   livePreviewProjectIds: string[];
+  labels: ReturnType<typeof getSectionLabels>;
 }
 
 function ProjectsShowcase({
   projects,
   primaryColor,
   livePreviewProjectIds,
+  labels,
 }: ProjectsShowcaseProps) {
   const firstTwo = projects.slice(0, 2);
   const [selectedSimId, setSelectedSimId] = useState<string>(firstTwo[0]?.id ?? '');
@@ -1014,43 +812,40 @@ function ProjectsShowcase({
   };
 
   return (
-    <section className="py-20" id="projects">
+    <section className="py-20" id="work">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Header Title */}
-        <div className="text-center @md:text-left mb-16 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
-            <span>Interactive Engineering Portfolio</span>
-          </div>
-          <h2 className="font-serif text-3xl @sm:text-4xl font-normal italic tracking-tight text-white">
-            System Code & Showcases
-          </h2>
-          <p className="font-sans text-sm @sm:text-base text-slate-400 max-w-xl">
-            A hand-picked selection of high-concurrency systems, synchronization engines, and low-latency API architectures built with clean interfaces.
-          </p>
+        <div className="mb-16">
+          <SectionHeading>{labels.projects}</SectionHeading>
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 @md:grid-cols-2 gap-8 mb-20" id="projects-grid-list">
+        <CollapsibleList
+          initial={4}
+          wrapperClassName={cn(PROJECTS_GRID_2, "gap-8 mb-20")}
+          buttonClassName="@md:col-span-2 mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+        >
           {projects.map((project) => (
             <div
               key={project.id}
-              className={`relative overflow-hidden rounded-3xl bg-white/5 border transition-all hover:bg-white/10 hover:scale-[1.01] flex flex-col justify-between ${
+              className={cn(
+                PROJECT_CARD,
+                "relative rounded-3xl bg-white/5 border transition-all hover:bg-white/10 hover:scale-[1.01] flex flex-col justify-between",
                 project.featured
-                  ? 'border-white/20 ring-1 ring-white/10'
-                  : 'border-white/10'
-              }`}
+                  ? "border-white/20 ring-1 ring-white/10"
+                  : "border-white/10"
+              )}
               id={`project-card-${project.id}`}
             >
 
               {/* Card Body */}
-              <div className="p-6 @sm:p-8 space-y-6">
+              <div className={cn(PROJECT_CARD_BODY, "space-y-6")}>
 
                 {/* Visual Image Header */}
                 <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-[#0a0a0a] border border-white/10">
                   <TemplateProjectPreview
-                    templateId="bluish"
+                    templateId="pulse"
                     liveUrl={project.liveUrl}
                     projectId={project.id}
                     livePreviewProjectIds={livePreviewProjectIds}
@@ -1074,15 +869,22 @@ function ProjectsShowcase({
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-display text-xl font-bold text-white leading-tight">
-                    {project.title}
-                  </h3>
-                  <p className="font-sans text-sm text-slate-400 leading-relaxed">
-                    {project.description}
-                  </p>
+                  <div className={PROJECT_CARD_HEADER}>
+                    <div className={PROJECT_CARD_META}>
+                      <h3 className={cn(PROJECT_CARD_TITLE, "font-display text-xl font-bold text-white leading-tight")}>
+                        {project.title}
+                      </h3>
+                    </div>
+                  </div>
+                  {project.description && (
+                    <DescriptionBlock
+                      text={project.description}
+                      paragraphClassName="font-sans text-sm text-slate-400 leading-relaxed"
+                      listClassName="space-y-2 pl-5 font-sans text-sm text-slate-400 leading-relaxed marker:text-slate-600"
+                    />
+                  )}
                 </div>
 
-                {/* Tech Badges */}
                 {project.techStack.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-2">
                     {project.techStack.map((tech) => (
@@ -1097,10 +899,8 @@ function ProjectsShowcase({
                 )}
               </div>
 
-              {/* Card Footer: Metadata and Links */}
               <div className="px-6 @sm:px-8 py-5 border-t border-white/10 bg-white/2 flex flex-wrap justify-between items-center gap-4">
 
-                {/* Git Statistics */}
                 <div className="flex items-center gap-4 text-xs font-mono text-slate-500">
                   <div className="flex items-center gap-1 hover:text-white transition-colors cursor-default">
                     <Star className="h-3.5 w-3.5" />
@@ -1112,66 +912,38 @@ function ProjectsShowcase({
                   </div>
                 </div>
 
-                {/* Links */}
-                <div className="flex items-center gap-2">
-                  {project.sourceUrl && (
-                    <a
-                      href={project.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-[#0a0a0a] hover:bg-white/5 border border-white/10 hover:border-white/20 text-slate-300 hover:text-white transition-all"
-                      id={`project-source-link-${project.id}`}
-                    >
-                      <Github className="h-3.5 w-3.5" />
-                      <span>Source</span>
-                    </a>
-                  )}
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-white hover:bg-slate-100 text-slate-950 transition-all shadow"
-                      id={`project-live-link-${project.id}`}
-                    >
-                      <span>Launch</span>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  )}
-                </div>
+                <ProjectActions
+                  liveUrl={project.liveUrl}
+                  sourceUrl={project.sourceUrl}
+                  liveClassName="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-white hover:bg-slate-100 text-slate-950 transition-all shadow"
+                  sourceClassName="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-[#0a0a0a] hover:bg-white/5 border border-white/10 hover:border-white/20 text-slate-300 hover:text-white transition-all"
+                />
 
               </div>
             </div>
           ))}
-        </div>
+        </CollapsibleList>
 
-        {/* Dynamic Architectural Playground Section */}
-        {firstTwo.length > 0 && (
+        {/* {firstTwo.length > 0 && (
           <div className="rounded-3xl border border-white/10 bg-[#0a0a0a] p-4 @sm:p-10 shadow-2xl space-y-8" id="system-sandbox">
 
-            {/* Headline and controls */}
-            <div className="flex flex-col @md:flex-row @md:items-start justify-between gap-6 border-b border-white/10 pb-6">
-              <div className="space-y-2">
-                <h3 className="font-display text-xl @sm:text-2xl font-bold text-white flex items-center gap-2">
-                  <Terminal className="h-5 w-5" style={{ color: primaryColor }} />
-                  <span>Architectural Execution Playground</span>
-                </h3>
+            <div className="flex flex-col @md:flex-row @md:items-start justify-between gap-6">
+              <div className="space-y-3 min-w-0 flex-1">
+                <SectionHeading as="h3">Architectural Execution Playground</SectionHeading>
                 <p className="font-sans text-xs @sm:text-sm text-slate-400 max-w-xl">
                   Simulate low-level event flows, webhook triggers, and runtime socket handshakes built natively on my core components.
                 </p>
               </div>
 
-              {/* Sim Switcher */}
               <div className="flex max-w-full gap-2 overflow-x-auto bg-white/5 p-1.5 rounded-xl border border-white/10 self-stretch @md:self-start">
                 {firstTwo.map((project) => (
                   <button
                     key={project.id}
                     onClick={() => selectSimulation(project)}
-                    className={`shrink-0 whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors ${
-                      selectedSimId === project.id
+                    className={`shrink-0 whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors ${selectedSimId === project.id
                         ? 'bg-[#0a0a0a] text-white border border-white/10 shadow'
                         : 'text-slate-400 hover:text-slate-200'
-                    }`}
+                      }`}
                     id={`sim-selector-${project.id}`}
                   >
                     {project.title}
@@ -1180,10 +952,8 @@ function ProjectsShowcase({
               </div>
             </div>
 
-            {/* Sandbox workspace */}
             <div className="grid grid-cols-1 @lg:grid-cols-12 gap-8 items-stretch">
 
-              {/* Left Block: JSON Input and Action (5/12) */}
               <div className="@lg:col-span-5 flex flex-col justify-between space-y-5" id="sim-input-card">
                 <div className="space-y-2">
                   <label className="block text-[11px] font-mono text-slate-500 font-bold uppercase tracking-wider">
@@ -1223,47 +993,42 @@ function ProjectsShowcase({
                 </button>
               </div>
 
-              {/* Right Block: Flow chart & Live Terminal logs (7/12) */}
               <div className="@lg:col-span-7 flex flex-col justify-between space-y-6">
 
-                {/* Flowchart Diagram tracker */}
                 <div className="bg-white/5 p-4 @sm:p-5 rounded-2xl border border-white/10 space-y-4">
                   <span className="block text-[11px] font-mono text-slate-500 font-bold uppercase tracking-wider">
                     Visual Architecture Process Sequence
                   </span>
                   <div className="grid grid-cols-1 @sm:grid-cols-3 gap-3 text-center text-[10px] font-mono">
                     <div
-                      className={`p-3.5 rounded-xl border transition-all ${
-                        simStep === 1 || simStep === 2
+                      className={`p-3.5 rounded-xl border transition-all ${simStep === 1 || simStep === 2
                           ? 'border-blue-500 text-white bg-blue-500/10 scale-105'
                           : simStep > 1
                             ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/5'
                             : 'border-white/10 bg-[#0a0a0a]/50'
-                      }`}
+                        }`}
                     >
                       <Network className="h-4 w-4 mx-auto mb-1.5 text-slate-500" style={{ color: simStep === 1 ? primaryColor : undefined }} />
                       <span className="block font-bold">1. RECEIVE</span>
                       <span className="text-[9px] text-slate-500">Gateway Port</span>
                     </div>
                     <div
-                      className={`p-3.5 rounded-xl border transition-all ${
-                        simStep === 3 || simStep === 4
+                      className={`p-3.5 rounded-xl border transition-all ${simStep === 3 || simStep === 4
                           ? 'border-blue-500 text-white bg-blue-500/10 scale-105'
                           : simStep > 3
                             ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/5'
                             : 'border-white/10 bg-[#0a0a0a]/50'
-                      }`}
+                        }`}
                     >
                       <Cpu className="h-4 w-4 mx-auto mb-1.5 text-slate-500" style={{ color: simStep === 3 ? primaryColor : undefined }} />
                       <span className="block font-bold">2. PROCESS</span>
                       <span className="text-[9px] text-slate-500">Event Loop Pool</span>
                     </div>
                     <div
-                      className={`p-3.5 rounded-xl border transition-all ${
-                        simStep === 5
+                      className={`p-3.5 rounded-xl border transition-all ${simStep === 5
                           ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10 scale-105'
                           : 'border-white/10 bg-[#0a0a0a]/50'
-                      }`}
+                        }`}
                     >
                       <CheckCircle2 className="h-4 w-4 mx-auto mb-1.5 text-slate-500" style={{ color: simStep === 5 ? '#10b981' : undefined }} />
                       <span className="block font-bold">3. DISPATCH</span>
@@ -1272,10 +1037,8 @@ function ProjectsShowcase({
                   </div>
                 </div>
 
-                {/* Live Terminal Output Console */}
                 <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between h-48">
 
-                  {/* Console header */}
                   <div className="bg-white/5 border-b border-white/10 px-3 @sm:px-4 py-2 flex flex-wrap justify-between items-center gap-2 text-[10px] font-mono text-slate-500">
                     <div className="flex items-center gap-1.5">
                       <div className="h-2.5 w-2.5 rounded-full bg-red-500/40" />
@@ -1286,7 +1049,6 @@ function ProjectsShowcase({
                     <span>UTF-8 // BUN_SHELL</span>
                   </div>
 
-                  {/* Console body */}
                   <div className="flex-1 p-4 font-mono text-[11px] leading-relaxed overflow-y-auto [overflow-wrap:anywhere] space-y-2 text-slate-300">
                     {simOutput.map((log, idx) => (
                       <div key={idx} className={idx === 0 && isSimulating ? 'text-white font-bold animate-pulse' : 'opacity-85'}>
@@ -1295,7 +1057,6 @@ function ProjectsShowcase({
                     ))}
                   </div>
 
-                  {/* Console footer */}
                   <div className="bg-[#0a0a0a] border-t border-white/5 px-3 @sm:px-4 py-1.5 flex flex-wrap justify-between items-center gap-2 text-[9px] font-mono text-slate-500">
                     <span>MEMORY_USAGE: 24.8MB</span>
                     <span>LATENCY: 0.04ms</span>
@@ -1307,7 +1068,7 @@ function ProjectsShowcase({
             </div>
 
           </div>
-        )}
+        )} */}
 
       </div>
     </section>
@@ -1317,305 +1078,264 @@ function ProjectsShowcase({
 // ==========================================
 // 7. ARTICLES AND SOCIALS COMPONENT
 // ==========================================
-interface ArticlesAndSocialsProps {
-  articles: Article[];
-  socialProfiles: SocialProfile[];
-  certifications: Certification[];
-  achievements: Achievement[];
-  customSections: CustomSection[];
-  primaryColor: string;
-}
-
-function ArticlesAndSocials({
-  articles,
-  socialProfiles,
+// 7. ORDERABLE CONTENT SECTIONS
+// ==========================================
+function CertificationsSection({
   certifications,
-  achievements,
-  customSections,
-  primaryColor,
-}: ArticlesAndSocialsProps) {
+  labels,
+}: {
+  certifications: Certification[];
+  labels: ReturnType<typeof getSectionLabels>;
+}) {
   const [certVerified, setCertVerified] = useState<string | null>(null);
 
   const handleVerifyCert = (certId: string) => {
     setCertVerified(certId);
-    setTimeout(() => {
-      setCertVerified(null);
-    }, 3000);
+    setTimeout(() => setCertVerified(null), 3000);
   };
 
+  if (certifications.length === 0) return null;
+
   return (
-    <section className="py-20 bg-transparent" id="achievements">
-      <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
-
-        <div className="grid grid-cols-1 @lg:grid-cols-12 gap-10 @lg:gap-16">
-
-          {/* Left Block: Papers, Certs, & Custom Focus (7/12) */}
-          <div className="@lg:col-span-7 space-y-12">
-
-            {/* Certifications Card list */}
-            {certifications.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                    style={{ color: primaryColor }}
+    <section key="certifications" className="py-20 bg-transparent" id="certifications">
+      <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
+        <SectionHeading>{labels.certifications}</SectionHeading>
+        <CollapsibleList
+          initial={4}
+          wrapperClassName="space-y-4"
+          buttonClassName="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          {certifications.map((cert) => (
+            <div
+              key={cert.id}
+              className="p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 group hover:border-white/20 transition-all"
+              id={`cert-card-${cert.id}`}
+            >
+              <div className="space-y-1">
+                <h4 className="font-display text-base font-bold text-white">
+                  {cert.name}
+                </h4>
+                <p className="font-sans text-xs text-slate-400">
+                  Issued by <span className="font-semibold text-slate-300">{cert.issuer}</span>
+                  {cert.issueDate && <> &bull; {displayDate(cert.issueDate)}</>}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 self-start @sm:self-center shrink-0">
+                <button
+                  onClick={() => handleVerifyCert(cert.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-all border ${certVerified === cert.id
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                      : 'bg-[#0a0a0a] text-slate-400 hover:text-white border-white/10 hover:border-white/20'
+                    }`}
+                  id={`cert-verify-btn-${cert.id}`}
+                >
+                  {certVerified === cert.id ? '✓ CREDENTIAL_VALID' : 'Verify TLS Checksum'}
+                </button>
+                {cert.url && (
+                  <a
+                    href={cert.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-[#0a0a0a] text-slate-500 hover:text-white border border-white/10 rounded-lg transition-colors"
+                    title="Open Credential"
                   >
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-white">Professional Credentials</h3>
-                </div>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </CollapsibleList>
+      </div>
+    </section>
+  );
+}
 
-                <div className="space-y-4">
-                  {certifications.map((cert) => (
-                    <div
-                      key={cert.id}
-                      className="p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 group hover:border-white/20 transition-all"
-                      id={`cert-card-${cert.id}`}
-                    >
-                      <div className="space-y-1">
-                        <h4 className="font-display text-base font-bold text-white">
-                          {cert.name}
-                        </h4>
-                        <p className="font-sans text-xs text-slate-400">
-                          Issued by <span className="font-semibold text-slate-300">{cert.issuer}</span>
-                          {cert.issueDate && <> &bull; {formatMonthYear(cert.issueDate)}</>}
-                        </p>
+function ArticlesSection({
+  articles,
+  labels,
+}: {
+  articles: Article[];
+  labels: ReturnType<typeof getSectionLabels>;
+}) {
+  if (articles.length === 0) return null;
+
+  return (
+    <section key="articles" className="py-20 bg-transparent" id="articles">
+      <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
+        <SectionHeading>{labels.articles}</SectionHeading>
+        <CollapsibleList
+          initial={4}
+          wrapperClassName="space-y-4"
+          buttonClassName="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          {articles.map((art) => (
+            <a
+              key={art.id}
+              href={art.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 block group hover:bg-white/10 transition-all space-y-3"
+              id={`article-card-${art.id}`}
+            >
+              <div className="space-y-1">
+                {art.publishedAt && (
+                  <span className="text-[10px] font-mono text-slate-500 bg-[#0a0a0a] px-2 py-0.5 rounded border border-white/10">
+                    {displayDate(art.publishedAt)}
+                  </span>
+                )}
+                <h4 className="font-display text-base font-bold text-white group-hover:text-white leading-snug pt-1">
+                  {art.title}
+                </h4>
+                {art.description && (
+                  <p className="font-sans text-xs text-slate-400 leading-relaxed line-clamp-2">{art.description}</p>
+                )}
+              </div>
+              <div className="flex items-center gap-1 text-xs font-mono text-slate-500 group-hover:text-slate-300 transition-colors">
+                <span>Read entire publication{art.readTime ? ` · ${art.readTime} min` : ''}</span>
+                <ExternalLink className="h-3 w-3" />
+              </div>
+            </a>
+          ))}
+        </CollapsibleList>
+      </div>
+    </section>
+  );
+}
+
+function AchievementsSection({
+  achievements,
+  primaryColor,
+  labels,
+}: {
+  achievements: Achievement[];
+  primaryColor: string;
+  labels: ReturnType<typeof getSectionLabels>;
+}) {
+  if (achievements.length === 0) return null;
+
+  return (
+    <section key="achievements" className="py-20 bg-transparent" id="achievements">
+      <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
+        <SectionHeading>{labels.achievements}</SectionHeading>
+        <CollapsibleList
+          initial={4}
+          wrapperClassName="relative pl-4 space-y-8"
+          buttonClassName="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          {achievements.map((ach) => (
+            <div
+              key={ach.id}
+              className="relative pl-6 border-l border-white/10 space-y-2 group"
+              id={`achievement-card-${ach.id}`}
+            >
+              <div
+                className="absolute -left-[9px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-slate-800 border transition-all duration-300 group-hover:scale-110"
+                style={{ borderColor: primaryColor, color: primaryColor }}
+              >
+                <Trophy className="h-2.5 w-2.5" />
+              </div>
+              <div className="space-y-1">
+                {ach.date && (
+                  <span className="text-[10px] font-mono text-slate-500 block">
+                    {displayDate(ach.date)}
+                  </span>
+                )}
+                <h4 className="font-display text-sm font-bold text-white leading-snug group-hover:text-slate-300 transition-colors">
+                  {ach.title}
+                </h4>
+              </div>
+            </div>
+          ))}
+        </CollapsibleList>
+      </div>
+    </section>
+  );
+}
+
+function ProfilesSection({
+  portfolio,
+  socialProfiles,
+  hasProfiles,
+  labels,
+}: {
+  portfolio: PortfolioMeta;
+  socialProfiles: SocialProfile[];
+  hasProfiles: boolean;
+  labels: ReturnType<typeof getSectionLabels>;
+}) {
+  if (!hasProfiles && socialProfiles.length === 0) return null;
+
+  return (
+    <section key="profiles" className="py-20 bg-transparent scroll-mt-24" id="profiles">
+      <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
+        <SectionHeading>{labels.profiles}</SectionHeading>
+        {hasProfiles && (
+          <ProfileLinksSection
+            portfolio={portfolio}
+            profiles={socialProfiles}
+            chipClassName="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-mono text-slate-300"
+            pillClassName="rounded-lg border border-white/10 bg-[#0a0a0a] px-3 py-1.5 text-xs font-mono text-slate-300 hover:bg-white/10 transition-colors"
+            titleClassName="font-display text-sm font-bold text-white"
+            textClassName="font-sans text-xs text-slate-400"
+          />
+        )}
+        {socialProfiles.length > 0 && (
+          <div className="space-y-4">
+            {socialProfiles.map((prof) => {
+              const isGitHub = prof.platform.toLowerCase() === 'github';
+              const followers = getStat(prof.cachedStats, 'followers');
+              const publicRepos = getStat(prof.cachedStats, 'publicRepos');
+              const connections = getStat(prof.cachedStats, 'connections');
+              return (
+                <a
+                  key={prof.platform}
+                  href={prof.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 block group hover:bg-white/10 transition-all"
+                  id={`social-card-${prof.platform}`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3.5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0a0a0a] border border-white/10 text-slate-300 group-hover:text-white transition-colors">
+                        {isGitHub ? <Github className="h-5 w-5" /> : <Linkedin className="h-5 w-5" />}
                       </div>
-
-                      <div className="flex items-center gap-2 self-start @sm:self-center shrink-0">
-                        <button
-                          onClick={() => handleVerifyCert(cert.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-all border ${
-                            certVerified === cert.id
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                              : 'bg-[#0a0a0a] text-slate-400 hover:text-white border-white/10 hover:border-white/20'
-                          }`}
-                          id={`cert-verify-btn-${cert.id}`}
-                        >
-                          {certVerified === cert.id ? '✓ CREDENTIAL_VALID' : 'Verify TLS Checksum'}
-                        </button>
-                        {cert.url && (
-                          <a
-                            href={cert.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 bg-[#0a0a0a] text-slate-500 hover:text-white border border-white/10 rounded-lg transition-colors"
-                            title="Open Credential"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
-                        )}
+                      <div>
+                        <h4 className="font-display text-base font-bold text-white uppercase tracking-wide">
+                          {prof.platform}
+                        </h4>
+                        {prof.username && <span className="font-mono text-xs text-slate-400">@{prof.username}</span>}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Technical Articles */}
-            {articles.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                    style={{ color: primaryColor }}
-                  >
-                    <FileText className="h-5 w-5" />
+                    <ExternalLink className="h-4 w-4 text-slate-600 group-hover:text-white transition-colors" />
                   </div>
-                  <h3 className="font-display text-xl font-bold text-white">Engineering Papers & Articles</h3>
-                </div>
-
-                <div className="space-y-4">
-                  {articles.map((art) => (
-                    <a
-                      key={art.id}
-                      href={art.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 block group hover:bg-white/10 transition-all space-y-3"
-                      id={`article-card-${art.id}`}
-                    >
-                      <div className="space-y-1">
-                        {art.publishedAt && (
-                          <span className="text-[10px] font-mono text-slate-500 bg-[#0a0a0a] px-2 py-0.5 rounded border border-white/10">
-                            {formatMonthYear(art.publishedAt)}
-                          </span>
-                        )}
-                        <h4 className="font-display text-base font-bold text-white group-hover:text-white leading-snug pt-1">
-                          {art.title}
-                        </h4>
-                        {art.description && (
-                          <p className="font-sans text-xs text-slate-400 leading-relaxed line-clamp-2">{art.description}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 text-xs font-mono text-slate-500 group-hover:text-slate-300 transition-colors">
-                        <span>Read entire publication{art.readTime ? ` · ${art.readTime} min` : ''}</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Custom Sections: dynamic, shape defined per section */}
-            {customSections.map((section) => (
-              <div key={section.id} className="space-y-6" id={`custom-section-${section.id}`}>
-                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                    style={{ color: primaryColor }}
-                  >
-                    <Target className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-white">{section.label}</h3>
-                </div>
-
-                <div className="space-y-4">
-                  {section.items.map((item, itemIdx) => {
-                    const { name, description } = getCustomItemFields(item);
-                    return (
-                      <div
-                        key={itemIdx}
-                        className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2.5"
-                      >
-                        <h4 className="font-display text-base font-bold text-white flex items-center gap-2">
-                          <Zap className="h-4.5 w-4.5 shrink-0" style={{ color: primaryColor }} />
-                          <span>{name}</span>
-                        </h4>
-                        {description && (
-                          <p className="font-sans text-sm text-slate-400 leading-relaxed">
-                            {description}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-
-          </div>
-
-          {/* Right Block: Milestones, Accolades, & Social stats (5/12) */}
-          <div className="@lg:col-span-5 space-y-12">
-
-            {/* Achievements */}
-            {achievements.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                    style={{ color: primaryColor }}
-                  >
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-white">Honors & Competitions</h3>
-                </div>
-
-                <div className="relative pl-4 space-y-8">
-                  {achievements.map((ach) => (
-                    <div
-                      key={ach.id}
-                      className="relative pl-6 border-l border-white/10 space-y-2 group"
-                      id={`achievement-card-${ach.id}`}
-                    >
-                      <div
-                        className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-slate-800 border transition-all duration-300 group-hover:scale-125"
-                        style={{ borderColor: primaryColor }}
-                      />
-                      <div className="space-y-1">
-                        {ach.date && (
-                          <span className="text-[10px] font-mono text-slate-500 block">
-                            {formatMonthYear(ach.date)}
-                          </span>
-                        )}
-                        <h4 className="font-display text-sm font-bold text-white leading-snug group-hover:text-slate-300 transition-colors">
-                          {ach.title}
-                        </h4>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Social profiles with stats */}
-            {socialProfiles.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10"
-                    style={{ color: primaryColor }}
-                  >
-                    <MessageSquare className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-white">Operational Hubs</h3>
-                </div>
-
-                <div className="space-y-4">
-                  {socialProfiles.map((prof) => {
-                    const isGitHub = prof.platform.toLowerCase() === 'github';
-                    const followers = getStat(prof.cachedStats, 'followers');
-                    const publicRepos = getStat(prof.cachedStats, 'publicRepos');
-                    const connections = getStat(prof.cachedStats, 'connections');
-                    return (
-                      <a
-                        key={prof.platform}
-                        href={prof.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 block group hover:bg-white/10 transition-all"
-                        id={`social-card-${prof.platform}`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3.5">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0a0a0a] border border-white/10 text-slate-300 group-hover:text-white transition-colors">
-                              {isGitHub ? <Github className="h-5 w-5" /> : <Linkedin className="h-5 w-5" />}
-                            </div>
-                            <div>
-                              <h4 className="font-display text-base font-bold text-white uppercase tracking-wide">
-                                {prof.platform}
-                              </h4>
-                              {prof.username && <span className="font-mono text-xs text-slate-400">@{prof.username}</span>}
-                            </div>
+                  {prof.cachedStats && (
+                    <div className="mt-4 pt-3 border-t border-white/10 grid grid-cols-2 gap-4 text-center font-mono text-xs">
+                      {isGitHub ? (
+                        <>
+                          <div>
+                            <span className="block text-[11px] text-slate-500 uppercase">Followers</span>
+                            <span className="font-bold text-white text-sm">{followers}</span>
                           </div>
-                          <ExternalLink className="h-4 w-4 text-slate-600 group-hover:text-white transition-colors" />
+                          <div>
+                            <span className="block text-[11px] text-slate-500 uppercase">Repositories</span>
+                            <span className="font-bold text-white text-sm">{publicRepos}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="col-span-2 text-left px-2">
+                          <span className="inline-block text-[11px] text-slate-500 uppercase mr-2">Connections:</span>
+                          <span className="font-bold text-emerald-400 text-sm">{connections}+ Industry Experts</span>
                         </div>
-
-                        {/* Display Cached Stats beautifully */}
-                        {prof.cachedStats && (
-                          <div className="mt-4 pt-3 border-t border-white/10 grid grid-cols-2 gap-4 text-center font-mono text-xs">
-                            {isGitHub ? (
-                              <>
-                                <div>
-                                  <span className="block text-[11px] text-slate-500 uppercase">Followers</span>
-                                  <span className="font-bold text-white text-sm">{followers}</span>
-                                </div>
-                                <div>
-                                  <span className="block text-[11px] text-slate-500 uppercase">Repositories</span>
-                                  <span className="font-bold text-white text-sm">{publicRepos}</span>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="col-span-2 text-left px-2">
-                                <span className="inline-block text-[11px] text-slate-500 uppercase mr-2">Connections:</span>
-                                <span className="font-bold text-emerald-400 text-sm">{connections}+ Industry Experts</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
+                      )}
+                    </div>
+                  )}
+                </a>
+              );
+            })}
           </div>
-
-        </div>
-
+        )}
       </div>
     </section>
   );
@@ -1759,14 +1479,8 @@ function ContactCRM({ contactEmail, primaryColor }: ContactCRMProps) {
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Title Heading */}
-        <div className="text-center @md:text-left mb-16 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
-            <span>Interactive Contact Gateway</span>
-          </div>
-          <h2 className="font-serif text-3xl @sm:text-4xl font-normal italic tracking-tight text-white">
-            Secure Message Dispatcher
-          </h2>
+        <div className="mb-16 space-y-3">
+          <SectionHeading>Secure Message Dispatcher</SectionHeading>
           <p className="font-sans text-sm @sm:text-base text-slate-400 max-w-xl">
             A real-time reactive REST transaction log dashboard representing custom CRM databases running server-side.
           </p>
@@ -1783,11 +1497,10 @@ function ContactCRM({ contactEmail, primaryColor }: ContactCRMProps) {
               </h3>
               <button
                 onClick={() => setInboxOpen(!inboxOpen)}
-                className={`self-start px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all flex items-center gap-1.5 border ${
-                  inboxOpen
+                className={`self-start px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all flex items-center gap-1.5 border ${inboxOpen
                     ? 'bg-[#0a0a0a] text-white border-white/15'
                     : 'text-slate-400 hover:text-white border-transparent'
-                }`}
+                  }`}
                 id="contact-inbox-toggle-btn"
               >
                 <Inbox className="h-4 w-4" />
@@ -2028,6 +1741,108 @@ export function PulseTemplate({ data }: AppProps) {
   const [activeSection, setActiveSection] = useState('about');
   const [primaryColor, setPrimaryColor] = useState(initialPrimaryColor);
 
+  const githubProfile = socialProfiles.find(
+    (p) => p.platform.toLowerCase() === "github"
+  );
+  const githubStats = githubProfile?.cachedStats as Record<string, unknown> | null;
+  const contributionCalendar = parseContributionCalendar(
+    githubStats?.contributionCalendar
+  );
+  const { hasProfiles, navbarEnabled, sections } = buildTemplateSections(data);
+  const navItems = navbarEnabled ? sections : [];
+  const navSectionIds = navItems.map((section) => section.id).join(",");
+  const navSectionIdsRef = useRef(navSectionIds);
+  navSectionIdsRef.current = navSectionIds;
+  const labels = getSectionLabels(portfolio.customization);
+  const resolved = resolveSectionLayout(
+    getTemplateSectionLayout("pulse"),
+    portfolio.customization,
+  );
+  const featuredProjects = projects.filter((project) => project.featured);
+  const visibleProjects =
+    featuredProjects.length > 0
+      ? [...featuredProjects, ...projects.filter((p) => !p.featured)]
+      : projects;
+
+  const blocks: Partial<Record<ReorderableSectionKey, React.ReactNode>> = {
+    about: null,
+    experience: experiences.length > 0 ? (
+      <Timeline
+        experiences={experiences}
+        primaryColor={primaryColor}
+        labels={labels}
+      />
+    ) : null,
+    education: educations.length > 0 ? (
+      <EducationSection
+        educations={educations}
+        primaryColor={primaryColor}
+        labels={labels}
+      />
+    ) : null,
+    skills: skills.length > 0 ? (
+      <SkillsMatrix
+        key="skills"
+        skills={skills}
+        primaryColor={primaryColor}
+        labels={labels}
+      />
+    ) : null,
+    projects: visibleProjects.length > 0 ? (
+      <ProjectsShowcase
+        key="projects"
+        projects={visibleProjects}
+        primaryColor={primaryColor}
+        livePreviewProjectIds={livePreviewProjectIds}
+        labels={labels}
+      />
+    ) : null,
+    github: contributionCalendar ? (
+      <section key="github" className="py-16" id="github-activity">
+        <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
+          <SectionHeading>{labels.github}</SectionHeading>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 overflow-x-auto">
+            <div className="mx-auto w-max max-w-full">
+              <GitHubContributionHeatmap
+                calendar={contributionCalendar}
+                profileUrl={githubProfile?.url}
+                username={githubProfile?.username}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    ) : null,
+    certifications:
+      certifications.length > 0 ? (
+        <CertificationsSection
+          certifications={certifications}
+          labels={labels}
+        />
+      ) : null,
+    articles:
+      articles.length > 0 ? (
+        <ArticlesSection articles={articles} labels={labels} />
+      ) : null,
+    achievements:
+      achievements.length > 0 ? (
+        <AchievementsSection
+          achievements={achievements}
+          primaryColor={primaryColor}
+          labels={labels}
+        />
+      ) : null,
+    profiles:
+      hasProfiles || socialProfiles.length > 0 ? (
+        <ProfilesSection
+          portfolio={portfolio}
+          socialProfiles={socialProfiles}
+          hasProfiles={hasProfiles}
+          labels={labels}
+        />
+      ) : null,
+  };
+
   const accentColors = [
     { name: 'Blue', hex: '#3b82f6', className: 'bg-blue-500' },
     { name: 'Emerald', hex: '#10b981', className: 'bg-emerald-500' },
@@ -2038,10 +1853,9 @@ export function PulseTemplate({ data }: AppProps) {
 
   useEffect(() => {
     const handleScrollActive = () => {
-      const sections = ['about', 'experience', 'skills', 'projects', 'achievements', 'contact'];
       const scrollPosition = window.scrollY + 200;
 
-      for (const section of sections) {
+      for (const section of navSectionIdsRef.current.split(",").filter(Boolean)) {
         const el = document.getElementById(section);
         if (el) {
           const top = el.offsetTop;
@@ -2060,7 +1874,15 @@ export function PulseTemplate({ data }: AppProps) {
 
   return (
     <div
-      className={`${styles.root} ${inter.variable} ${spaceGrotesk.variable} ${playfairDisplay.variable} ${jetBrainsMono.variable} @container flex min-w-0 flex-col overflow-x-hidden font-sans selection:bg-slate-800 selection:text-white`}
+      className={cn(
+        TEMPLATE_CONTAINER,
+        styles.root,
+        inter.variable,
+        spaceGrotesk.variable,
+        playfairDisplay.variable,
+        jetBrainsMono.variable,
+        "flex min-w-0 flex-col overflow-x-hidden font-sans selection:bg-slate-800 selection:text-white"
+      )}
     >
       {/* Dynamic glow overlay */}
       <div
@@ -2071,6 +1893,7 @@ export function PulseTemplate({ data }: AppProps) {
       {/* Primary Header/Nav */}
       <Header
         portfolioTitle={portfolio.title}
+        navItems={navItems}
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         primaryColor={primaryColor}
@@ -2084,44 +1907,37 @@ export function PulseTemplate({ data }: AppProps) {
         {/* 1. Hero Bio Intro */}
         <Hero
           portfolio={portfolio}
-          primaryColor={primaryColor}
-        />
-
-        {/* 2. Professional experience/educations Timeline */}
-        <Timeline
-          experiences={experiences}
-          educations={educations}
-          primaryColor={primaryColor}
-        />
-
-        {/* 3. Searchable Skills Matrix */}
-        <SkillsMatrix
-          skills={skills}
-          primaryColor={primaryColor}
-        />
-
-        {/* 4. Projects Showcase & Architectural Playground */}
-        <ProjectsShowcase
-          projects={projects}
-          primaryColor={primaryColor}
-          livePreviewProjectIds={livePreviewProjectIds}
-        />
-
-        {/* 5. Articles, Certifications, achievements, and Focus list */}
-        <ArticlesAndSocials
-          articles={articles}
           socialProfiles={socialProfiles}
-          certifications={certifications}
-          achievements={achievements}
-          customSections={customSections}
           primaryColor={primaryColor}
+          showSummary={!resolved.isHidden("about")}
         />
 
-        {/* 6. Message Dispatcher Form and Recruiter Console */}
-        <ContactCRM
+        {renderSections(resolved, "full", blocks)}
+
+        {customSections.length > 0 && (
+          <section className="py-20 bg-transparent">
+            <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-12">
+              {customSections.map((section) => (
+                <div key={section.id} className="space-y-6" id={`custom-section-${section.id}`}>
+                  <SectionHeading>{section.label}</SectionHeading>
+                  <CustomSectionItems
+                    items={section.items}
+                    titleClassName="font-display text-base font-bold text-white"
+                    textClassName="font-sans text-sm text-slate-400 leading-relaxed"
+                    chipClassName="rounded-lg bg-[#0a0a0a] border border-white/10 px-2 py-0.5 text-[10px] font-mono text-slate-400"
+                    buttonClassName="mt-2 text-xs font-mono text-slate-400 hover:text-white"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Message Dispatcher Form and Recruiter Console */}
+        {/* <ContactCRM
           contactEmail={portfolio.contactEmail}
           primaryColor={primaryColor}
-        />
+        /> */}
 
       </main>
 
@@ -2139,5 +1955,25 @@ export function PulseTemplate({ data }: AppProps) {
         </div>
       </footer>
     </div>
+  );
+}
+
+function SectionHeading({
+  children,
+  as: Tag = "h2",
+}: {
+  children: React.ReactNode;
+  as?: "h2" | "h3";
+}) {
+  return (
+    <Tag
+      className={
+        Tag === "h3"
+          ? "w-full border-b border-white/10 pb-4 text-left font-serif text-2xl @sm:text-3xl font-normal italic tracking-tight text-slate-200"
+          : "w-full border-b border-white/10 pb-4 text-left font-serif text-3xl @sm:text-4xl font-normal italic tracking-tight text-slate-200"
+      }
+    >
+      {children}
+    </Tag>
   );
 }

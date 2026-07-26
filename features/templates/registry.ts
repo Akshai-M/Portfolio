@@ -20,6 +20,9 @@ import { AiryTemplate } from "./airy/airy-template";
 import { TerracottaTemplate } from "./terracotta/terracotta-template";
 import { CitrusTemplate } from "./citrus/citrus-template";
 import { ParchmentTemplate } from "./parchment/parchment-template";
+import { LedgerTemplate } from "./ledger/ledger-template";
+import { PulseTemplate } from "./pulse/pulse-template";
+import { MaximalistTemplate } from "./maximalist/maximalist-template";
 import type { TemplateComponent } from "./types";
 import { getTemplatePreviewImagePath } from "./template-preview-images";
 
@@ -217,6 +220,33 @@ export const templateRegistry: Record<string, TemplateComponent> = {
     previewImage: getTemplatePreviewImagePath("parchment"),
     category: "corporate",
     component: ParchmentTemplate,
+  },
+  ledger: {
+    id: "ledger",
+    name: "Ledger",
+    description:
+      "Dark developer portfolio with interactive project and recruiter consoles.",
+    previewImage: getTemplatePreviewImagePath("ledger"),
+    category: "general",
+    component: LedgerTemplate,
+  },
+  pulse: {
+    id: "pulse",
+    name: "Pulse",
+    description:
+      "Sophisticated dark developer portfolio with interactive project and recruiter consoles.",
+    previewImage: getTemplatePreviewImagePath("pulse"),
+    category: "developer",
+    component: PulseTemplate,
+  },
+  maximalist: {
+    id: "maximalist",
+    name: "Maximalist",
+    description:
+      "Maximalist developer portfolio with interactive project and recruiter consoles.",
+    previewImage: getTemplatePreviewImagePath("maximalist"),
+    category: "developer",
+    component: MaximalistTemplate,
   },
 };
 

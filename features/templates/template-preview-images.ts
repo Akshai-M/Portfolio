@@ -22,6 +22,9 @@ const TEMPLATE_PREVIEW_FILES: Record<string, string> = {
   terracotta: "terracotta.webp",
   citrus: "citrus.webp",
   parchment: "parchment.webp",
+  ledger: "ledger.webp",
+  pulse: "pulse.webp",
+  maximalist: "maximalist.webp",
 };
 
 export function getTemplatePreviewImagePath(templateId: string): string {
