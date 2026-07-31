@@ -225,7 +225,7 @@ export const templateRegistry: Record<string, TemplateComponent> = {
     id: "ledger",
     name: "Ledger",
     description:
-      "Dark developer portfolio with interactive project and recruiter consoles.",
+      "Dark developer portfolio with searchable projects and a structured section layout.",
     previewImage: getTemplatePreviewImagePath("ledger"),
     category: "general",
     component: LedgerTemplate,
@@ -234,7 +234,7 @@ export const templateRegistry: Record<string, TemplateComponent> = {
     id: "pulse",
     name: "Pulse",
     description:
-      "Sophisticated dark developer portfolio with interactive project and recruiter consoles.",
+      "Sophisticated dark developer portfolio with accent theming and interactive project cards.",
     previewImage: getTemplatePreviewImagePath("pulse"),
     category: "developer",
     component: PulseTemplate,
@@ -243,7 +243,7 @@ export const templateRegistry: Record<string, TemplateComponent> = {
     id: "maximalist",
     name: "Maximalist",
     description:
-      "Maximalist developer portfolio with interactive project and recruiter consoles.",
+      "Bold high-contrast developer portfolio with an interactive CLI terminal.",
     previewImage: getTemplatePreviewImagePath("maximalist"),
     category: "developer",
     component: MaximalistTemplate,

@@ -30,7 +30,6 @@ import {
   HERO_HEADLINE_SCALE,
   HERO_TITLE_BASE,
   HERO_TITLE_SCALE_7XL,
-  SocialPills,
   PROJECTS_GRID_2,
   TEMPLATE_CONTAINER,
   getSectionLabels,
@@ -46,27 +45,13 @@ import styles from "./maximalist-template.module.css";
 import {
   Terminal as TerminalIcon,
   Code,
-  Download,
-  Mail,
-  Server,
   Zap,
-  Cpu,
-  Layers,
-  Database,
-  Briefcase,
-  FolderGit2,
   Trophy,
   Award,
-  BookOpen,
-  MapPin,
   Calendar,
   ExternalLink,
-  ChevronDown,
-  ChevronUp,
   Menu,
   X,
-  Sparkles,
-  BarChart2,
   Star,
   GitFork,
   Activity,
@@ -74,16 +59,18 @@ import {
   Copy,
   Check,
   RefreshCw,
-  Palette,
-  Send,
   CornerDownLeft,
   FileText,
-  UserCheck,
 } from "lucide-react";
 
-// ---- null-safety helpers (the shared PortfolioData type allows nulls the demo data didn't) ----
-const FALLBACK_AVATAR =
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb";
+type Article = PortfolioData["articles"][number];
+
+function getInitials(title: string): string {
+  const parts = title.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+  return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
+}
 
 function displayDate(dateStr: string | null, fallback = "N/A"): string {
   return formatDate(dateStr) || fallback;
@@ -102,33 +89,17 @@ interface AppProps {
 }
 
 export function MaximalistTemplate({ data: initialData }: AppProps) {
-  // Kept as local, editable state so the CLI/JSON inspector demo features still work;
-  // seeded from (and resettable to) the real data passed in via props.
+  // Local state so the JSON inspector can experiment without mutating props.
   const [data, setData] = useState<PortfolioData>(initialData);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<boolean>(false);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
+  const [activeSection, setActiveSection] = useState("about");
 
-  // Bengaluru IST live clock
-  const [bengaluruTime, setBengaluruTime] = useState('');
   useEffect(() => {
-    const updateTime = () => {
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: 'Asia/Kolkata',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true,
-      };
-      setBengaluruTime(new Intl.DateTimeFormat('en-US', options).format(new Date()));
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
+    setData(initialData);
+  }, [initialData]);
 
   const handleResetData = () => {
     setData(initialData);
@@ -339,7 +310,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
 
                       {proj.featured && (
                         <div className="absolute top-3 left-3 bg-white text-black font-mono font-black text-[10px] px-2.5 py-1 border border-black italic uppercase">
-                          ⚡ FEATURED ARCHITECTURE
+                          Featured
                         </div>
                       )}
 
@@ -456,7 +427,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
       <ArticlesSectionComponent
         data={data}
         labels={labels}
-        onOpenArticle={() => setSelectedArticle(true)}
+        onOpenArticle={setSelectedArticle}
       />
     ) : null,
     certifications: data.certifications.length > 0 ? (
@@ -493,25 +464,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               </div>
             ))}
           </CollapsibleList>
-
-          {data.customSections.length > 0 && data.customSections.map((sec) => (
-            <div key={sec.id} className="bg-black border-4 border-[#3b82f6] p-8 neo-shadow sm:rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300 relative z-10 mb-8">
-              <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
-                <Zap className="w-4 h-4 text-[#3b82f6] fill-[#3b82f6]" />
-                <span>{`// ${sec.sectionType || "DEEP TECHNICAL FOCUS"}`}</span>
-              </div>
-              <h3 className="text-3xl font-black text-white uppercase tracking-tight mb-4 italic">
-                {sec.label}
-              </h3>
-              <CustomSectionItems
-                items={sec.items}
-                titleClassName="font-mono text-sm font-black text-[#3b82f6] uppercase"
-                textClassName="text-slate-300 text-xs font-bold"
-                chipClassName="px-2 py-0.5 bg-white/10 border border-white/20 font-mono text-[10px] text-white uppercase"
-                buttonClassName="mt-4 font-mono text-xs font-black uppercase text-[#3b82f6] hover:text-white transition-colors"
-              />
-            </div>
-          ))}
 
         </div>
       </section>
@@ -603,7 +555,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
           {/* Logo */}
           <a href="#about" className="flex items-center gap-3 group">
             <div className="w-9 h-9 sm:w-11 sm:h-11 bg-[#3b82f6] text-black font-mono font-black text-lg sm:text-xl flex items-center justify-center border-2 border-white neo-shadow group-hover:bg-white transition-colors">
-              {data.portfolio.title.split(" ")[0].charAt(0)+data.portfolio.title.split(" ")[1].charAt(0)}
+              {getInitials(data.portfolio.title)}
             </div>
             <div className="flex flex-col">
               <span className="font-black font-mono text-sm sm:text-base tracking-tighter text-white uppercase group-hover:text-[#3b82f6] transition-colors">
@@ -751,50 +703,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               />
             </div>
 
-            {/* Right Column: Hero Profile Card */}
-            {/* <div className="lg:col-span-4">
-              <div className="bg-black border-4 border-white p-6 neo-shadow space-y-6 lg:rotate-[1deg] hover:rotate-0 transition-transform duration-300">
-
-                <div className="relative border-4 border-white overflow-hidden bg-[#3b82f6]">
-                  <img
-                    src={data.portfolio.avatarUrl ?? FALLBACK_AVATAR}
-                    alt={data.portfolio.title}
-                    className="w-full h-72 sm:h-80 object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-300"
-                  />
-                  {data.portfolio.location && (
-                    <div className="absolute bottom-2 left-2 bg-black text-white font-mono font-black text-[10px] px-2 py-1 border border-white uppercase">
-                      📍 {data.portfolio.location}
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3 font-mono text-xs">
-                  <div className="flex items-center justify-between border-b border-white/20 pb-2">
-                    <span className="text-slate-400">STATUS:</span>
-                    <span className="text-emerald-400 font-black">ACTIVE / BENGALURU</span>
-                  </div>
-
-                  {data.portfolio.contactEmail && (
-                    <div className="flex items-center justify-between border-b border-white/20 pb-2">
-                      <span className="text-slate-400">EMAIL:</span>
-                      <a href={`mailto:${data.portfolio.contactEmail}`} className="text-[#3b82f6] font-black underline">
-                        {data.portfolio.contactEmail}
-                      </a>
-                    </div>
-                  )}
-
-                  {data.portfolio.phone && (
-                    <div className="flex items-center justify-between border-b border-white/20 pb-2">
-                      <span className="text-slate-400">PHONE:</span>
-                      <span className="text-white font-black">{data.portfolio.phone}</span>
-                    </div>
-                  )}
-
-                </div>
-
-              </div>
-            </div> */}
-
           </div>
         </div>
       </section>
@@ -809,7 +717,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               <div key={sec.id} className="bg-black border-4 border-[#3b82f6] p-8 neo-shadow mb-8">
                 <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
                   <Zap className="w-4 h-4 text-[#3b82f6] fill-[#3b82f6]" />
-                  <span>{`// ${sec.sectionType || "Custom Section"}`}</span>
+                  <span>{`// ${sec.label}`}</span>
                 </div>
                 <SectionHeading>{sec.label}</SectionHeading>
                 <CustomSectionItems
@@ -859,8 +767,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
             {/* 1. Full name — one line, never truncated */}
             <div className="flex shrink-0 items-center gap-2">
               <div className="w-10 h-10 shrink-0 bg-[#3b82f6] border-2 border-white font-mono font-black text-black flex items-center justify-center neo-shadow text-lg">
-                {(data.portfolio.title.split(/\s+/).filter(Boolean)[0]?.charAt(0) ?? "?")
-                  + (data.portfolio.title.split(/\s+/).filter(Boolean)[1]?.charAt(0) ?? "")}
+                {getInitials(data.portfolio.title)}
               </div>
               <span className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight uppercase whitespace-nowrap">
                 {data.portfolio.title}
@@ -868,13 +775,13 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
             </div>
 
             {/* 2. Navigation jumps — stacked column */}
-            {sections.length > 0 && (
+            {navItems.length > 0 && (
               <div className="shrink-0 space-y-2 font-mono text-xs">
                 <div className="text-[#3b82f6] font-black uppercase tracking-widest whitespace-nowrap">
                   {"// NAVIGATION JUMPS"}
                 </div>
                 <ul className="flex flex-col gap-1.5 text-white font-bold">
-                  {sections.map((section) => (
+                  {navItems.map((section) => (
                     <li key={section.id}>
                       <a
                         href={`#${section.id}`}
@@ -889,14 +796,13 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
             )}
 
             {/* 3. Back to top */}
-            <button
-              type="button"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            <a
+              href="#about"
               className="shrink-0 self-start md:self-center px-4 py-2 bg-white text-black hover:bg-[#3b82f6] font-black border-2 border-black neo-shadow flex items-center gap-2 transition-all uppercase font-mono text-xs"
             >
               <span>BACK TO TOP</span>
               <ArrowUp className="w-3.5 h-3.5" />
-            </button>
+            </a>
           </div>
         </div>
       </footer>
@@ -916,7 +822,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
       )}
 
       {selectedArticle && (
-        <ArticleModal onClose={() => setSelectedArticle(false)} />
+        <ArticleModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
       )}
 
     </div>
@@ -987,7 +893,7 @@ function ArticlesSectionComponent({
 }: {
   data: PortfolioData;
   labels: ReturnType<typeof getSectionLabels>;
-  onOpenArticle: () => void;
+  onOpenArticle: (article: Article) => void;
 }) {
   if (data.articles.length === 0) return null;
 
@@ -1041,18 +947,24 @@ function ArticlesSectionComponent({
                       target="_blank"
                       rel="noreferrer"
                       className="px-4 py-2.5 bg-[#3b82f6] hover:bg-white text-black font-black border-2 border-black flex items-center gap-2 neo-shadow transition-all uppercase"
+                      data-lf-track="article"
+                      data-lf-label={art.title}
+                      data-lf-id={art.id}
                     >
                       <span>READ ARTICLE</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
 
-                    <button
-                      onClick={onOpenArticle}
-                      className="px-4 py-2.5 bg-black hover:bg-white hover:text-black text-white font-black border-2 border-white flex items-center gap-2 transition-colors uppercase"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>QUICK PREVIEW</span>
-                    </button>
+                    {art.description ? (
+                      <button
+                        type="button"
+                        onClick={() => onOpenArticle(art)}
+                        className="px-4 py-2.5 bg-black hover:bg-white hover:text-black text-white font-black border-2 border-white flex items-center gap-2 transition-colors uppercase"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>QUICK PREVIEW</span>
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               );
@@ -1081,7 +993,7 @@ function CertificationsSectionComponent({
         <div className="space-y-6">
           <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest">
             <Award className="w-4 h-4 text-[#3b82f6]" />
-            <span>{"// INDUSTRY CREDENTIALS"}</span>
+            <span>{`// ${labels.certifications}`}</span>
           </div>
           <SectionHeading>{labels.certifications}</SectionHeading>
 
@@ -1156,9 +1068,6 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
     },
   ]);
 
-  const [messageSubject, setMessageSubject] = useState('');
-  const [messageBody, setMessageBody] = useState('');
-  const [sentStatus, setSentStatus] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1283,17 +1192,6 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
     setInput('');
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!messageSubject || !messageBody) return;
-    setSentStatus(true);
-    setTimeout(() => {
-      setSentStatus(false);
-      setMessageSubject('');
-      setMessageBody('');
-    }, 3000);
-  };
-
   return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
       <div className="bg-black border-4 border-white rounded-none max-w-3xl w-full p-4 sm:p-6 neo-shadow flex flex-col max-h-[90vh] text-slate-200 font-mono text-xs space-y-4">
@@ -1341,44 +1239,6 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
             <CornerDownLeft className="w-3.5 h-3.5" />
           </button>
         </form>
-
-        <div className="pt-3 border-t-2 border-white space-y-2">
-          <div className="text-xs text-[#3b82f6] font-black">
-            DIRECT EMAIL DISPATCH: <span className="text-slate-200">{data.portfolio.contactEmail ?? 'N/A'}</span>
-          </div>
-
-          {sentStatus ? (
-            <div className="p-3 bg-[#3b82f6] text-black border-2 border-white text-center font-black">
-              ✓ Message dispatched successfully to {data.portfolio.contactEmail ?? 'the team'}!
-            </div>
-          ) : (
-            <form onSubmit={handleSendMessage} className="space-y-2">
-              <input
-                type="text"
-                required
-                placeholder="Subject / Organization Name"
-                value={messageSubject}
-                onChange={(e) => setMessageSubject(e.target.value)}
-                className="w-full bg-black border border-white/60 p-2 text-white font-mono text-xs focus:outline-none focus:border-[#3b82f6]"
-              />
-              <textarea
-                required
-                rows={2}
-                placeholder="Message body / Project inquiry..."
-                value={messageBody}
-                onChange={(e) => setMessageBody(e.target.value)}
-                className="w-full bg-black border border-white/60 p-2 text-white font-mono text-xs focus:outline-none focus:border-[#3b82f6]"
-              />
-              <button
-                type="submit"
-                className="w-full py-2.5 bg-[#3b82f6] hover:bg-white text-black font-black border-2 border-black flex items-center justify-center gap-2 neo-shadow uppercase"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>SEND DIRECT INQUIRY</span>
-              </button>
-            </form>
-          )}
-        </div>
 
       </div>
     </div>
@@ -1483,7 +1343,13 @@ function DataInspectorModal({
 }
 
 // 6. ARTICLE MODAL
-function ArticleModal({ onClose }: { onClose: () => void }) {
+function ArticleModal({
+  article,
+  onClose,
+}: {
+  article: Article;
+  onClose: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
       <div className="bg-black border-4 border-white max-w-3xl w-full p-6 neo-shadow space-y-4 font-mono text-xs text-slate-200 max-h-[90vh] overflow-y-auto">
@@ -1499,27 +1365,51 @@ function ArticleModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <h2 className="text-2xl sm:text-3xl font-black text-white uppercase italic">
-          Optimizing Node.js Event Loop for High-Throughput Microservices
+          {article.title}
         </h2>
 
-        <p className="text-slate-300 font-sans text-sm leading-relaxed">
-          When scaling backend services to handle over 10,000 concurrent requests per second, traditional CPU synchronous tasks can stall Node.js&apos;s single-threaded event loop. This article breaks down:
-        </p>
+        {article.publishedAt && (
+          <div className="flex items-center gap-1 text-slate-400 font-bold">
+            <Calendar className="w-3.5 h-3.5 text-[#3b82f6]" />
+            <span>{displayDate(article.publishedAt)}</span>
+            {article.readTime != null && (
+              <span className="ml-2">{article.readTime} min read</span>
+            )}
+          </div>
+        )}
 
-        <ul className="space-y-2 list-disc list-inside text-slate-200 font-sans text-xs">
-          <li><strong>libuv Thread Pool:</strong> Worker allocation for crypto and filesystem ops.</li>
-          <li><strong>Microtasks vs Macrotasks:</strong> `Promise.then` priority over `setTimeout` timers.</li>
-          <li><strong>Benchmarking Runtimes:</strong> Comparing Node.js V8 execution against Bun JSC runtime.</li>
-        </ul>
+        {article.description && (
+          <DescriptionBlock
+            text={article.description}
+            paragraphClassName="text-slate-300 font-sans text-sm leading-relaxed"
+            listClassName="space-y-2 list-disc list-inside text-slate-200 font-sans text-xs"
+          />
+        )}
+
+        {article.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {article.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 border border-white/30 text-[10px] font-black uppercase text-slate-300"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="pt-4 border-t-2 border-white flex justify-end">
           <a
-            href="https://dev.to"
+            href={article.url}
             target="_blank"
             rel="noreferrer"
             className="px-5 py-2.5 bg-[#3b82f6] text-black font-black border-2 border-black neo-shadow uppercase"
+            data-lf-track="article"
+            data-lf-label={article.title}
+            data-lf-id={article.id}
           >
-            FULL ARTICLE ON DEV.TO →
+            READ FULL ARTICLE →
           </a>
         </div>
 

@@ -19,7 +19,6 @@ import {
   ContactChips,
   CustomSectionItems,
   DescriptionBlock,
-  HeroProfileButtons,
   ProfileLinksSection,
   ProjectActions,
   PROJECT_CARD,
@@ -31,10 +30,8 @@ import {
   HERO_HEADLINE_SCALE,
   HERO_TITLE_BASE,
   HERO_TITLE_SCALE_7XL,
-  SocialPills,
   PROJECTS_GRID_2,
   TEMPLATE_CONTAINER,
-  TemplateNavbar,
   getSectionLabels,
 } from "@/features/templates/shared";
 import { CollapsibleList } from "@/features/templates/collapsible-list";
@@ -118,22 +115,19 @@ function getSocialStatLabel(stats: Record<string, unknown> | null): string | nul
   return null;
 }
 
-const FALLBACK_AVATAR =
-  'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=400&fit=crop';
-
 const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-aurora-sans',
+  variable: '--font-ledger-sans',
 });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-aurora-display',
+  variable: '--font-ledger-display',
 });
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-aurora-mono',
+  variable: '--font-ledger-mono',
 });
 
 export function LedgerTemplate({ data }: AppProps) {
@@ -166,6 +160,7 @@ export function LedgerTemplate({ data }: AppProps) {
     githubStats?.contributionCalendar
   );
   const { hasProfiles, navbarEnabled, sections } = buildTemplateSections(data);
+  const navItems = navbarEnabled ? sections : [];
   const labels = getSectionLabels(portfolio.customization);
   const resolved = resolveSectionLayout(
     getTemplateSectionLayout("ledger"),
@@ -298,17 +293,13 @@ export function LedgerTemplate({ data }: AppProps) {
                         </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">Key Achievements</p>
-                        <ul className="space-y-3">
-                          {exp.description.split('\n').filter(Boolean).map((bullet, idx) => (
-                            <li key={idx} className="flex items-start gap-3 text-sm text-slate-300 leading-relaxed">
-                              <span className="mt-2 w-1.5 h-1.5 bg-blue-500 shrink-0" />
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      {exp.description && (
+                        <DescriptionBlock
+                          text={exp.description}
+                          paragraphClassName="text-sm text-slate-300 leading-relaxed"
+                          listClassName="space-y-3 text-sm text-slate-300 leading-relaxed"
+                        />
+                      )}
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -606,7 +597,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="certifications" id="certifications" className="space-y-6 scroll-mt-20">
                 <div className="border-l-2 border-blue-500 pl-4">
                   <SectionHeading as="h3">{labels.certifications}</SectionHeading>
-                  <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">Industry certified qualifications</p>
                 </div>
 
                 <CollapsibleList
@@ -669,7 +659,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="articles" id="publications" className="space-y-6 scroll-mt-20">
                 <div className="border-l-2 border-blue-500 pl-4">
                   <SectionHeading as="h3">{labels.articles}</SectionHeading>
-                  <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">Published tech guides and thoughts</p>
                 </div>
 
                 <CollapsibleList
@@ -778,7 +767,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="github" className="space-y-6 scroll-mt-20">
             <div className="border-l-2 border-blue-500 pl-4">
               <SectionHeading>{labels.github}</SectionHeading>
-              <p className="text-slate-500 text-sm mt-1 font-mono uppercase tracking-wider">Contribution heatmap</p>
             </div>
             <div className="bg-[#111418] border border-slate-800 p-5 rounded-none overflow-x-auto">
               <div className="mx-auto w-max max-w-full">
@@ -840,35 +828,41 @@ export function LedgerTemplate({ data }: AppProps) {
           </a>
 
           {/* Desktop Nav */}
-          <nav id="desktop-nav" className="hidden @lg:flex items-center gap-6 @xl:gap-8">
-            {sections.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition-colors"
-              >
-                {section.label}
-              </a>
-            ))}
-            <a href="#contact" className="px-4 py-2 rounded-none border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-all">
-              Get In Touch
-            </a>
-          </nav>
+          {navItems.length > 0 && (
+            <nav id="desktop-nav" className="hidden @lg:flex items-center gap-6 @xl:gap-8">
+              {navItems.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition-colors"
+                >
+                  {section.label}
+                </a>
+              ))}
+              {(portfolio.contactEmail || portfolio.phone) && (
+                <a href="#contact" className="px-4 py-2 rounded-none border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-all">
+                  {labels.contact}
+                </a>
+              )}
+            </nav>
+          )}
 
           {/* Mobile Menu Button */}
-          <button
-            id="mobile-menu-toggle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="@lg:hidden p-2 text-slate-400 hover:text-white focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {navItems.length > 0 && (
+            <button
+              id="mobile-menu-toggle"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="@lg:hidden p-2 text-slate-400 hover:text-white focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          )}
         </div>
 
         {/* Mobile Nav Drawer */}
         <AnimatePresence>
-          {mobileMenuOpen && (
+          {mobileMenuOpen && navItems.length > 0 && (
             <motion.div
               id="mobile-nav"
               initial={{ opacity: 0, height: 0 }}
@@ -878,7 +872,7 @@ export function LedgerTemplate({ data }: AppProps) {
               className="@lg:hidden border-t border-slate-800 bg-[#0A0C10]"
             >
               <div className="px-4 py-6 space-y-4 flex flex-col">
-                {sections.map((section) => (
+                {navItems.map((section) => (
                   <a
                     key={section.id}
                     href={`#${section.id}`}
@@ -888,13 +882,15 @@ export function LedgerTemplate({ data }: AppProps) {
                     {section.label}
                   </a>
                 ))}
-                <a
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-3 rounded-none border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-colors"
-                >
-                  Get In Touch
-                </a>
+                {(portfolio.contactEmail || portfolio.phone) && (
+                  <a
+                    href="#contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 rounded-none border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-colors"
+                  >
+                    {labels.contact}
+                  </a>
+                )}
               </div>
             </motion.div>
           )}
@@ -980,31 +976,6 @@ export function LedgerTemplate({ data }: AppProps) {
                 </div>
               )}
             </div>
-
-            {/* Right avatar column */}
-            {/* <div className="@md:col-span-5 flex justify-center order-1 @md:order-2">
-              <div className="h-60 w-60 @min-[360px]:h-64 @min-[360px]:w-64 @sm:h-72 @sm:w-72 @lg:h-80 @lg:w-80 rounded-none border-2 border-blue-500 p-1 bg-[#111418] relative">
-                <div className="w-full h-full bg-slate-800 border border-slate-800 overflow-hidden relative">
-                  <img
-                    src={portfolio.avatarUrl ?? FALLBACK_AVATAR}
-                    alt={portfolio.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 hover:scale-102 transition-all duration-500"
-                    id="avatar-image"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-transparent to-transparent opacity-50" />
-                </div>
-                
-                {portfolio.location && (
-                  <div className="absolute -bottom-3 left-4 right-4 bg-[#0A0C10] border border-slate-800 p-2 text-center">
-                    <div className="flex items-center justify-center gap-1.5 text-white">
-                      <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                      <span className="text-xs font-mono uppercase tracking-widest font-bold">{portfolio.location}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div> */}
           </div>
         </section>
 
@@ -1016,7 +987,6 @@ export function LedgerTemplate({ data }: AppProps) {
               <section key={sect.id} id={`custom-section-${sect.id}`} className="space-y-6">
                 <div className="border-l-2 border-blue-500 pl-4">
                   <SectionHeading as="h3">{sect.label}</SectionHeading>
-                  <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">{sect.sectionType}</p>
                 </div>
                 <CustomSectionItems
                   items={sect.items}
@@ -1030,16 +1000,14 @@ export function LedgerTemplate({ data }: AppProps) {
           </div>
         )}
 
-                {/* CONTACT / CALL TO ACTION */}
+        {(portfolio.contactEmail || portfolio.phone) && (
         <section id="contact" className="scroll-mt-20">
           <div className="bg-[#111418] border border-slate-800 p-5 @sm:p-12 rounded-none text-center space-y-6 relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4">
-              <h2 className="break-words text-2xl @sm:text-4xl font-display font-extrabold text-white uppercase tracking-tight">Let&apos;s Connect</h2>
+              <h2 className="break-words text-2xl @sm:text-4xl font-display font-extrabold text-white uppercase tracking-tight">{labels.contact}</h2>
             </div>
 
-            {/* Copyable contact card */}
-            {(portfolio.contactEmail || portfolio.phone) && (
-              <div className="max-w-md mx-auto grid grid-cols-1 @sm:grid-cols-2 gap-4 pt-4">
+            <div className="max-w-md mx-auto grid grid-cols-1 @sm:grid-cols-2 gap-4 pt-4">
                 {/* Email Copier */}
                 {portfolio.contactEmail && (
                   <button
@@ -1080,9 +1048,9 @@ export function LedgerTemplate({ data }: AppProps) {
                   </button>
                 )}
               </div>
-            )}
           </div>
         </section>
+        )}
 
       </main>
 
@@ -1099,9 +1067,15 @@ export function LedgerTemplate({ data }: AppProps) {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 @sm:gap-4 text-xs font-mono text-slate-500 uppercase">
-            {isSectionEnabled('experience') && <a href="#experience" className="hover:text-blue-500 transition-colors">Experience</a>}
-            {isSectionEnabled('work') && <a href="#work" className="hover:text-blue-500 transition-colors">Projects</a>}
-            <a href="#skills" className="hover:text-blue-500 transition-colors">Skills</a>
+            {isSectionEnabled('experience') && experiences.length > 0 && (
+              <a href="#experience" className="hover:text-blue-500 transition-colors">{labels.experience}</a>
+            )}
+            {isSectionEnabled('work') && projects.length > 0 && (
+              <a href="#work" className="hover:text-blue-500 transition-colors">{labels.projects}</a>
+            )}
+            {skills.length > 0 && (
+              <a href="#skills" className="hover:text-blue-500 transition-colors">{labels.skills}</a>
+            )}
             <a href="#header" className="p-2 rounded-none bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-all">
               ↑ Back to top
             </a>

@@ -1,9 +1,9 @@
 .root {
-  --font-sans: var(--font-bluish-sans), ui-sans-serif, system-ui, -apple-system,
+  --font-sans: var(--font-pulse-sans), ui-sans-serif, system-ui, -apple-system,
     sans-serif;
-  --font-display: var(--font-bluish-display), sans-serif;
-  --font-serif: var(--font-bluish-serif), Georgia, serif;
-  --font-mono: var(--font-bluish-mono), ui-monospace, monospace;
+  --font-display: var(--font-pulse-display), sans-serif;
+  --font-serif: var(--font-pulse-serif), Georgia, serif;
+  --font-mono: var(--font-pulse-mono), ui-monospace, monospace;
 
   min-height: 100vh;
   background: #0a0a0a;
