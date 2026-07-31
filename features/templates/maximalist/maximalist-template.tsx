@@ -1,11 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import confetti from "canvas-confetti";
-import {
-  GithubIcon as Github,
-  LinkedinIcon as Linkedin,
-} from "@/components/icons";
 import { TemplateProjectPreview } from "@/components/template-project-preview";
 import { cn } from "@/lib/utils";
 import {
@@ -68,7 +63,6 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  CheckCircle2,
   Menu,
   X,
   Sparkles,
@@ -135,15 +129,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Confetti trigger
-  const handleTriggerConfetti = () => {
-    confetti({
-      particleCount: 120,
-      spread: 80,
-      origin: { y: 0.6 },
-      colors: ['#3b82f6', '#ffffff', '#000000', '#fbbf24', '#ec4899'],
-    });
-  };
 
   const handleResetData = () => {
     setData(initialData);
@@ -222,10 +207,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
 
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 border-b-4 border-white pb-6">
             <div>
-              <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
-                <Briefcase className="w-4 h-4 text-[#3b82f6]" />
-                <span>{"// CAREER ARCHITECTURE"}</span>
-              </div>
               <SectionHeading>{labels.experience}</SectionHeading>
             </div>
           </div>
@@ -317,10 +298,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
 
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 border-b-4 border-white pb-6">
             <div>
-              <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
-                <FolderGit2 className="w-4 h-4 text-[#3b82f6]" />
-                <span>{"// FEATURED ARCHITECTURE & MICROSERVICES"}</span>
-              </div>
               <SectionHeading>{labels.projects}</SectionHeading>
             </div>
           </div>
@@ -445,10 +422,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
         <section key="education" id="education" className="py-16 bg-[#0A0A0B] bg-grid-pattern border-b-4 border-white relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="mb-12 border-b-4 border-white pb-6">
-              <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
-                <Award className="w-4 h-4 text-[#3b82f6]" />
-                <span>{"// ACADEMIC PATH"}</span>
-              </div>
               <SectionHeading>{labels.education}</SectionHeading>
             </div>
             <CollapsibleList
@@ -499,59 +472,26 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
 
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 border-b-4 border-white pb-6">
             <div>
-              <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
-                <Trophy className="w-4 h-4 text-[#3b82f6]" />
-                <span>{"// HONORS & ATHLETIC TITLES"}</span>
-              </div>
               <SectionHeading>{labels.achievements}</SectionHeading>
             </div>
-
-            <button
-              onClick={handleTriggerConfetti}
-              className="px-6 py-3 bg-[#3b82f6] hover:bg-white text-black font-mono font-black text-xs border-2 border-white neo-shadow flex items-center gap-2 transition-all uppercase"
-            >
-              <Sparkles className="w-4 h-4 fill-black" />
-              <span>TRIGGER CELEBRATION</span>
-            </button>
           </div>
 
           <CollapsibleList
             initial={4}
-            wrapperClassName="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12"
-            buttonClassName="lg:col-span-2 mt-4 w-full py-3 bg-black border-4 border-white font-mono text-xs font-black uppercase text-white hover:bg-[#3b82f6] hover:text-black transition-colors neo-shadow"
+            wrapperClassName="space-y-3 mb-12"
+            buttonClassName="mt-4 w-full py-3 bg-black border-4 border-white font-mono text-xs font-black uppercase text-white hover:bg-[#3b82f6] hover:text-black transition-colors neo-shadow"
           >
-            {data.achievements.map((ach, idx) => {
-              const isHackathon = ach.title.toLowerCase().includes('hackathon');
-              const slantClass = idx % 2 === 0
-                ? 'sm:rotate-[-1deg] hover:rotate-0 transition-transform duration-300'
-                : 'sm:rotate-[1deg] hover:rotate-0 transition-transform duration-300';
-
-              return (
-                <div
-                  key={ach.id}
-                  className={`p-8 bg-black border-4 border-white neo-shadow transition-all group flex flex-col justify-between ${slantClass}`}
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between font-mono text-xs">
-                      <span className="px-3 py-1 bg-[#3b82f6] text-black font-black uppercase border border-black flex items-center gap-1.5">
-                        <Trophy className="w-3.5 h-3.5" />
-                        {isHackathon ? '1ST PLACE WINNER' : 'ACHIEVEMENT'}
-                      </span>
-                      {ach.date && <span className="text-slate-300 font-bold">{displayDate(ach.date)}</span>}
-                    </div>
-
-                    <h3 className="text-3xl font-black text-white group-hover:text-[#3b82f6] transition-colors italic uppercase tracking-tight">
-                      {ach.title}
-                    </h3>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t-2 border-white/20 flex items-center gap-2 font-mono text-xs text-slate-300 font-bold">
-                    <CheckCircle2 className="w-4 h-4 text-[#3b82f6]" />
-                    <span>Verified Title & Competition Record</span>
-                  </div>
-                </div>
-              );
-            })}
+            {data.achievements.map((ach) => (
+              <div
+                key={ach.id}
+                className="flex items-center gap-3 border-4 border-white bg-black px-4 py-3 neo-shadow"
+              >
+                <Trophy className="w-4 h-4 shrink-0 text-[#3b82f6]" />
+                <h3 className="min-w-0 text-base sm:text-lg font-black text-white uppercase tracking-tight">
+                  {ach.title}
+                </h3>
+              </div>
+            ))}
           </CollapsibleList>
 
           {data.customSections.length > 0 && data.customSections.map((sec) => (
@@ -801,25 +741,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
                 />
               )}
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 font-mono text-xs sm:text-sm font-black uppercase">
-                <button
-                  onClick={() => setIsTerminalOpen(true)}
-                  className="px-6 py-3.5 bg-white text-black border-2 border-black neo-shadow hover:bg-[#3b82f6] transition-all hover:-translate-y-1 flex items-center gap-2"
-                >
-                  <TerminalIcon className="w-4 h-4" />
-                  <span>LAUNCH CLI TERMINAL</span>
-                </button>
-
-                <a
-                  href="#work"
-                  className="px-6 py-3.5 bg-black hover:bg-white hover:text-black text-white border-2 border-white transition-all hover:-translate-y-1 flex items-center gap-2"
-                >
-                  <FolderGit2 className="w-4 h-4" />
-                  <span>VIEW REPOSITORIES</span>
-                </a>
-              </div>
-
               <ContactChips
                 portfolio={data.portfolio}
                 chipClassName="px-3 py-1.5 bg-black border-2 border-white font-mono text-[10px] font-black uppercase text-slate-300"
@@ -888,7 +809,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               <div key={sec.id} className="bg-black border-4 border-[#3b82f6] p-8 neo-shadow mb-8">
                 <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
                   <Zap className="w-4 h-4 text-[#3b82f6] fill-[#3b82f6]" />
-                  <span>{`// ${sec.sectionType || "DEEP TECHNICAL FOCUS"}`}</span>
+                  <span>{`// ${sec.sectionType || "Custom Section"}`}</span>
                 </div>
                 <SectionHeading>{sec.label}</SectionHeading>
                 <CustomSectionItems
@@ -933,46 +854,31 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
           </div>
         )}
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-
-            <div className="md:col-span-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-[#3b82f6] border-2 border-white font-mono font-black text-black flex items-center justify-center neo-shadow text-lg">
-                  AK
-                </div>
-                <span className="text-3xl font-black text-white tracking-tight uppercase">
-                  {data.portfolio.title}
-                </span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-6">
+            {/* 1. Full name — one line, never truncated */}
+            <div className="flex shrink-0 items-center gap-2">
+              <div className="w-10 h-10 shrink-0 bg-[#3b82f6] border-2 border-white font-mono font-black text-black flex items-center justify-center neo-shadow text-lg">
+                {(data.portfolio.title.split(/\s+/).filter(Boolean)[0]?.charAt(0) ?? "?")
+                  + (data.portfolio.title.split(/\s+/).filter(Boolean)[1]?.charAt(0) ?? "")}
               </div>
-
-              <p className="text-slate-300 font-bold text-sm max-w-md leading-relaxed">
-                {data.portfolio.summary}
-              </p>
-
-              <div className="font-mono text-xs text-[#3b82f6] flex items-center gap-2 font-black">
-                {data.portfolio.location && (
-                  <>
-                    <MapPin className="w-4 h-4 text-[#3b82f6]" />
-                    <span>{data.portfolio.location}</span>
-                    <span>•</span>
-                  </>
-                )}
-                <span className="text-white font-black bg-[#3b82f6] text-black px-2 py-0.5">
-                  IST: {bengaluruTime || '10:12:00 PM'}
-                </span>
-              </div>
+              <span className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight uppercase whitespace-nowrap">
+                {data.portfolio.title}
+              </span>
             </div>
 
+            {/* 2. Navigation jumps — stacked column */}
             {sections.length > 0 && (
-              <div className="md:col-span-3 space-y-3 font-mono text-xs">
-                <div className="text-[#3b82f6] font-black uppercase tracking-widest">{"// NAVIGATION JUMPS"}</div>
-                <ul className="space-y-2 text-white font-bold">
+              <div className="shrink-0 space-y-2 font-mono text-xs">
+                <div className="text-[#3b82f6] font-black uppercase tracking-widest whitespace-nowrap">
+                  {"// NAVIGATION JUMPS"}
+                </div>
+                <ul className="flex flex-col gap-1.5 text-white font-bold">
                   {sections.map((section) => (
                     <li key={section.id}>
                       <a
                         href={`#${section.id}`}
-                        className="hover:text-[#3b82f6] transition-colors"
+                        className="hover:text-[#3b82f6] transition-colors whitespace-nowrap"
                       >
                         → {section.label}
                       </a>
@@ -982,75 +888,16 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               </div>
             )}
 
-            <div className="md:col-span-3 space-y-3 font-mono text-xs">
-              <div className="text-[#3b82f6] font-black uppercase tracking-widest">{"// CONNECT DIRECT"}</div>
-
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const githubUrl = data.socialProfiles.find((s) => s.platform.toLowerCase() === 'github')?.url;
-                  return githubUrl ? (
-                    <a
-                      href={githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-3 bg-black text-white hover:bg-[#3b82f6] hover:text-black font-black border-2 border-white transition-colors"
-                      title="GitHub Profile"
-                    >
-                      <Github className="w-5 h-5" />
-                    </a>
-                  ) : null;
-                })()}
-
-                {(() => {
-                  const linkedinUrl = data.socialProfiles.find((s) => s.platform.toLowerCase() === 'linkedin')?.url;
-                  return linkedinUrl ? (
-                    <a
-                      href={linkedinUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-3 bg-[#3b82f6] text-black hover:bg-white font-black border-2 border-black neo-shadow transition-colors"
-                      title="LinkedIn Profile"
-                    >
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                  ) : null;
-                })()}
-
-                <button
-                  onClick={() => setIsTerminalOpen(true)}
-                  className="px-3.5 py-3 bg-white text-black font-black border-2 border-black neo-shadow hover:bg-[#3b82f6] transition-colors flex items-center gap-1.5 uppercase"
-                >
-                  <TerminalIcon className="w-4 h-4" />
-                  <span>CLI</span>
-                </button>
-              </div>
-
-              {data.portfolio.contactEmail && (
-                <a
-                  href={`mailto:${data.portfolio.contactEmail}`}
-                  className="block w-full py-3 bg-[#3b82f6] hover:bg-white text-black font-black border-2 border-black text-center neo-shadow transition-all uppercase"
-                >
-                  SEND DIRECT EMAIL
-                </a>
-              )}
-            </div>
-
-          </div>
-
-          <div className="pt-6 border-t-2 border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-slate-300 font-bold">
-            <div>
-              © {new Date().getFullYear()} {data.portfolio.title.toUpperCase()}. ALL RIGHTS RESERVED.
-            </div>
-
+            {/* 3. Back to top */}
             <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="px-4 py-2 bg-white text-black hover:bg-[#3b82f6] font-black border-2 border-black neo-shadow flex items-center gap-2 transition-all uppercase"
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="shrink-0 self-start md:self-center px-4 py-2 bg-white text-black hover:bg-[#3b82f6] font-black border-2 border-black neo-shadow flex items-center gap-2 transition-all uppercase font-mono text-xs"
             >
               <span>BACK TO TOP</span>
               <ArrowUp className="w-3.5 h-3.5" />
             </button>
           </div>
-
         </div>
       </footer>
 
@@ -1097,10 +944,6 @@ function SkillsSectionComponent({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 border-b-4 border-white pb-6">
           <div>
-            <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest mb-2">
-              <Cpu className="w-4 h-4 text-[#3b82f6]" />
-              <span>{"// TECHNICAL PROFICIENCY & RUNTIMES"}</span>
-            </div>
             <SectionHeading>{labels.skills}</SectionHeading>
           </div>
         </div>
@@ -1154,10 +997,6 @@ function ArticlesSectionComponent({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="space-y-6">
-          <div className="flex items-center gap-2 font-mono text-xs text-[#3b82f6] font-black uppercase tracking-widest">
-            <BookOpen className="w-4 h-4 text-[#3b82f6]" />
-            <span>{"// THOUGHT LEADERSHIP & WRITING"}</span>
-          </div>
           <SectionHeading>{labels.articles}</SectionHeading>
 
           <CollapsibleList

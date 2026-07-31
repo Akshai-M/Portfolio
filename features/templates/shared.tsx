@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { stripBulletPrefix } from "@/lib/text";
-import { Layers } from "lucide-react";
 import ExpandableText from "@/components/expandable-text";
+import { PlatformIcon } from "@/components/icons";
 import type {
   PortfolioCustomization,
   PortfolioData,
@@ -19,7 +19,7 @@ import { CollapsibleList } from "./collapsible-list";
 export { getSectionLabel, getSectionLabels, STANDARD_SECTION_LABELS } from "./section-labels";
 export type { SectionKey } from "./section-labels";
 
-const HERO_PROFILE_PLATFORMS = ["github", "linkedin"] as const;
+const HERO_PROFILE_PLATFORMS = ["github", "linkedin", "medium", "leetcode"] as const;
 
 /** Enables container-query breakpoints inside templates (mobile preview, narrow embeds). */
 export const TEMPLATE_CONTAINER =
@@ -278,8 +278,11 @@ export function SocialPills({
           data-lf-track="social"
           data-lf-label={profile.platform}
         >
-          {getPlatformIcon(profile.platform)}
-          {showUsername && username ? ` · @${username}` : ""}
+          <span className="inline-flex items-center gap-1.5">
+            <PlatformIcon platform={profile.platform} className="h-3.5 w-3.5" />
+            <span>{getPlatformIcon(profile.platform)}</span>
+            {showUsername && username ? <span>· @{username}</span> : null}
+          </span>
         </a>
         );
       })}
@@ -315,7 +318,10 @@ export function HeroProfileButtons({
           data-lf-track="social"
           data-lf-label={profile.platform}
         >
-          {getPlatformIcon(profile.platform)}
+          <span className="inline-flex items-center gap-1.5">
+            <PlatformIcon platform={profile.platform} className="h-3.5 w-3.5" />
+            <span>{getPlatformIcon(profile.platform)}</span>
+          </span>
         </a>
       ))}
     </div>

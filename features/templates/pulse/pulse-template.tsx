@@ -7,10 +7,7 @@ import {
   Playfair_Display,
   Space_Grotesk,
 } from "next/font/google";
-import {
-  GithubIcon as Github,
-  LinkedinIcon as Linkedin,
-} from "@/components/icons";
+import { PlatformIcon } from "@/components/icons";
 import { TemplateProjectPreview } from "@/components/template-project-preview";
 import { cn } from "@/lib/utils";
 import {
@@ -63,8 +60,6 @@ import {
   MapPin,
   Phone,
   Globe,
-  Copy,
-  Check,
   Server,
   Database,
   ChevronRight,
@@ -86,7 +81,6 @@ import {
   Clock,
   Trash2,
   RefreshCw,
-  Mail,
   Menu,
   X,
 } from "lucide-react";
@@ -183,12 +177,7 @@ function getSkillLevelInfo(level: number | null): { label: string; value: number
   return { label: 'Familiar', value: 50, color: 'from-slate-500 to-slate-400' };
 }
 
-/** cachedStats is Record<string, unknown> | null; read known fields safely. */
-function getStat(stats: Record<string, unknown> | null, key: string): number {
-  if (!stats) return 0;
-  const val = stats[key];
-  return typeof val === 'number' ? val : 0;
-}
+
 
 // ==========================================
 // 2. HEADER COMPONENT
@@ -219,13 +208,7 @@ function Header({
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
-      const headerOffset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -348,17 +331,8 @@ interface HeroProps {
 }
 
 function Hero({ portfolio, socialProfiles, primaryColor, showSummary = true }: HeroProps) {
-  const [copied, setCopied] = useState(false);
   const [simulatedLoad, setSimulatedLoad] = useState(12);
   const [activeTab, setActiveTab] = useState<'details' | 'runtime'>('details');
-
-  const handleCopyEmail = () => {
-    if (!portfolio.contactEmail) return;
-    navigator.clipboard.writeText(portfolio.contactEmail);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -372,7 +346,7 @@ function Hero({ portfolio, socialProfiles, primaryColor, showSummary = true }: H
   }, []);
 
   return (
-    <section className="relative overflow-hidden px-0 pt-8 pb-14 @sm:pt-12 @sm:pb-20 @md:py-28" id="about">
+    <section className="relative overflow-hidden px-0 pt-8 pb-10 @sm:pt-10 @sm:pb-12 @md:py-16 scroll-mt-20" id="about">
       {/* Absolute Ambient Glow */}
       <div
         className="absolute -top-40 right-0 h-96 w-96 rounded-full blur-[120px] opacity-20 pointer-events-none transition-colors duration-500"
@@ -459,22 +433,6 @@ function Hero({ portfolio, socialProfiles, primaryColor, showSummary = true }: H
                   </a>
                 </div>
               )}
-              {portfolio.contactEmail && (
-                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/10 justify-between">
-                  <div className="flex items-center gap-3 truncate">
-                    <Mail className="h-4 w-4 text-slate-500 shrink-0" />
-                    <span className="truncate">{portfolio.contactEmail}</span>
-                  </div>
-                  <button
-                    onClick={handleCopyEmail}
-                    className="p-1.5 hover:bg-white/10 text-slate-400 hover:text-white rounded-md transition-all shrink-0"
-                    title="Copy Email Address"
-                    id="hero-copy-email-btn"
-                  >
-                    {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -496,7 +454,7 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
   if (experiences.length === 0) return null;
 
   return (
-    <section key="experience" className="py-20 bg-transparent" id="experience">
+    <section key="experience" className="py-12 scroll-mt-20 bg-transparent" id="experience">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Section Heading */}
@@ -504,14 +462,14 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
           <SectionHeading>{labels.experience}</SectionHeading>
         </div>
 
-        <div className="space-y-16">
+        <div className="space-y-10">
 
           {/* Work Experience */}
-          <div className="space-y-10" id="timeline-experience-list">
+          <div className="space-y-6" id="timeline-experience-list">
               <div className="relative border-l border-white/10 pl-6 ml-5">
                 <CollapsibleList
                   initial={4}
-                  wrapperClassName="space-y-12"
+                  wrapperClassName="space-y-8"
                   buttonClassName="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   {experiences.map((exp) => {
@@ -608,23 +566,23 @@ function EducationSection({ educations, primaryColor, labels }: EducationSection
   if (educations.length === 0) return null;
 
   return (
-    <section key="education" className="py-20 bg-transparent" id="education">
+    <section key="education" className="py-12 scroll-mt-20 bg-transparent" id="education">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
-        <div className="space-y-10" id="timeline-education-list">
+        <div className="space-y-6" id="timeline-education-list">
           <SectionHeading>{labels.education}</SectionHeading>
 
           <CollapsibleList
             initial={4}
-            wrapperClassName="grid grid-cols-1 @md:grid-cols-2 gap-8"
+            wrapperClassName="grid grid-cols-1 @md:grid-cols-2 gap-4"
             buttonClassName="@md:col-span-2 mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             {educations.map((edu) => (
               <div
                 key={edu.id}
-                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all shadow-xl space-y-4"
+                className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all shadow-xl space-y-3"
                 id={`education-card-${edu.id}`}
               >
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <div className="flex justify-between items-start gap-4">
                     <h4 className="font-display text-base font-bold text-white">
                       {edu.degree}
@@ -651,13 +609,10 @@ function EducationSection({ educations, primaryColor, labels }: EducationSection
 
                 {edu.gpa && (
                   <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-                    <span className="text-slate-500">Cumulative GPA Score:</span>
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-6 items-center gap-1 bg-[#0a0a0a]/85 px-2.5 py-0.5 rounded border border-white/10 text-white font-bold">
-                        <Award className="h-3.5 w-3.5 text-amber-500" />
-                        <span>{edu.gpa}</span>
-                        <span className="text-slate-500 font-normal">/ 10</span>
-                      </div>
+                    <span className="text-slate-500">GPA</span>
+                    <div className="flex h-6 items-center gap-1 bg-[#0a0a0a]/85 px-2.5 py-0.5 rounded border border-white/10 text-white font-bold">
+                      <Award className="h-3.5 w-3.5 text-amber-500" />
+                      <span>{edu.gpa}</span>
                     </div>
                   </div>
                 )}
@@ -689,7 +644,7 @@ function SkillsMatrix({ skills, primaryColor, labels }: SkillsMatrixProps) {
   }, [skills]);
 
   return (
-    <section className="py-20 bg-transparent border-y border-white/10" id="skills">
+    <section className="py-12 bg-transparent border-y border-white/10" id="skills">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Header */}
@@ -812,7 +767,7 @@ function ProjectsShowcase({
   };
 
   return (
-    <section className="py-20" id="work">
+    <section className="py-12 scroll-mt-20" id="work">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Header Title */}
@@ -1097,7 +1052,7 @@ function CertificationsSection({
   if (certifications.length === 0) return null;
 
   return (
-    <section key="certifications" className="py-20 bg-transparent" id="certifications">
+    <section key="certifications" className="py-12 bg-transparent" id="certifications">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
         <SectionHeading>{labels.certifications}</SectionHeading>
         <CollapsibleList
@@ -1161,7 +1116,7 @@ function ArticlesSection({
   if (articles.length === 0) return null;
 
   return (
-    <section key="articles" className="py-20 bg-transparent" id="articles">
+    <section key="articles" className="py-12 bg-transparent" id="articles">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
         <SectionHeading>{labels.articles}</SectionHeading>
         <CollapsibleList
@@ -1215,7 +1170,7 @@ function AchievementsSection({
   if (achievements.length === 0) return null;
 
   return (
-    <section key="achievements" className="py-20 bg-transparent" id="achievements">
+    <section key="achievements" className="py-12 bg-transparent" id="achievements">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
         <SectionHeading>{labels.achievements}</SectionHeading>
         <CollapsibleList
@@ -1267,7 +1222,7 @@ function ProfilesSection({
   if (!hasProfiles && socialProfiles.length === 0) return null;
 
   return (
-    <section key="profiles" className="py-20 bg-transparent scroll-mt-24" id="profiles">
+    <section key="profiles" className="py-12 bg-transparent scroll-mt-20" id="profiles">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
         <SectionHeading>{labels.profiles}</SectionHeading>
         {hasProfiles && (
@@ -1283,10 +1238,6 @@ function ProfilesSection({
         {socialProfiles.length > 0 && (
           <div className="space-y-4">
             {socialProfiles.map((prof) => {
-              const isGitHub = prof.platform.toLowerCase() === 'github';
-              const followers = getStat(prof.cachedStats, 'followers');
-              const publicRepos = getStat(prof.cachedStats, 'publicRepos');
-              const connections = getStat(prof.cachedStats, 'connections');
               return (
                 <a
                   key={prof.platform}
@@ -1299,7 +1250,7 @@ function ProfilesSection({
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3.5">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0a0a0a] border border-white/10 text-slate-300 group-hover:text-white transition-colors">
-                        {isGitHub ? <Github className="h-5 w-5" /> : <Linkedin className="h-5 w-5" />}
+                        <PlatformIcon platform={prof.platform} className="h-5 w-5" />
                       </div>
                       <div>
                         <h4 className="font-display text-base font-bold text-white uppercase tracking-wide">
@@ -1310,27 +1261,7 @@ function ProfilesSection({
                     </div>
                     <ExternalLink className="h-4 w-4 text-slate-600 group-hover:text-white transition-colors" />
                   </div>
-                  {prof.cachedStats && (
-                    <div className="mt-4 pt-3 border-t border-white/10 grid grid-cols-2 gap-4 text-center font-mono text-xs">
-                      {isGitHub ? (
-                        <>
-                          <div>
-                            <span className="block text-[11px] text-slate-500 uppercase">Followers</span>
-                            <span className="font-bold text-white text-sm">{followers}</span>
-                          </div>
-                          <div>
-                            <span className="block text-[11px] text-slate-500 uppercase">Repositories</span>
-                            <span className="font-bold text-white text-sm">{publicRepos}</span>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="col-span-2 text-left px-2">
-                          <span className="inline-block text-[11px] text-slate-500 uppercase mr-2">Connections:</span>
-                          <span className="font-bold text-emerald-400 text-sm">{connections}+ Industry Experts</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                 
                 </a>
               );
             })}
@@ -1475,7 +1406,7 @@ function ContactCRM({ contactEmail, primaryColor }: ContactCRMProps) {
   };
 
   return (
-    <section className="py-20 border-t border-white/10" id="contact">
+    <section className="py-12 border-t border-white/10 scroll-mt-20" id="contact">
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Title Heading */}
@@ -1798,7 +1729,7 @@ export function PulseTemplate({ data }: AppProps) {
       />
     ) : null,
     github: contributionCalendar ? (
-      <section key="github" className="py-16" id="github-activity">
+      <section key="github" className="py-12" id="github-activity">
         <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-6">
           <SectionHeading>{labels.github}</SectionHeading>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 overflow-x-auto">
@@ -1852,25 +1783,28 @@ export function PulseTemplate({ data }: AppProps) {
   ];
 
   useEffect(() => {
-    const handleScrollActive = () => {
-      const scrollPosition = window.scrollY + 200;
+    const sectionIds = navSectionIdsRef.current.split(",").filter(Boolean);
+    if (sectionIds.length === 0) return;
 
-      for (const section of navSectionIdsRef.current.split(",").filter(Boolean)) {
-        const el = document.getElementById(section);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
+    const elements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (elements.length === 0) return;
 
-    window.addEventListener('scroll', handleScrollActive);
-    return () => window.removeEventListener('scroll', handleScrollActive);
-  }, []);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const top = visible[0]?.target;
+        if (top?.id) setActiveSection(top.id);
+      },
+      { root: null, rootMargin: "-20% 0px -55% 0px", threshold: [0.1, 0.25, 0.5] },
+    );
+
+    for (const el of elements) observer.observe(el);
+    return () => observer.disconnect();
+  }, [navSectionIds]);
 
   return (
     <div
@@ -1915,7 +1849,7 @@ export function PulseTemplate({ data }: AppProps) {
         {renderSections(resolved, "full", blocks)}
 
         {customSections.length > 0 && (
-          <section className="py-20 bg-transparent">
+          <section className="py-12 bg-transparent">
             <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8 space-y-12">
               {customSections.map((section) => (
                 <div key={section.id} className="space-y-6" id={`custom-section-${section.id}`}>
@@ -1948,10 +1882,6 @@ export function PulseTemplate({ data }: AppProps) {
             <Cpu className="h-4 w-4" style={{ color: primaryColor }} />
             <span>{portfolio.title.toUpperCase()}</span>
           </div>
-
-          <p className="text-center @md:text-right">
-            &copy; {new Date().getFullYear()} {portfolio.title.toUpperCase()}. ALL RIGHTS RESERVED.
-          </p>
         </div>
       </footer>
     </div>

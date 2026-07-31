@@ -4,8 +4,7 @@ import { useState, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import {
-  GithubIcon as Github,
-  LinkedinIcon as Linkedin,
+  PlatformIcon,
 } from "@/components/icons";
 import { TemplateProjectPreview } from "@/components/template-project-preview";
 import { cn } from "@/lib/utils";
@@ -70,7 +69,6 @@ import {
   Layers,
   Cloud,
   ChevronRight,
-  Globe,
   FileCheck,
   Filter,
 } from "lucide-react";
@@ -88,11 +86,17 @@ function displayYear(date: string | null, fallback = "N/A"): string {
   return date.slice(0, 4) || fallback;
 }
 
+/** Initials from the first two words of a display name (e.g. "Akshai Kumar" → "AK"). */
+function getInitials(title: string): string {
+  const parts = title.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+  return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
+}
+
 /** skills.level is a numeric score (0-5) or null; map it to a display label + color. */
-function getSkillLevelDisplay(level: number | null): { label: string; classes: string } {
-  if (level === null || level === undefined) {
-    return { label: 'N/A', classes: 'bg-slate-900 border border-slate-800 text-slate-400' };
-  }
+function getSkillLevelDisplay(level: number | null): { label: string; classes: string } | null {
+  if (level === null || level === undefined) return null;
   if (level >= 4) {
     return { label: 'Expert', classes: 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' };
   }
@@ -223,16 +227,9 @@ export function LedgerTemplate({ data }: AppProps) {
   };
 
   // Render social profile icon helper
-  const getSocialIcon = (platform: string, className = 'w-5 h-5') => {
-    switch (platform.toLowerCase()) {
-      case 'github':
-        return <Github className={className} />;
-      case 'linkedin':
-        return <Linkedin className={className} />;
-      default:
-        return <Globe className={className} />;
-    }
-  };
+  const getSocialIcon = (platform: string, className = 'w-5 h-5') => (
+    <PlatformIcon platform={platform} className={className} />
+  );
 
 
   const blocks: Partial<Record<ReorderableSectionKey, ReactNode>> = {
@@ -242,7 +239,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="experience" id="experience" className="space-y-8 scroll-mt-20">
             <div className="border-l-2 border-blue-500 pl-4">
               <SectionHeading>{labels.experience}</SectionHeading>
-              <p className="text-slate-500 text-sm mt-1 font-mono uppercase tracking-wider">Professional timeline and core contributions</p>
             </div>
 
             <div className="grid grid-cols-1 @lg:grid-cols-12 gap-8">
@@ -327,7 +323,6 @@ export function LedgerTemplate({ data }: AppProps) {
           <div className="flex flex-col @sm:flex-row @sm:items-end justify-between gap-4 border-l-2 border-blue-500 pl-4">
             <div>
               <SectionHeading>{labels.projects}</SectionHeading>
-              <p className="text-slate-500 text-sm mt-1 font-mono uppercase tracking-wider">Production architectures and engineering deliverables</p>
             </div>
 
             {/* Total count badge */}
@@ -531,7 +526,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="skills" id="skills" className="space-y-8 scroll-mt-20">
             <div className="border-l-2 border-blue-500 pl-4">
               <SectionHeading>{labels.skills}</SectionHeading>
-              <p className="text-slate-500 text-sm mt-1 font-mono uppercase tracking-wider">Expertise mapping and runtimes knowledge</p>
             </div>
 
             <div id="skills-container" className="space-y-8">
@@ -553,9 +547,11 @@ export function LedgerTemplate({ data }: AppProps) {
                           <div className="space-y-1.5">
                             <p className="font-mono font-bold text-xs uppercase text-white group-hover:text-blue-500 transition-colors">{name}</p>
                           </div>
-                          <span className={`px-2 py-0.5 rounded-none text-[9px] font-mono uppercase tracking-widest font-bold ${levelDisplay.classes}`}>
-                            {levelDisplay.label}
-                          </span>
+                          {levelDisplay && (
+                            <span className={`px-2 py-0.5 rounded-none text-[9px] font-mono uppercase tracking-widest font-bold ${levelDisplay.classes}`}>
+                              {levelDisplay.label}
+                            </span>
+                          )}
                         </div>
                       );
                     })}
@@ -571,7 +567,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="achievements" id="achievements" className="space-y-6 scroll-mt-20">
                 <div className="border-l-2 border-blue-500 pl-4">
                   <SectionHeading as="h3">{labels.achievements}</SectionHeading>
-                  <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">Milestones and recognitions</p>
                 </div>
 
                 <CollapsibleList
@@ -735,7 +730,6 @@ export function LedgerTemplate({ data }: AppProps) {
         <section key="education" id="education" className="space-y-6 scroll-mt-20">
                 <div className="border-l-2 border-blue-500 pl-4">
                   <SectionHeading as="h3">{labels.education}</SectionHeading>
-                  <p className="text-slate-500 text-xs font-mono uppercase tracking-wider">Academic path</p>
                 </div>
 
                 <CollapsibleList
@@ -834,16 +828,13 @@ export function LedgerTemplate({ data }: AppProps) {
       {/* Header / Navbar */}
       <header id="header" className="sticky top-0 z-50 bg-[#0A0C10]/95 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 h-16 flex items-center justify-between">
-          <a href="#hero" id="logo" className="flex min-w-0 items-center gap-2 group">
+          <a href="#about" id="logo" className="flex min-w-0 items-center gap-2 group">
             <span className="w-9 h-9 rounded-none border border-blue-500 bg-slate-900 flex items-center justify-center font-display font-bold text-white group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
-              AK
+              {getInitials(portfolio.title)}
             </span>
             <div className="flex min-w-0 flex-col">
               <span className="max-w-44 truncate font-display font-semibold text-white leading-none text-sm tracking-wide group-hover:text-blue-400 transition-colors @sm:max-w-64">
                 {portfolio.title}
-              </span>
-              <span className="text-[10px] text-slate-500 font-mono mt-0.5">
-                env: production
               </span>
             </div>
           </a>
@@ -961,49 +952,6 @@ export function LedgerTemplate({ data }: AppProps) {
                 portfolio={portfolio}
                 chipClassName="rounded-none border border-slate-800 bg-[#111418] px-3 py-1.5 text-xs font-mono text-slate-400"
               />
-              <div id="hero-profiles" className="scroll-mt-20 space-y-3">
-                <HeroProfileButtons
-                  profiles={socialProfiles}
-                  className="rounded-none border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-mono uppercase text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
-                />
-              </div>
-
-              {/* Dynamic stats row */}
-              <div id="stats-banner" className="grid grid-cols-3 gap-2 @sm:gap-4 py-4 max-w-md mx-auto @md:mx-0 border-t border-b border-slate-800 font-mono">
-                <div className="min-w-0 bg-slate-900/40 p-2 @sm:p-3 border-l-2 border-blue-500">
-                  <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">EXPERIENCE</div>
-                  <div className="text-xl font-bold text-white mt-1">{experiences.length}+</div>
-                </div>
-                <div className="min-w-0 bg-slate-900/40 p-2 @sm:p-3 border-l-2 border-slate-700">
-                  <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">G_STARS</div>
-                  <div className="text-xl font-bold text-white mt-1">
-                    {projects.reduce((sum, p) => sum + (p.githubStars ?? 0), 0)}+
-                  </div>
-                </div>
-                <div className="min-w-0 bg-slate-900/40 p-2 @sm:p-3 border-l-2 border-slate-700">
-                  <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">PROJECTS</div>
-                  <div className="text-xl font-bold text-white mt-1">{projects.length}</div>
-                </div>
-              </div>
-
-              {/* Action buttons */}
-              <div id="hero-actions" className="flex flex-col @sm:flex-row @sm:flex-wrap gap-3 @sm:gap-4 justify-center @md:justify-start">
-                <a
-                  href="#work"
-                  className="w-full @sm:w-auto justify-center px-5 py-2.5 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-mono font-semibold text-xs uppercase tracking-wider transition-all border border-slate-800 hover:border-slate-700 flex items-center gap-2 shadow-sm"
-                >
-                  View My Work
-                  <ChevronRight className="w-4 h-4 text-blue-500" />
-                </a>
-
-                <a
-                  href="#contact"
-                  className="w-full @sm:w-auto justify-center px-5 py-2.5 rounded-none bg-blue-600 hover:bg-transparent border border-blue-500 text-white hover:text-blue-400 font-mono font-semibold text-xs uppercase tracking-wider transition-all flex items-center gap-2"
-                >
-                  Let&apos;s Connect
-                  <ArrowUpRight className="w-4 h-4" />
-                </a>
-              </div>
 
               {/* Social profiles stats & links */}
               {socialProfiles.length > 0 && (
@@ -1086,10 +1034,7 @@ export function LedgerTemplate({ data }: AppProps) {
         <section id="contact" className="scroll-mt-20">
           <div className="bg-[#111418] border border-slate-800 p-5 @sm:p-12 rounded-none text-center space-y-6 relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4">
-              <h2 className="break-words text-2xl @sm:text-4xl font-display font-extrabold text-white uppercase tracking-tight">Let&apos;s Build Something High-Performance</h2>
-              <p className="text-slate-400 text-sm @sm:text-base leading-relaxed">
-                Whether you&apos;re looking for a Senior Full-Stack architect, need performance tuning on complex Node.js/Bun applications, or want to discuss caching and indexing strategies, feel free to reach out.
-              </p>
+              <h2 className="break-words text-2xl @sm:text-4xl font-display font-extrabold text-white uppercase tracking-tight">Let&apos;s Connect</h2>
             </div>
 
             {/* Copyable contact card */}
@@ -1146,11 +1091,10 @@ export function LedgerTemplate({ data }: AppProps) {
         <div className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 flex flex-col @lg:flex-row items-center justify-between gap-6">
           <div className="flex min-w-0 items-center gap-2 text-center @lg:text-left">
             <span className="w-8 h-8 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center font-display font-bold text-white text-xs">
-              AK
+              {getInitials(portfolio.title)}
             </span>
             <div className="flex min-w-0 flex-col">
               <span className="break-words text-sm font-semibold text-white uppercase tracking-wider">{portfolio.title}</span>
-              <span className="break-words text-[10px] text-slate-500 font-mono mt-0.5">© {new Date().getFullYear()} {portfolio.title}. All rights reserved.</span>
             </div>
           </div>
 
