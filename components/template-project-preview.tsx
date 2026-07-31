@@ -13,6 +13,8 @@ export type TemplateProjectPreviewProps = {
   className?: string;
   containerClassName?: string;
   placeholderClassName?: string;
+  /** Overrides placeholder primary/accent to match the portfolio accent picker. */
+  accentColor?: string;
   loading?: "lazy" | "eager";
 };
 
@@ -24,6 +26,7 @@ export type TemplateProjectPreviewProps = {
 export function TemplateProjectPreview({
   templateId,
   placeholderClassName,
+  accentColor,
   ...props
 }: TemplateProjectPreviewProps) {
   const config = getTemplateProjectPreviewConfig(templateId);
@@ -34,6 +37,7 @@ export function TemplateProjectPreview({
       templateId={templateId}
       placeholderVariant={config?.variant ?? "default"}
       placeholderClassName={placeholderClassName}
+      accentColor={accentColor}
     />
   );
 }

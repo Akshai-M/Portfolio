@@ -108,15 +108,31 @@ function hashString(value: string): number {
 function getPalette(
   seed: string,
   variant: PreviewPlaceholderVariant,
-  templateId?: string
+  templateId?: string,
+  accentColor?: string
 ): Palette {
   const templateConfig = getTemplateProjectPreviewConfig(templateId);
-  if (templateConfig) return templateConfig.palette;
+  let palette: Palette;
+  if (templateConfig) {
+    palette = templateConfig.palette;
+  } else if (variant === "retro") {
+    palette = RETRO_PALETTE;
+  } else if (variant === "dark") {
+    palette = DARK_PALETTE;
+  } else if (variant === "minimal") {
+    palette = MINIMAL_PALETTE;
+  } else {
+    palette = DEFAULT_PALETTES[hashString(seed) % DEFAULT_PALETTES.length];
+  }
 
-  if (variant === "retro") return RETRO_PALETTE;
-  if (variant === "dark") return DARK_PALETTE;
-  if (variant === "minimal") return MINIMAL_PALETTE;
-  return DEFAULT_PALETTES[hashString(seed) % DEFAULT_PALETTES.length];
+  if (accentColor && /^#[0-9a-fA-F]{6}$/.test(accentColor)) {
+    return {
+      ...palette,
+      primary: accentColor,
+      accent: accentColor,
+    };
+  }
+  return palette;
 }
 
 function resolveVariant(
@@ -410,17 +426,20 @@ export function ProjectPreviewPlaceholderGraphic({
   seedKey,
   variant = "default",
   templateId,
+  accentColor,
   className,
 }: {
   title: string;
   seedKey?: string;
   variant?: PreviewPlaceholderVariant;
   templateId?: string;
+  /** When set, overrides the placeholder's primary/accent colors. */
+  accentColor?: string;
   className?: string;
 }) {
   const seed = hashString(seedKey ?? title);
   const resolvedVariant = resolveVariant(variant, templateId);
-  const palette = getPalette(seedKey ?? title, variant, templateId);
+  const palette = getPalette(seedKey ?? title, variant, templateId, accentColor);
 
   return (
     <div

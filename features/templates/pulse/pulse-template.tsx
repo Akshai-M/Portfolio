@@ -50,6 +50,7 @@ import {
   resolveSectionLayout,
   type ReorderableSectionKey,
 } from "@/features/templates/section-order";
+import { resolveAccentColor } from "@/features/templates/template-accent-palettes";
 import styles from "./pulse-template.module.css";
 import {
   Terminal,
@@ -644,12 +645,14 @@ interface ProjectsShowcaseProps {
   projects: Project[];
   livePreviewProjectIds: string[];
   labels: ReturnType<typeof getSectionLabels>;
+  primaryColor: string;
 }
 
 function ProjectsShowcase({
   projects,
   livePreviewProjectIds,
   labels,
+  primaryColor,
 }: ProjectsShowcaseProps) {
   return (
     <section className="py-12 scroll-mt-20" id="work">
@@ -691,6 +694,7 @@ function ProjectsShowcase({
                     livePreviewProjectIds={livePreviewProjectIds}
                     alt={project.title}
                     loading="lazy"
+                    accentColor={primaryColor}
                     containerClassName="h-full aspect-auto bg-[#0a0a0a]"
                     className="h-full w-full object-cover object-top opacity-75 transition-all duration-300 group-hover:opacity-90"
                   />
@@ -1023,8 +1027,7 @@ export function PulseTemplate({ data }: AppProps) {
   } = data;
 
   const customization: PortfolioCustomization = portfolio.customization ?? {};
-  const primaryColor =
-    typeof customization.primaryColor === 'string' ? customization.primaryColor : '#3b82f6';
+  const primaryColor = resolveAccentColor("pulse", customization);
 
   const [activeSection, setActiveSection] = useState('about');
 
@@ -1087,6 +1090,7 @@ export function PulseTemplate({ data }: AppProps) {
         projects={visibleProjects}
         livePreviewProjectIds={livePreviewProjectIds}
         labels={labels}
+        primaryColor={primaryColor}
       />
     ) : null,
     github: contributionCalendar ? (
@@ -1170,6 +1174,7 @@ export function PulseTemplate({ data }: AppProps) {
         jetBrainsMono.variable,
         "flex min-w-0 flex-col overflow-x-hidden font-sans selection:bg-slate-800 selection:text-white"
       )}
+      style={{ ["--lf-accent" as string]: primaryColor }}
     >
       {/* Dynamic glow overlay */}
       <div

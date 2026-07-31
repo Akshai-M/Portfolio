@@ -485,6 +485,9 @@ export const portfolio = new Elysia({ prefix: "/portfolio" })
                 ),
               }),
             ),
+            primaryColor: t.Optional(
+              t.String({ pattern: "^#[0-9a-fA-F]{6}$" }),
+            ),
           }),
         }),
       ),

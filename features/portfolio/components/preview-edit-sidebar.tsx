@@ -133,7 +133,7 @@ function DesignTabContent({
             ) : isPublished ? (
               "Apply & go live"
             ) : (
-              "Apply template"
+              "Apply"
             )}
           </Button>
         </div>

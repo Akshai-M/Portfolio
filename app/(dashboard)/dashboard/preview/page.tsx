@@ -20,9 +20,15 @@ import {
 } from "@/features/portfolio/components/preview-edit-sidebar";
 import { PreviewToolbar } from "@/features/portfolio/components/preview-toolbar";
 import { PublishDialog } from "@/features/portfolio/components/publish-dialog";
+import { AccentSwatches } from "@/features/templates/components/accent-swatches";
 import { getTemplate, templateRegistry } from "@/features/templates/registry";
 import { getStoredSectionLayout } from "@/features/templates/section-order";
 import type { SectionLayoutCustomization } from "@/features/templates/section-order";
+import {
+  getTemplateDefaultAccent,
+  isAccentSupportedTemplate,
+  resolveAccentColor,
+} from "@/features/templates/template-accent-palettes";
 import { portfolioToTemplateData } from "@/features/templates/transform";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -34,6 +40,10 @@ export default function PreviewPage() {
   const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
   const [previewSectionLayout, setPreviewSectionLayout] =
     useState<SectionLayoutCustomization | null>(null);
+  /** Local accent draft; null means use saved/default for the effective template. */
+  const [previewPrimaryColor, setPreviewPrimaryColor] = useState<string | null>(
+    null,
+  );
   const [allowedTemplateIds, setAllowedTemplateIds] = useState<string[] | null>(
     null
   );
@@ -83,23 +93,57 @@ export default function PreviewPage() {
       toast.error("Your free month has ended. Upgrade to Pro to unlock this template.");
       return;
     }
+    const current =
+      previewTemplate ?? portfolio?.templateId ?? "minimal";
     setPreviewTemplate(next);
+    // Preview template switches always land on that template's default accent.
+    if (next !== current) {
+      setPreviewPrimaryColor(getTemplateDefaultAccent(next));
+    }
   };
 
   const savedTemplateId = portfolio?.templateId ?? "minimal";
 
   const handleTemplateSave = async () => {
     const templateToSave = previewTemplate ?? savedTemplateId;
-    if (templateToSave === savedTemplateId) return;
+    const customization = portfolio?.customization as
+      | { primaryColor?: string }
+      | null
+      | undefined;
+    const templateChanged = templateToSave !== savedTemplateId;
+    const accentDraft =
+      previewPrimaryColor ??
+      (templateChanged ? getTemplateDefaultAccent(templateToSave) : null);
+    const accentToSave =
+      accentDraft ?? resolveAccentColor(templateToSave, customization);
+    const savedAccent = resolveAccentColor(savedTemplateId, customization);
+    const accentChanged =
+      accentDraft !== null &&
+      accentToSave.toLowerCase() !== savedAccent.toLowerCase();
+
+    if (!templateChanged && !accentChanged) return;
 
     try {
-      await updateTemplate.mutateAsync(templateToSave);
+      if (templateChanged) {
+        await updateTemplate.mutateAsync(templateToSave);
+      }
+      // Persist accent on apply (supported pick, or default reset when switching templates).
+      if (templateChanged || isAccentSupportedTemplate(templateToSave)) {
+        await updatePortfolio.mutateAsync({
+          customization: { primaryColor: accentToSave },
+        });
+      }
       setPreviewTemplate(null);
+      setPreviewPrimaryColor(null);
       const appliedName = getTemplate(templateToSave).name;
-      if (portfolio?.isPublished) {
-        toast.success(`${appliedName} is now live on your portfolio`);
+      if (templateChanged) {
+        if (portfolio?.isPublished) {
+          toast.success(`${appliedName} is now live on your portfolio`);
+        } else {
+          toast.success(`${appliedName} template applied`);
+        }
       } else {
-        toast.success(`${appliedName} template applied`);
+        toast.success("Accent color applied");
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to save template");
@@ -196,6 +240,26 @@ export default function PreviewPage() {
     };
   }
 
+  const effectiveAccent =
+    previewPrimaryColor ??
+    resolveAccentColor(templateId, data.portfolio.customization);
+  const savedAccent = resolveAccentColor(
+    savedTemplateId,
+    portfolio.customization as { primaryColor?: string } | null | undefined,
+  );
+  const hasUnsavedAccent =
+    isAccentSupportedTemplate(templateId) &&
+    previewPrimaryColor !== null &&
+    effectiveAccent.toLowerCase() !== savedAccent.toLowerCase();
+  const hasUnsavedDesign = hasUnsavedTemplate || hasUnsavedAccent;
+
+  if (isAccentSupportedTemplate(templateId)) {
+    data.portfolio.customization = {
+      ...data.portfolio.customization,
+      primaryColor: effectiveAccent,
+    };
+  }
+
   const isPublished = portfolio.isPublished ?? false;
   const slug = portfolio.slug ?? "";
   const savedSectionLayout = getStoredSectionLayout(portfolio.customization);
@@ -204,8 +268,8 @@ export default function PreviewPage() {
     templateId,
     savedTemplateId: portfolio.templateId ?? "minimal",
     isPublished,
-    hasUnsavedTemplate,
-    isSavingTemplate: updateTemplate.isPending,
+    hasUnsavedTemplate: hasUnsavedDesign,
+    isSavingTemplate: updateTemplate.isPending || updatePortfolio.isPending,
     onTemplateChange: handleTemplatePreview,
     onTemplateSave: handleTemplateSave,
     templateOptions,
@@ -218,6 +282,8 @@ export default function PreviewPage() {
     isSavingSectionLayout: updatePortfolio.isPending,
   };
 
+  const showAccentPicker = isAccentSupportedTemplate(templateId);
+
   return (
     <div className="flex min-h-0 w-full max-w-full flex-col gap-4 lg:h-[calc(100dvh-4rem)] lg:min-h-0 lg:flex-row lg:overflow-hidden">
       <PreviewEditSidebar
@@ -227,53 +293,69 @@ export default function PreviewPage() {
       />
 
       <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col gap-4 lg:overflow-hidden">
-        <div className="flex shrink-0 flex-col gap-3 rounded-[var(--radius-lg)] glass-panel p-3 lg:flex-row lg:items-start lg:justify-between xl:items-center">
-          <div className="min-w-0 flex-1 px-2">
-            <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "h-2 w-2 shrink-0 rounded-full",
-                  hasUnsavedTemplate && isPublished
-                    ? "bg-warning"
-                    : isPublished
-                      ? "bg-success"
-                      : "bg-text-muted"
-                )}
-                aria-hidden
-              />
-              <span className="text-body-sm font-medium text-text-primary">
-                {hasUnsavedTemplate
-                  ? `Previewing ${template.name}`
-                  : isPublished
-                    ? `${liveTemplate.name} is live`
-                    : "Portfolio builder"}
-              </span>
+        <div className="flex shrink-0 flex-col gap-3 rounded-[var(--radius-lg)] glass-panel p-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between xl:items-center">
+            <div className="min-w-0 flex-1 px-2">
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    "h-2 w-2 shrink-0 rounded-full",
+                    hasUnsavedDesign && isPublished
+                      ? "bg-warning"
+                      : isPublished
+                        ? "bg-success"
+                        : "bg-text-muted"
+                  )}
+                  aria-hidden
+                />
+                <span className="text-body-sm font-medium text-text-primary">
+                  {hasUnsavedTemplate
+                    ? `Previewing ${template.name}`
+                    : hasUnsavedAccent
+                      ? "Accent preview"
+                      : isPublished
+                        ? `${liveTemplate.name} is live`
+                        : "Portfolio builder"}
+                </span>
+              </div>
+              {hasUnsavedTemplate && isPublished ? (
+                <p className="mt-1 pl-4 text-xs text-text-muted">
+                  Your live site still uses {liveTemplate.name}. Apply this template to switch.
+                </p>
+              ) : hasUnsavedTemplate ? (
+                <p className="mt-1 pl-4 text-xs text-text-muted">
+                  Apply this template before publishing.
+                </p>
+              ) : hasUnsavedAccent ? (
+                <p className="mt-1 pl-4 text-xs text-text-muted">
+                  Apply to save this accent color.
+                </p>
+              ) : null}
             </div>
-            {hasUnsavedTemplate && isPublished ? (
-              <p className="mt-1 pl-4 text-xs text-text-muted">
-                Your live site still uses {liveTemplate.name}. Apply this template to switch.
-              </p>
-            ) : hasUnsavedTemplate ? (
-              <p className="mt-1 pl-4 text-xs text-text-muted">
-                Apply this template before publishing.
-              </p>
-            ) : null}
+            <PreviewToolbar
+              device={device}
+              onDeviceChange={setDevice}
+              editOpen={editOpen}
+              onEditOpenChange={setEditOpen}
+              hasUnsavedTemplate={hasUnsavedDesign}
+              isPublished={isPublished}
+              templateName={template.name}
+              isSavingTemplate={updateTemplate.isPending || updatePortfolio.isPending}
+              onTemplateSave={() => void handleTemplateSave()}
+              isPublishing={publishPortfolio.isPending}
+              onPublishClick={() => void handlePublishClick()}
+              slug={slug}
+              showAnalytics={isPublished && !hasUnsavedDesign}
+            />
           </div>
-          <PreviewToolbar
-            device={device}
-            onDeviceChange={setDevice}
-            editOpen={editOpen}
-            onEditOpenChange={setEditOpen}
-            hasUnsavedTemplate={hasUnsavedTemplate}
-            isPublished={isPublished}
-            templateName={template.name}
-            isSavingTemplate={updateTemplate.isPending}
-            onTemplateSave={() => void handleTemplateSave()}
-            isPublishing={publishPortfolio.isPending}
-            onPublishClick={() => void handlePublishClick()}
-            slug={slug}
-            showAnalytics={isPublished && !hasUnsavedTemplate}
-          />
+          {showAccentPicker ? (
+            <div className="flex justify-end px-2">
+              <AccentSwatches
+                value={effectiveAccent}
+                onChange={setPreviewPrimaryColor}
+              />
+            </div>
+          ) : null}
         </div>
 
         <div className="-mx-[var(--space-5)] flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-sunken sm:mx-0 sm:rounded-[var(--radius-lg)] sm:border sm:border-border-default sm:p-3 sm:shadow-[var(--shadow-modal)]">

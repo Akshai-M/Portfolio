@@ -20,6 +20,8 @@ interface LivePreviewImageProps {
   placeholderClassName?: string;
   placeholderVariant?: PreviewPlaceholderVariant;
   templateId?: string;
+  /** Overrides placeholder primary/accent when no live screenshot is shown. */
+  accentColor?: string;
   loading?: "lazy" | "eager";
 }
 
@@ -34,6 +36,7 @@ export function LivePreviewImage({
   placeholderClassName,
   placeholderVariant = "default",
   templateId,
+  accentColor,
   loading = "lazy",
 }: LivePreviewImageProps) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -69,6 +72,7 @@ export function LivePreviewImage({
           seedKey={projectId ?? alt}
           variant={placeholderVariant}
           templateId={templateId}
+          accentColor={accentColor}
           className={placeholderClassName}
         />
       )}
