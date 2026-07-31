@@ -155,7 +155,6 @@ interface HeaderProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   primaryColor: string;
-  showConnect: boolean;
 }
 
 function Header({
@@ -164,7 +163,6 @@ function Header({
   activeSection,
   setActiveSection,
   primaryColor,
-  showConnect,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -179,24 +177,26 @@ function Header({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 @sm:px-6 @lg:px-8">
+      <div className="mx-auto flex max-w-7xl min-h-16 items-center justify-between gap-3 px-4 py-2 @sm:px-6 @lg:px-8">
         {/* Logo/Brand */}
         <div
           onClick={() => handleScroll(navItems[0]?.id ?? 'about')}
-          className="flex cursor-pointer items-center gap-2.5 font-display text-lg font-bold tracking-tight text-white hover:opacity-95"
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 font-display font-bold tracking-tight text-white hover:opacity-95"
           id="header-brand-logo"
         >
           <div
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 border border-white/10 transition-colors"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10 transition-colors"
             style={{ color: primaryColor }}
           >
             <Terminal className="h-4.5 w-4.5" />
           </div>
-          <span className="hidden max-w-48 truncate @sm:inline">{portfolioTitle}</span>
+          <span className="min-w-0 text-sm @sm:text-base @md:text-lg leading-snug break-words">
+            {portfolioTitle}
+          </span>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden @md:flex items-center gap-1" id="header-nav-list">
+        <nav className="hidden @md:flex shrink-0 items-center gap-1" id="header-nav-list">
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -218,30 +218,17 @@ function Header({
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 @sm:gap-4" id="header-actions">
-          {showConnect && (
-            <button
-              onClick={() => handleScroll('contact')}
-              className="hidden @sm:flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold font-display bg-white/5 hover:bg-white/10 text-white border border-white/10 transition-all hover:border-white/20"
-              id="header-cta-connect"
-            >
-              <MessageSquare className="h-3.5 w-3.5" style={{ color: primaryColor }} />
-              <span>Connect</span>
-            </button>
-          )}
-
-          {navItems.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((open) => !open)}
-              className="@md:hidden flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
-              aria-label="Toggle navigation"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
-          )}
-        </div>
+        {navItems.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="@md:hidden flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+            aria-label="Toggle navigation"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
+        )}
       </div>
 
       {mobileMenuOpen && navItems.length > 0 && (
@@ -278,20 +265,6 @@ interface HeroProps {
 }
 
 function Hero({ portfolio, socialProfiles, primaryColor, showSummary = true }: HeroProps) {
-  const [simulatedLoad, setSimulatedLoad] = useState(12);
-  const [activeTab, setActiveTab] = useState<'details' | 'runtime'>('details');
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSimulatedLoad(prev => {
-        const delta = Math.floor(Math.random() * 7) - 3;
-        const next = prev + delta;
-        return Math.max(5, Math.min(35, next));
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section className="relative overflow-hidden px-0 pt-8 pb-10 @sm:pt-10 @sm:pb-12 @md:py-16 scroll-mt-20" id="about">
       {/* Absolute Ambient Glow */}
@@ -413,7 +386,7 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
 
           {/* Work Experience */}
           <div className="space-y-6" id="timeline-experience-list">
-              <div className="relative border-l border-white/10 pl-6 ml-5">
+              <div className="relative border-l border-white/10 pl-5 @sm:pl-6 ml-3 @sm:ml-5">
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-8"
@@ -429,7 +402,7 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
 
                         {/* Timeline Node Point */}
                         <div
-                          className="absolute -left-[31px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0a0a0a] border-2 transition-all group-hover:scale-125"
+                          className="absolute -left-[27px] @sm:-left-[31px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0a0a0a] border-2 transition-all group-hover:scale-125"
                           style={{
                             borderColor: primaryColor,
                             boxShadow: `0 0 10px ${primaryColor}40`
@@ -438,13 +411,13 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
 
                         <div className="space-y-4">
                           {/* Title & Metadata Card Header */}
-                          <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-2">
-                            <div>
-                              <h4 className="font-display text-lg font-bold text-white group-hover:text-slate-200 transition-colors">
+                          <div className="flex flex-col gap-3 @sm:flex-row @sm:items-start @sm:justify-between">
+                            <div className="min-w-0 space-y-0.5">
+                              <h4 className="font-display text-base @sm:text-lg font-bold text-white group-hover:text-slate-200 transition-colors break-words">
                                 {exp.role}
                               </h4>
                               <span
-                                className="font-sans text-sm font-semibold transition-colors"
+                                className="font-sans text-sm font-semibold transition-colors break-words"
                                 style={{ color: primaryColor }}
                               >
                                 {exp.company}
@@ -452,17 +425,18 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
                             </div>
 
                             {/* Period Tag */}
-                            <div className="flex items-center gap-2 text-xs font-mono text-slate-500 bg-white/5 border border-white/10 px-2.5 py-1 rounded-md self-start @sm:self-center">
-                              <Calendar className="h-3 w-3" />
-                              <span>
-                                {formatDateRange(exp.startDate, exp.endDate) || "N/A"}
-                              </span>
-                              {duration && (
-                                <>
-                                  <span className="text-white/10">|</span>
-                                  <span className="text-slate-400">{duration}</span>
-                                </>
-                              )}
+                            <div className="inline-flex items-start gap-2 text-xs font-mono text-slate-500 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-md self-start shrink-0">
+                              <Calendar className="h-3 w-3 shrink-0 mt-0.5" />
+                              <div className="flex flex-col gap-0.5">
+                                <span className="whitespace-nowrap text-slate-400">
+                                  {formatDateRange(exp.startDate, exp.endDate) || "N/A"}
+                                </span>
+                                {duration && (
+                                  <span className="text-slate-400 whitespace-nowrap">
+                                    {duration}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
 
@@ -659,14 +633,14 @@ function ProjectsShowcase({
       <div className="mx-auto max-w-7xl px-4 @sm:px-6 @lg:px-8">
 
         {/* Header Title */}
-        <div className="mb-16">
+        <div className="mb-8 @sm:mb-16">
           <SectionHeading>{labels.projects}</SectionHeading>
         </div>
 
         {/* Projects Grid */}
         <CollapsibleList
           initial={4}
-          wrapperClassName={cn(PROJECTS_GRID_2, "gap-8 mb-20")}
+          wrapperClassName={cn(PROJECTS_GRID_2, "gap-4 @sm:gap-8 mb-8 @sm:mb-20")}
           buttonClassName="@md:col-span-2 mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-mono text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
         >
           {projects.map((project) => (
@@ -674,7 +648,7 @@ function ProjectsShowcase({
               key={project.id}
               className={cn(
                 PROJECT_CARD,
-                "group relative rounded-3xl bg-white/5 border transition-all hover:bg-white/10 hover:scale-[1.01] flex flex-col justify-between",
+                "group relative rounded-2xl @sm:rounded-3xl bg-white/5 border transition-all hover:bg-white/10 @md:hover:scale-[1.01] flex flex-col justify-between min-w-0",
                 project.featured
                   ? "border-white/20 ring-1 ring-white/10"
                   : "border-white/10"
@@ -709,7 +683,7 @@ function ProjectsShowcase({
                 <div className="space-y-2">
                   <div className={PROJECT_CARD_HEADER}>
                     <div className={PROJECT_CARD_META}>
-                      <h3 className={cn(PROJECT_CARD_TITLE, "font-display text-2xl font-bold text-white leading-tight")}>
+                      <h3 className={cn(PROJECT_CARD_TITLE, "font-display text-xl @sm:text-2xl font-bold text-white leading-tight")}>
                         {project.title}
                       </h3>
                     </div>
@@ -737,24 +711,30 @@ function ProjectsShowcase({
                 )}
               </div>
 
-              <div className="px-6 @sm:px-8 py-5 border-t border-white/10 bg-white/2 flex flex-wrap justify-between items-center gap-4">
+              <div className="px-4 @sm:px-6 @md:px-8 py-4 @sm:py-5 border-t border-white/10 bg-white/2 flex flex-col @sm:flex-row @sm:flex-wrap justify-between items-stretch @sm:items-center gap-3 @sm:gap-4">
 
-                <div className="flex items-center gap-4 text-xs font-mono text-slate-500">
-                  <div className="flex items-center gap-1 hover:text-white transition-colors cursor-default">
-                    <Star className="h-3.5 w-3.5" />
-                    <span>{project.githubStars ?? 0}</span>
+                {(project.githubStars !== null || project.githubForks !== null) && (
+                  <div className="flex items-center gap-4 text-xs font-mono text-slate-500">
+                    {project.githubStars !== null && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3.5 w-3.5" />
+                        <span>{project.githubStars}</span>
+                      </div>
+                    )}
+                    {project.githubForks !== null && (
+                      <div className="flex items-center gap-1">
+                        <GitFork className="h-3.5 w-3.5" />
+                        <span>{project.githubForks}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 hover:text-white transition-colors cursor-default">
-                    <GitFork className="h-3.5 w-3.5" />
-                    <span>{project.githubForks ?? 0}</span>
-                  </div>
-                </div>
+                )}
 
                 <ProjectActions
                   liveUrl={project.liveUrl}
                   sourceUrl={project.sourceUrl}
-                  liveClassName="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-white hover:bg-slate-100 text-slate-950 transition-all shadow"
-                  sourceClassName="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-[#0a0a0a] hover:bg-white/5 border border-white/10 hover:border-white/20 text-slate-300 hover:text-white transition-all"
+                  liveClassName="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-white hover:bg-slate-100 text-slate-950 transition-all shadow"
+                  sourceClassName="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono bg-[#0a0a0a] hover:bg-white/5 border border-white/10 hover:border-white/20 text-slate-300 hover:text-white transition-all"
                 />
 
               </div>
@@ -1183,7 +1163,6 @@ export function PulseTemplate({ data }: AppProps) {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         primaryColor={primaryColor}
-        showConnect={hasContact}
       />
 
       {/* Main Content Sections */}

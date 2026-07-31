@@ -268,7 +268,7 @@ export function LedgerTemplate({ data }: AppProps) {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -5 }}
                       transition={{ duration: 0.15 }}
-                      className="bg-[#111418] border border-slate-800 p-6 @sm:p-8 rounded-none space-y-6"
+                      className="bg-[#111418] border border-slate-800 p-4 @sm:p-6 @md:p-8 rounded-none space-y-4 @sm:space-y-6"
                       id={`exp-content-${exp.id}`}
                     >
                       <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
@@ -333,10 +333,10 @@ export function LedgerTemplate({ data }: AppProps) {
                 <input
                   type="text"
                   id="project-search-input"
-                  placeholder="SEARCH PROJECTS BY NAME, DESCRIPTION, TECH..."
+                  placeholder="SEARCH PROJECTS..."
                   value={projectSearch}
                   onChange={(e) => setProjectSearch(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-[var(--lf-accent)] rounded-none py-2.5 pl-10 pr-4 text-xs font-mono uppercase tracking-wider text-white placeholder-slate-600 focus:outline-none transition-colors"
+                  className="w-full min-w-0 bg-slate-950 border border-slate-800 focus:border-[var(--lf-accent)] rounded-none py-2.5 pl-10 pr-4 text-xs font-mono uppercase tracking-wider text-white placeholder-slate-600 focus:outline-none transition-colors"
                 />
                 {projectSearch && (
                   <button
@@ -469,29 +469,31 @@ export function LedgerTemplate({ data }: AppProps) {
                   </div>
 
                   {/* Project Footer containing Actions and Stats */}
-                  <div className="px-4 @sm:px-6 py-4 border-t border-slate-800/80 bg-slate-950/65 flex flex-wrap items-center justify-between gap-3">
-                    {/* GitHub Stats */}
-                    <div className="flex items-center gap-4 font-mono text-[10px] text-slate-500 uppercase tracking-widest">
-                      {!!project.githubStars && (
-                        <div className="flex items-center gap-1 hover:text-amber-400 transition-colors" title="GitHub Stars">
-                          <Star className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
-                          <span>{project.githubStars}</span>
-                        </div>
-                      )}
-                      {!!project.githubForks && (
-                        <div className="flex items-center gap-1 hover:text-[var(--lf-accent)] transition-colors" title="GitHub Forks">
-                          <GitFork className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
-                          <span>{project.githubForks}</span>
-                        </div>
-                      )}
-                    </div>
+                  <div className="px-4 @sm:px-6 py-4 border-t border-slate-800/80 bg-slate-950/65 flex flex-col @sm:flex-row @sm:flex-wrap items-stretch @sm:items-center justify-between gap-3">
+                    {/* GitHub Stats — only when values exist (GitHub projects) */}
+                    {(project.githubStars !== null || project.githubForks !== null) && (
+                      <div className="flex items-center gap-4 font-mono text-[10px] text-slate-500 uppercase tracking-widest">
+                        {project.githubStars !== null && (
+                          <div className="flex items-center gap-1 hover:text-amber-400 transition-colors" title="GitHub Stars">
+                            <Star className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
+                            <span>{project.githubStars}</span>
+                          </div>
+                        )}
+                        {project.githubForks !== null && (
+                          <div className="flex items-center gap-1 hover:text-[var(--lf-accent)] transition-colors" title="GitHub Forks">
+                            <GitFork className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
+                            <span>{project.githubForks}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Action Links */}
                     <ProjectActions
                       liveUrl={project.liveUrl}
                       sourceUrl={project.sourceUrl}
-                      liveClassName="px-3 py-1 bg-[var(--lf-accent)] border border-[var(--lf-accent)] hover:bg-transparent text-white hover:text-[var(--lf-accent)] font-semibold text-[10px] font-mono uppercase tracking-widest rounded-none transition-all"
-                      sourceClassName="px-3 py-1 text-slate-500 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-none transition-colors text-[10px] font-mono uppercase tracking-widest"
+                      liveClassName="px-3 py-1.5 bg-[var(--lf-accent)] border border-[var(--lf-accent)] hover:bg-transparent text-white hover:text-[var(--lf-accent)] font-semibold text-[10px] font-mono uppercase tracking-widest rounded-none transition-all text-center"
+                      sourceClassName="px-3 py-1.5 text-slate-500 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-none transition-colors text-[10px] font-mono uppercase tracking-widest text-center"
                     />
                   </div>
                 </div>
@@ -822,7 +824,7 @@ export function LedgerTemplate({ data }: AppProps) {
               {getInitials(portfolio.title)}
             </span>
             <div className="flex min-w-0 flex-col">
-              <span className="max-w-44 truncate font-display font-semibold text-white leading-none text-sm tracking-wide group-hover:text-[var(--lf-accent)] transition-colors @sm:max-w-64">
+              <span className="max-w-[9rem] truncate font-display font-semibold text-white leading-none text-sm tracking-wide group-hover:text-[var(--lf-accent)] transition-colors @sm:max-w-64">
                 {portfolio.title}
               </span>
             </div>
@@ -900,7 +902,7 @@ export function LedgerTemplate({ data }: AppProps) {
 
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 py-8 @md:py-16 space-y-24 @sm:space-y-32">
+      <main className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 py-6 @sm:py-8 @md:py-16 space-y-16 @sm:space-y-24 @md:space-y-32">
 
         {/* HERO SECTION */}
         <section id="about" className="relative pt-4 @md:pt-12 scroll-mt-20">
@@ -1056,10 +1058,10 @@ export function LedgerTemplate({ data }: AppProps) {
       </main>
 
       {/* FOOTER */}
-      <footer id="footer" className="border-t border-slate-800 bg-[#0A0C10] mt-24">
-        <div className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 py-12 flex flex-col @lg:flex-row items-center justify-between gap-6">
-          <div className="flex min-w-0 items-center gap-2 text-center @lg:text-left">
-            <span className="w-8 h-8 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center font-display font-bold text-white text-xs">
+      <footer id="footer" className="border-t border-slate-800 bg-[#0A0C10] mt-12 @sm:mt-24">
+        <div className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 py-8 @sm:py-12 flex flex-col @lg:flex-row items-center justify-between gap-6">
+          <div className="flex min-w-0 max-w-full items-center gap-2 text-center @lg:text-left">
+            <span className="w-8 h-8 shrink-0 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center font-display font-bold text-white text-xs">
               {getInitials(portfolio.title)}
             </span>
             <div className="flex min-w-0 flex-col">

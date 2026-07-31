@@ -77,13 +77,7 @@ function displayDate(dateStr: string | null, fallback = "N/A"): string {
   return formatDate(dateStr) || fallback;
 }
 
-/** skills.level is now a numeric score (0-5) or null; map it to the old Expert/Advanced labels. */
-function getSkillLevelLabel(level: number | null): 'Expert' | 'Advanced' | 'Intermediate' {
-  if (level === null || level === undefined) return 'Intermediate';
-  if (level >= 4.5) return 'Expert';
-  if (level >= 3.5) return 'Advanced';
-  return 'Intermediate';
-}
+
 
 interface AppProps {
   data: PortfolioData;
@@ -629,7 +623,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               </a>
             ))}
 
-            <div className="pt-2 grid grid-cols-2 gap-2">
+            <div className="pt-2 grid gap-2">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -639,17 +633,6 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
               >
                 <TerminalIcon className="w-4 h-4" />
                 <span>TERMINAL CLI</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsInspectorOpen(true);
-                }}
-                className="py-2.5 bg-[var(--lf-accent)] text-black border-2 border-white font-black text-center flex items-center justify-center gap-2"
-              >
-                <Code className="w-4 h-4" />
-                <span>INSPECT JSON</span>
               </button>
             </div>
           </div>
@@ -1093,13 +1076,12 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
         output = (
           <div className="space-y-1 text-xs">
             <div className="text-yellow-400 font-black">AVAILABLE COMMANDS:</div>
-            <div>• <span className="text-[var(--lf-accent)] font-bold">bio</span> : Summary & headline</div>
+            <div>• <span className="text-[var(--lf-accent)] font-bold">bio</span> : Summary</div>
             <div>• <span className="text-[var(--lf-accent)] font-bold">experience</span> : Career timeline & roles</div>
             <div>• <span className="text-[var(--lf-accent)] font-bold">projects</span> : Repos & tech stack</div>
             <div>• <span className="text-[var(--lf-accent)] font-bold">skills</span> : Full language & framework matrix</div>
             <div>• <span className="text-[var(--lf-accent)] font-bold">contact</span> : Email & phone details</div>
             <div>• <span className="text-[var(--lf-accent)] font-bold">clear</span> : Clear terminal screen</div>
-            <div>• <span className="text-[var(--lf-accent)] font-bold">cat resume.txt</span> : Export raw developer profile</div>
           </div>
         );
         break;
@@ -1107,9 +1089,8 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
       case 'bio':
         output = (
           <div className="text-slate-200">
-            <div className="text-[var(--lf-accent)] font-bold">{data.portfolio.title} - {data.portfolio.headline}</div>
+            <div className="text-[var(--lf-accent)] font-bold">{data.portfolio.title}</div>
             <div>{data.portfolio.summary}</div>
-            <div className="text-slate-400 mt-1">Location: {data.portfolio.location ?? 'N/A'}</div>
           </div>
         );
         break;
@@ -1133,9 +1114,15 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
           <div className="space-y-2 text-slate-200">
             {data.projects.map((p) => (
               <div key={p.id}>
-                <div className="font-bold text-white">{p.title} (★ {p.githubStars})</div>
-                <div className="text-slate-300 text-[11px]">{p.description}</div>
-                <div className="text-[var(--lf-accent)] text-[11px]">Stack: {p.techStack.join(', ')}</div>
+                <div className="font-bold text-white">{p.title}</div>
+                {p.description && (
+                  <div className="text-slate-300 text-[11px]">{p.description}</div>
+                )}
+                {p.techStack.length > 0 && (
+                  <div className="text-[var(--lf-accent)] text-[11px]">
+                    Stack: {p.techStack.join(', ')}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -1146,10 +1133,11 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
         output = (
           <div className="text-slate-200">
             <div className="font-bold text-[var(--lf-accent)]">SKILL MATRIX:</div>
-            <div className="grid grid-cols-2 gap-1 text-[11px] mt-1">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-1 text-[11px] mt-1">
               {data.skills.map((s) => (
                 <div key={s.id}>
-                  • <span className="font-bold text-white">{s.name}</span> ({s.category}) - <span className="text-[var(--lf-accent)]">{getSkillLevelLabel(s.level)}</span>
+                  • <span className="font-bold text-white">{s.name}</span>
+                  {s.category ? <span className="text-slate-400"> ({s.category})</span> : null}
                 </div>
               ))}
             </div>
@@ -1167,8 +1155,8 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
             ) : (
               <div>Email: N/A</div>
             )}
-            <div>Phone: {data.portfolio.phone ?? 'N/A'}</div>
-            <div>Location: {data.portfolio.location ?? 'N/A'}</div>
+            {data.portfolio.phone && <div>Phone: {data.portfolio.phone}</div>}
+            {data.portfolio.location && <div>Location: {data.portfolio.location}</div>}
           </div>
         );
         break;
@@ -1177,14 +1165,6 @@ function TerminalContactModal({ data, onClose }: { data: PortfolioData; onClose:
         setLogs([]);
         setInput('');
         return;
-
-      case 'cat resume.txt':
-        output = (
-          <pre className="text-[10px] text-emerald-300 bg-black p-2 rounded overflow-x-auto border border-white/20">
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        );
-        break;
 
       default:
         output = (
