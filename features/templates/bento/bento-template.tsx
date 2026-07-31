@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { getTemplateSectionLayout } from "../section-layouts";
 import { resolveSectionLayout } from "../section-order";
@@ -46,6 +47,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("bento", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -67,7 +69,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
   );
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-zinc-50 text-zinc-900 font-sans")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-zinc-50 text-zinc-900 font-sans")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 md:px-8 md:pb-24 md:pt-12">
         {navbarEnabled && (
           <div className="mb-8 flex justify-center">
@@ -82,7 +84,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
         <div className={BENTO_GRID}>
           {/* Hero Bento Box */}
           <header className="col-span-1 @md:col-span-2 @lg:col-span-3 row-span-2 rounded-3xl bg-white p-5 @md:p-8 shadow-sm border border-zinc-200/50 flex min-w-0 flex-col justify-between relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-br from-blue-100/40 to-purple-100/40 rounded-full blur-3xl -mr-20 -mt-20 transition-transform duration-700 group-hover:scale-110" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-br from-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] to-[color-mix(in_srgb,var(--lf-accent)_18%,transparent)] rounded-full blur-3xl -mr-20 -mt-20 transition-transform duration-700 group-hover:scale-110" />
             <div className="relative z-10">
               <h1 className="min-w-0 text-balance [overflow-wrap:anywhere] text-2xl @sm:text-3xl @md:text-4xl @lg:text-6xl font-bold tracking-tight text-zinc-900 mb-4">
                 {portfolio.title}
@@ -143,7 +145,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
             <section id="work" className="col-span-1 @md:col-span-3 @lg:col-span-4 rounded-3xl bg-white p-8 shadow-sm border border-zinc-200/50">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-zinc-900 flex items-center">
-                  <span className="w-3 h-3 rounded-full bg-blue-500 mr-3" />
+                  <span className="w-3 h-3 rounded-full bg-[var(--lf-accent)] mr-3" />
                   {labels.projects}
                 </h2>
               </div>
@@ -169,11 +171,11 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
                       loading="lazy"
                       containerClassName="overflow-hidden bg-zinc-200"
                       className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                    />
+                     accentColor={primaryColor} />
                     <div className={cn(PROJECT_CARD_BODY, "flex flex-col grow p-5")}>
                       <div className={cn(PROJECT_CARD_HEADER, "mb-3")}>
                         <div className="min-w-0 flex-1">
-                          <h3 className={cn(PROJECT_CARD_TITLE, "text-lg font-bold text-zinc-900 transition-colors group-hover:text-blue-600")}>
+                          <h3 className={cn(PROJECT_CARD_TITLE, "text-lg font-bold text-zinc-900 transition-colors group-hover:text-[var(--lf-accent)]")}>
                             {project.title}
                           </h3>
                           {project.language && (
@@ -183,7 +185,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
                           )}
                         </div>
                         {project.featured && (
-                          <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600">
+                          <span className="shrink-0 rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_10%,white)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--lf-accent)]">
                             Featured
                           </span>
                         )}
@@ -243,7 +245,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
           {experiences.length > 0 && !resolved.isHidden("experience") && (
             <section id="experience" className="col-span-1 @md:col-span-2 @lg:col-span-2 row-span-2 rounded-3xl bg-white p-8 shadow-sm border border-zinc-200/50">
               <h2 className="text-xl font-bold text-zinc-900 mb-6 flex items-center">
-                <span className="w-3 h-3 rounded-full bg-purple-500 mr-3" />
+                <span className="w-3 h-3 rounded-full bg-[var(--lf-accent)] mr-3" />
                 {labels.experience}
               </h2>
               <CollapsibleList
@@ -264,7 +266,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
                         </span>
                       )}
                     </div>
-                    <p className="mb-2 text-sm font-medium text-purple-600">
+                    <p className="mb-2 text-sm font-medium text-[var(--lf-accent)]">
                       {exp.company}
                       {exp.location ? ` · ${exp.location}` : ""}
                     </p>
@@ -283,7 +285,7 @@ export function BentoTemplate({ data }: { data: PortfolioData }) {
 
           {/* Skills Bento Box */}
           {skills.length > 0 && !resolved.isHidden("skills") && (
-            <section className="col-span-1 @md:col-span-1 @lg:col-span-2 row-span-1 rounded-3xl bg-blue-600 p-8 shadow-sm text-white overflow-hidden relative">
+            <section className="col-span-1 @md:col-span-1 @lg:col-span-2 row-span-1 rounded-3xl bg-[var(--lf-accent)] p-8 shadow-sm text-white overflow-hidden relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
               <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/10 rounded-full blur-2xl -ml-20 -mb-20" />
               <h2 className="text-xl font-bold text-white mb-6 relative z-10">{labels.skills}</h2>

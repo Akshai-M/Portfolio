@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -50,6 +51,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("pastel", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -76,14 +78,14 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
       <section key="about" id="about" className="scroll-mt-32">
 
             <div className="bg-white/80 backdrop-blur-lg rounded-[3rem] p-10 md:p-14 shadow-[0_20px_50px_rgba(255,179,186,0.15)] border border-white relative">
-              <div className="absolute top-10 right-10 text-[#ffdfba] opacity-50">
+              <div className="absolute top-10 right-10 text-[color-mix(in_srgb,var(--lf-accent)_35%,white)] opacity-50">
                 <Heart className="w-12 h-12" fill="currentColor" />
               </div>
               <SectionHeading>{labels.about}</SectionHeading>
               <DescriptionBlock
                 text={portfolio.summary}
                 paragraphClassName="text-lg md:text-xl leading-relaxed text-[#666] font-medium relative z-10"
-                listClassName="space-y-3 pl-6 text-lg md:text-xl leading-relaxed text-[#666] font-medium marker:text-[#ffb3ba] relative z-10"
+                listClassName="space-y-3 pl-6 text-lg md:text-xl leading-relaxed text-[#666] font-medium marker:text-[var(--lf-accent)] relative z-10"
               />
             </div>
       </section>
@@ -96,7 +98,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
             <CollapsibleList
               initial={4}
               wrapperClassName={cn(PROJECTS_GRID_2, "gap-8")}
-              buttonClassName="col-span-full mt-10 mx-auto block bg-white px-8 py-4 rounded-full text-sm font-bold text-[#ffb3ba] shadow-sm hover:shadow-md transition-all hover:scale-105"
+              buttonClassName="col-span-full mt-10 mx-auto block bg-white px-8 py-4 rounded-full text-sm font-bold text-[var(--lf-accent)] shadow-sm hover:shadow-md transition-all hover:scale-105"
             >
               {visibleProjects.map((project) => (
                 <article key={project.id} className={cn(PROJECT_CARD, "group flex flex-col rounded-[2.5rem] bg-white p-4 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-all duration-500 hover:shadow-[0_20px_40px_rgba(255,179,186,0.2)]")}>
@@ -108,11 +110,11 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                     loading="lazy"
                     containerClassName="mb-6 overflow-hidden rounded-[2rem] bg-[#fff5f8]"
                     className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                  />
+                   accentColor={primaryColor} />
 
                   <div className={cn(PROJECT_CARD_BODY, "flex flex-col grow px-4 pb-4")}>
                     <div className={cn(PROJECT_CARD_HEADER, "mb-3")}>
-                      <h3 className={cn(PROJECT_CARD_TITLE, "text-2xl font-extrabold text-[#2d2d2d] group-hover:text-[#ffb3ba] transition-colors")}>
+                      <h3 className={cn(PROJECT_CARD_TITLE, "text-2xl font-extrabold text-[#2d2d2d] group-hover:text-[var(--lf-accent)] transition-colors")}>
                         {project.title}
                       </h3>
                       {project.featured && (
@@ -126,7 +128,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                       <DescriptionBlock
                         text={project.description}
                         paragraphClassName="text-[#888] leading-relaxed mb-6 grow font-medium"
-                        listClassName="mb-6 grow space-y-2 pl-5 text-[#888] leading-relaxed font-medium marker:text-[#ffb3ba]"
+                        listClassName="mb-6 grow space-y-2 pl-5 text-[#888] leading-relaxed font-medium marker:text-[var(--lf-accent)]"
                       />
                     )}
 
@@ -144,7 +146,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                         sourceUrl={project.sourceUrl}
                         label={project.title}
                         projectId={project.id}
-                        liveClassName="bg-[#bae1ff] text-[#0066b3] text-sm font-bold px-5 py-2.5 rounded-full hover:bg-[#a0d4ff] transition-colors mr-3"
+                        liveClassName="bg-[color-mix(in_srgb,var(--lf-accent)_45%,white)] text-[#0066b3] text-sm font-bold px-5 py-2.5 rounded-full hover:bg-[#a0d4ff] transition-colors mr-3"
                         sourceClassName="bg-gray-100 text-gray-600 text-sm font-bold px-5 py-2.5 rounded-full hover:bg-gray-200 transition-colors"
                       />
                     </div>
@@ -162,12 +164,12 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
               <CollapsibleList
                 initial={4}
                 wrapperClassName="space-y-6"
-                buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[#ffb3ba] shadow-sm hover:shadow-md transition-all"
+                buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[var(--lf-accent)] shadow-sm hover:shadow-md transition-all"
               >
                 {experiences.map((exp) => (
                   <article key={exp.id} className="bg-white rounded-[2rem] p-8 shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_35px_rgba(255,179,186,0.15)] transition-all">
                     <h3 className="text-xl font-extrabold text-[#2d2d2d] mb-1">{exp.role}</h3>
-                    <p className="text-[#ffb3ba] font-bold text-lg mb-3">{exp.company}</p>
+                    <p className="text-[var(--lf-accent)] font-bold text-lg mb-3">{exp.company}</p>
                     {(exp.startDate || exp.endDate) && (
                       <div className="inline-block bg-[#f4f4f4] text-[#888] text-xs font-bold px-3 py-1 rounded-full mb-4">
                         {formatDateRange(exp.startDate, exp.endDate)}
@@ -178,7 +180,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                         <DescriptionBlock
                           text={exp.description}
                           paragraphClassName="mb-2"
-                          listClassName="list-disc pl-5 space-y-1 marker:text-[#ffdfba]"
+                          listClassName="list-disc pl-5 space-y-1 marker:text-[color-mix(in_srgb,var(--lf-accent)_35%,white)]"
                         />
                       </div>
                     )}
@@ -220,7 +222,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={3}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[#ffb3ba] shadow-sm hover:shadow-md transition-all"
+                  buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[var(--lf-accent)] shadow-sm hover:shadow-md transition-all"
                 >
                   {educations.map((edu) => (
                     <article key={edu.id} className="bg-white rounded-[2rem] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)]">
@@ -245,14 +247,14 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[#ffb3ba] shadow-sm hover:shadow-md transition-all"
+                  buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[var(--lf-accent)] shadow-sm hover:shadow-md transition-all"
                 >
                   {certifications.map((cert) => (
                     <article key={cert.id} className={cn(SPLIT_CARD_ROW, "bg-white rounded-[2rem] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)]")}>
                       <div className="min-w-0">
                         <h3 className="text-base font-extrabold text-[#2d2d2d]">
                           {cert.url ? (
-                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="hover:text-[#ffb3ba] transition-colors">
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--lf-accent)] transition-colors">
                               {cert.name}
                             </a>
                           ) : (
@@ -279,7 +281,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[#ffb3ba] shadow-sm hover:shadow-md transition-all"
+                  buttonClassName="mt-6 bg-white px-6 py-3 rounded-full text-sm font-bold text-[var(--lf-accent)] shadow-sm hover:shadow-md transition-all"
                 >
                   {achievements.map((ach) => (
                     <article key={ach.id} className="bg-white rounded-[2rem] p-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] flex items-center gap-4">
@@ -307,7 +309,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
             <CollapsibleList
               initial={4}
               wrapperClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-              buttonClassName="col-span-full mt-10 mx-auto block bg-white px-8 py-4 rounded-full text-sm font-bold text-[#ffb3ba] shadow-sm hover:shadow-md transition-all hover:scale-105"
+              buttonClassName="col-span-full mt-10 mx-auto block bg-white px-8 py-4 rounded-full text-sm font-bold text-[var(--lf-accent)] shadow-sm hover:shadow-md transition-all hover:scale-105"
             >
               {articles.map((article) => (
                 <article key={article.id} className="bg-white rounded-[2.5rem] p-8 shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_15px_35px_rgba(255,179,186,0.15)] transition-all flex flex-col group">
@@ -336,7 +338,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
     profiles: hasProfiles ? (
       <section key="profiles" id="profiles" className="scroll-mt-32">
 
-            <div className="bg-linear-to-br from-[#ffb3ba] to-[#ffdfba] rounded-[3rem] p-10 md:p-14 text-center shadow-lg relative overflow-hidden">
+            <div className="bg-linear-to-br from-[var(--lf-accent)] to-[color-mix(in_srgb,var(--lf-accent)_35%,white)] rounded-[3rem] p-10 md:p-14 text-center shadow-lg relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-20 rounded-full blur-3xl" />
               <h2 className="text-3xl font-extrabold text-white mb-8 relative z-10">{labels.profiles}</h2>
               <div className="relative z-10 flex justify-center">
@@ -371,12 +373,12 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#fff5f8] text-[#4a4a4a] font-sans selection:bg-[#ffb3ba] selection:text-white overflow-hidden relative pb-20")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#fff5f8] text-[#4a4a4a] font-sans selection:bg-[var(--lf-accent)] selection:text-white overflow-hidden relative pb-20")} style={accentRootStyle(primaryColor)}>
       {/* Soft Blobs Background */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#ffdfba] opacity-40 blur-[100px] animate-[pulse_8s_ease-in-out_infinite]" />
-        <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#bae1ff] opacity-40 blur-[100px] animate-[pulse_10s_ease-in-out_infinite_reverse]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#baffc9] opacity-30 blur-[120px] animate-[pulse_12s_ease-in-out_infinite]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_35%,white)] opacity-40 blur-[100px] animate-[pulse_8s_ease-in-out_infinite]" />
+        <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_45%,white)] opacity-40 blur-[100px] animate-[pulse_10s_ease-in-out_infinite_reverse]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] opacity-30 blur-[120px] animate-[pulse_12s_ease-in-out_infinite]" />
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-12 relative z-10 space-y-20">
@@ -386,7 +388,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
             <TemplateNavbar
               items={sections}
               className="flex gap-2 bg-white/70 backdrop-blur-xl border border-white p-2 rounded-[2rem] shadow-[0_8px_30px_rgba(255,179,186,0.2)]"
-              linkClassName="px-5 py-2.5 text-sm font-bold text-[#888] hover:bg-[#ffb3ba] hover:text-white transition-all rounded-full"
+              linkClassName="px-5 py-2.5 text-sm font-bold text-[#888] hover:bg-[var(--lf-accent)] hover:text-white transition-all rounded-full"
             />
           </div>
         )}
@@ -405,11 +407,11 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             <ContactChips
               portfolio={portfolio}
-              chipClassName="bg-white border-2 border-transparent hover:border-[#bae1ff] px-6 py-3 rounded-full text-sm font-bold text-[#666] transition-all shadow-sm hover:shadow-md"
+              chipClassName="bg-white border-2 border-transparent hover:border-[color-mix(in_srgb,var(--lf-accent)_45%,white)] px-6 py-3 rounded-full text-sm font-bold text-[#666] transition-all shadow-sm hover:shadow-md"
             />
             <HeroProfileButtons
               profiles={socialProfiles}
-              className="bg-linear-to-r from-[#ffb3ba] to-[#ffdfba] text-white px-8 py-3 rounded-full text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
+              className="bg-linear-to-r from-[var(--lf-accent)] to-[color-mix(in_srgb,var(--lf-accent)_35%,white)] text-white px-8 py-3 rounded-full text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
             />
           </div>
 
@@ -418,7 +420,7 @@ export function PastelTemplate({ data }: { data: PortfolioData }) {
               <SocialPills
                 profiles={socialProfiles}
                 showUsername
-                className="text-sm font-bold text-[#aaa] hover:text-[#ffb3ba] transition-colors px-4 py-2 bg-white/50 rounded-full"
+                className="text-sm font-bold text-[#aaa] hover:text-[var(--lf-accent)] transition-colors px-4 py-2 bg-white/50 rounded-full"
               />
             </div>
           )}

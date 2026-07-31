@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -48,6 +49,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("monochrome", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -73,7 +75,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
       <section
         key="about"
         id="about"
-        className="scroll-mt-32 grid grid-cols-1 lg:grid-cols-12 gap-12 border-t border-black pt-12"
+        className="scroll-mt-32 grid grid-cols-1 lg:grid-cols-12 gap-12 border-t border-[var(--lf-accent)] pt-12"
       >
         <div className="lg:col-span-4">
           <SectionHeading>{labels.about}</SectionHeading>
@@ -89,12 +91,12 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     projects: visibleProjects.length > 0 ? (
-      <section key="projects" id="work" className="scroll-mt-32 border-t border-black pt-12">
+      <section key="projects" id="work" className="scroll-mt-32 border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.projects}</SectionHeading>
         <CollapsibleList
           initial={4}
           wrapperClassName={cn(PROJECTS_GRID_2, "gap-x-8 gap-y-16")}
-          buttonClassName="col-span-full mt-16 mx-auto block border border-black bg-white px-12 py-4 text-sm font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+          buttonClassName="col-span-full mt-16 mx-auto block border border-[var(--lf-accent)] bg-white px-12 py-4 text-sm font-bold uppercase tracking-widest text-black hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
         >
           {visibleProjects.map((project) => (
             <article key={project.id} className={cn(PROJECT_CARD, "group flex flex-col")}>
@@ -106,7 +108,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
                 loading="lazy"
                 containerClassName="mb-6 overflow-hidden bg-gray-100"
                 className="h-full w-full object-cover object-top filter transition-all duration-700 group-hover:scale-105"
-              />
+               accentColor={primaryColor} />
 
               <div className="flex flex-col grow">
                 <div className={cn(PROJECT_CARD_HEADER, "mb-4")}>
@@ -114,7 +116,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
                     {project.title}
                   </h3>
                   {project.featured && (
-                    <span className="shrink-0 border border-black px-2 py-1 text-[10px] font-bold uppercase tracking-widest">
+                    <span className="shrink-0 border border-[var(--lf-accent)] px-2 py-1 text-[10px] font-bold uppercase tracking-widest">
                       Featured
                     </span>
                   )}
@@ -142,8 +144,8 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
                     sourceUrl={project.sourceUrl}
                     label={project.title}
                     projectId={project.id}
-                    liveClassName="text-sm font-bold uppercase tracking-widest border-b-2 border-black pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors flex items-center gap-2"
-                    sourceClassName="text-sm font-bold uppercase tracking-widest border-b-2 border-gray-300 pb-1 text-gray-500 hover:text-black hover:border-black transition-colors"
+                    liveClassName="text-sm font-bold uppercase tracking-widest border-b-2 border-[var(--lf-accent)] pb-1 hover:text-gray-500 hover:border-gray-500 transition-colors flex items-center gap-2"
+                    sourceClassName="text-sm font-bold uppercase tracking-widest border-b-2 border-gray-300 pb-1 text-gray-500 hover:text-black hover:border-[var(--lf-accent)] transition-colors"
                   />
                 </div>
               </div>
@@ -154,15 +156,15 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     experience: experiences.length > 0 ? (
-      <section key="experience" id="experience" className="scroll-mt-32 border-t border-black pt-12">
+      <section key="experience" id="experience" className="scroll-mt-32 border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.experience}</SectionHeading>
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-12"
-          buttonClassName="mt-12 border border-black bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+          buttonClassName="mt-12 border border-[var(--lf-accent)] bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
         >
           {experiences.map((exp) => (
-            <article key={exp.id} className="border-l-4 border-black pl-6">
+            <article key={exp.id} className="border-l-4 border-[var(--lf-accent)] pl-6">
               <h3 className="text-2xl font-black uppercase tracking-tight mb-1">{exp.role}</h3>
               <p className="text-xl font-medium text-gray-600 mb-4">{exp.company}</p>
               {(exp.startDate || exp.endDate) && (
@@ -186,7 +188,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     skills: skills.length > 0 ? (
-      <section key="skills" className="border-t border-black pt-12">
+      <section key="skills" className="border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.skills}</SectionHeading>
         <div className="space-y-12">
           {Object.entries(groupedSkills).map(([category, names]) => (
@@ -208,12 +210,12 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     education: educations.length > 0 ? (
-      <section key="education" className="border-t border-black pt-12">
+      <section key="education" className="border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.education}</SectionHeading>
         <CollapsibleList
           initial={3}
           wrapperClassName="space-y-8"
-          buttonClassName="mt-8 border border-black bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+          buttonClassName="mt-8 border border-[var(--lf-accent)] bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
         >
           {educations.map((edu) => (
             <article key={edu.id} className="border-b border-gray-200 pb-6">
@@ -232,12 +234,12 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     certifications: certifications.length > 0 ? (
-      <section key="certifications" className="border-t border-black pt-12">
+      <section key="certifications" className="border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.certifications}</SectionHeading>
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-6"
-          buttonClassName="mt-8 border border-black bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+          buttonClassName="mt-8 border border-[var(--lf-accent)] bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
         >
           {certifications.map((cert) => (
             <article key={cert.id} className="flex items-center justify-between border-b border-gray-200 pb-4 group">
@@ -265,12 +267,12 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     achievements: achievements.length > 0 ? (
-      <section key="achievements" className="border-t border-black pt-12">
+      <section key="achievements" className="border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.achievements}</SectionHeading>
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-6"
-          buttonClassName="mt-8 border border-black bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+          buttonClassName="mt-8 border border-[var(--lf-accent)] bg-white px-8 py-3 text-sm font-bold uppercase tracking-widest text-black hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
         >
           {achievements.map((ach) => (
             <article key={ach.id} className="border-b border-gray-200 pb-4">
@@ -287,12 +289,12 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     articles: articles.length > 0 ? (
-      <section key="articles" id="writing" className="scroll-mt-32 border-t border-black pt-12">
+      <section key="articles" id="writing" className="scroll-mt-32 border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.articles}</SectionHeading>
         <CollapsibleList
           initial={4}
           wrapperClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12"
-          buttonClassName="col-span-full mt-16 mx-auto block border border-black bg-white px-12 py-4 text-sm font-bold uppercase tracking-widest text-black hover:bg-black hover:text-white transition-colors"
+          buttonClassName="col-span-full mt-16 mx-auto block border border-[var(--lf-accent)] bg-white px-12 py-4 text-sm font-bold uppercase tracking-widest text-black hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
         >
           {articles.map((article) => (
             <article key={article.id} className="group flex flex-col">
@@ -320,13 +322,13 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     profiles: hasProfiles ? (
-      <section key="profiles" id="profiles" className="scroll-mt-32 border-t border-black pt-12">
+      <section key="profiles" id="profiles" className="scroll-mt-32 border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.profiles}</SectionHeading>
         <ProfileLinksSection
           portfolio={portfolio}
           profiles={socialProfiles}
-          chipClassName="text-sm font-bold uppercase tracking-widest border border-black px-6 py-3 hover:bg-black hover:text-white transition-colors"
-          pillClassName="text-sm font-bold uppercase tracking-widest border border-black px-6 py-3 hover:bg-black hover:text-white transition-colors"
+          chipClassName="text-sm font-bold uppercase tracking-widest border border-[var(--lf-accent)] px-6 py-3 hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
+          pillClassName="text-sm font-bold uppercase tracking-widest border border-[var(--lf-accent)] px-6 py-3 hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
           titleClassName="text-2xl font-black uppercase tracking-tighter"
           textClassName="text-gray-500 font-medium"
         />
@@ -334,7 +336,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
     ) : null,
 
     github: contributionCalendar ? (
-      <section key="github" className="scroll-mt-32 border-t border-black pt-12">
+      <section key="github" className="scroll-mt-32 border-t border-[var(--lf-accent)] pt-12">
         <SectionHeading className="mb-12">{labels.github}</SectionHeading>
         <div className="overflow-x-auto custom-scrollbar pb-4">
           <GitHubContributionHeatmap
@@ -350,10 +352,10 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-white text-black font-sans selection:bg-[var(--lf-accent)] selection:text-white")} style={accentRootStyle(primaryColor)}>
 
       {navbarEnabled && (
-        <div className="sticky top-0 z-50 bg-white border-b border-black">
+        <div className="sticky top-0 z-50 bg-white border-b border-[var(--lf-accent)]">
           <div className="mx-auto max-w-7xl px-4 md:px-8 py-4 flex justify-between items-center">
             <div className="font-bold text-xl tracking-tighter uppercase">{portfolio.title.split(' ')[0]}</div>
             <TemplateNavbar
@@ -383,11 +385,11 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
             <div className="flex flex-col items-start lg:items-end gap-4 w-full">
               <ContactChips
                 portfolio={portfolio}
-                chipClassName="w-full text-left lg:text-right text-sm font-bold uppercase tracking-widest border-b border-black pb-2 hover:bg-black hover:text-white transition-colors px-2"
+                chipClassName="w-full text-left lg:text-right text-sm font-bold uppercase tracking-widest border-b border-[var(--lf-accent)] pb-2 hover:bg-[var(--lf-accent)] hover:text-white transition-colors px-2"
               />
               <HeroProfileButtons
                 profiles={socialProfiles}
-                className="w-full text-left lg:text-right text-sm font-bold uppercase tracking-widest bg-black text-white px-6 py-3 hover:bg-white hover:text-black border border-black transition-colors"
+                className="w-full text-left lg:text-right text-sm font-bold uppercase tracking-widest bg-[var(--lf-accent)] text-white px-6 py-3 hover:bg-white hover:text-black border border-[var(--lf-accent)] transition-colors"
               />
               {socialProfiles.length > 0 && (
                 <SocialPills
@@ -403,7 +405,7 @@ export function MonochromeTemplate({ data }: { data: PortfolioData }) {
         {renderSections(resolved, "full", blocks)}
 
         {customSections.length > 0 && customSections.map((cs) => (
-          <section key={cs.id} className="scroll-mt-32 border-t border-black pt-12">
+          <section key={cs.id} className="scroll-mt-32 border-t border-[var(--lf-accent)] pt-12">
             <SectionHeading className="mb-12">{cs.label}</SectionHeading>
             <CustomSectionItems
               items={cs.items}

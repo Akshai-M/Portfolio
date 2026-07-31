@@ -27,6 +27,15 @@ import type { TemplateComponent } from "./types";
 import { getTemplatePreviewImagePath } from "./template-preview-images";
 
 export const templateRegistry: Record<string, TemplateComponent> = {
+  pulse: {
+    id: "pulse",
+    name: "Pulse",
+    description:
+      "Sophisticated dark developer portfolio with accent theming and interactive project cards.",
+    previewImage: getTemplatePreviewImagePath("pulse"),
+    category: "developer",
+    component: PulseTemplate,
+  },
   modern: {
     id: "modern",
     name: "Modern",
@@ -229,15 +238,6 @@ export const templateRegistry: Record<string, TemplateComponent> = {
     previewImage: getTemplatePreviewImagePath("ledger"),
     category: "general",
     component: LedgerTemplate,
-  },
-  pulse: {
-    id: "pulse",
-    name: "Pulse",
-    description:
-      "Sophisticated dark developer portfolio with accent theming and interactive project cards.",
-    previewImage: getTemplatePreviewImagePath("pulse"),
-    category: "developer",
-    component: PulseTemplate,
   },
   maximalist: {
     id: "maximalist",

@@ -10,6 +10,7 @@ import { TemplateProjectPreview } from "@/components/template-project-preview";
 import { cn } from "@/lib/utils";
 import { formatDateRange, groupSkillsByCategory } from "@/features/templates/utils";
 import type { PortfolioData } from "@/features/templates/types";
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import {
   GitHubContributionHeatmap,
   parseContributionCalendar,
@@ -95,10 +96,10 @@ function getInitials(title: string): string {
 function getSkillLevelDisplay(level: number | null): { label: string; classes: string } | null {
   if (level === null || level === undefined) return null;
   if (level >= 4) {
-    return { label: 'Expert', classes: 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' };
+    return { label: 'Expert', classes: 'bg-[color-mix(in_srgb,var(--lf-accent)_10%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)]' };
   }
   if (level >= 3) {
-    return { label: 'Advanced', classes: 'bg-blue-500/10 border border-blue-500/20 text-blue-400' };
+    return { label: 'Advanced', classes: 'bg-[color-mix(in_srgb,var(--lf-accent)_10%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)]' };
   }
   return { label: 'Familiar', classes: 'bg-slate-900 border border-slate-800 text-slate-400' };
 }
@@ -144,6 +145,7 @@ export function LedgerTemplate({ data }: AppProps) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("ledger", portfolio.customization);
 
   // State management
   const [copiedText, setCopiedText] = useState<'email' | 'phone' | null>(null);
@@ -205,7 +207,7 @@ export function LedgerTemplate({ data }: AppProps) {
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
       case 'languages':
-        return <Code className="w-4 h-4 text-blue-400" />;
+        return <Code className="w-4 h-4 text-[var(--lf-accent)]" />;
       case 'runtimes':
         return <Cpu className="w-4 h-4 text-green-400" />;
       case 'frameworks':
@@ -213,7 +215,7 @@ export function LedgerTemplate({ data }: AppProps) {
       case 'databases':
         return <Database className="w-4 h-4 text-amber-400" />;
       case 'orms':
-        return <Terminal className="w-4 h-4 text-rose-400" />;
+        return <Terminal className="w-4 h-4 text-[var(--lf-accent)]" />;
       case 'cloud':
         return <Cloud className="w-4 h-4 text-indigo-400" />;
       default:
@@ -232,7 +234,7 @@ export function LedgerTemplate({ data }: AppProps) {
     experience: experiences.length > 0
       ? (
         <section key="experience" id="experience" className="space-y-8 scroll-mt-20">
-            <div className="border-l-2 border-blue-500 pl-4">
+            <div className="border-l-2 border-[var(--lf-accent)] pl-4">
               <SectionHeading>{labels.experience}</SectionHeading>
             </div>
 
@@ -245,7 +247,7 @@ export function LedgerTemplate({ data }: AppProps) {
                     onClick={() => setActiveExperienceTab(exp.id)}
                     className={`flex-none max-w-[85vw] @lg:max-w-none @lg:flex-1 text-left px-4 py-3 border transition-all flex flex-col gap-1 items-start whitespace-nowrap @lg:whitespace-normal rounded-none ${
                       activeExperienceTab === exp.id
-                        ? 'bg-blue-600/5 border-l-2 border-l-blue-500 border-slate-800 text-white'
+                        ? 'bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border-l-2 border-l-[var(--lf-accent)] border-slate-800 text-white'
                         : 'bg-transparent border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
                     }`}
                     id={`tab-${exp.id}`}
@@ -272,7 +274,7 @@ export function LedgerTemplate({ data }: AppProps) {
                       <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                         <div>
                           <h3 className="text-base @sm:text-lg font-mono font-bold text-white flex items-center gap-2 flex-wrap">
-                            <span className="text-blue-500 uppercase">{exp.role}</span>
+                            <span className="text-[var(--lf-accent)] uppercase">{exp.role}</span>
                             <span className="text-slate-500 font-normal">@</span>
                             <span className="text-white uppercase tracking-wide">{exp.company}</span>
                           </h3>
@@ -285,7 +287,7 @@ export function LedgerTemplate({ data }: AppProps) {
                         </div>
 
                         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono self-start @sm:self-center">
-                          <Calendar className="w-3.5 h-3.5 text-blue-500" />
+                          <Calendar className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
                           <span>
                             {formatDateRange(exp.startDate, exp.endDate)?.toUpperCase() ||
                               "N/A"}
@@ -311,7 +313,7 @@ export function LedgerTemplate({ data }: AppProps) {
     projects: visibleProjects.length > 0
       ? (
         <section key="projects" id="work" className="space-y-8 scroll-mt-20">
-          <div className="flex flex-col @sm:flex-row @sm:items-end justify-between gap-4 border-l-2 border-blue-500 pl-4">
+          <div className="flex flex-col @sm:flex-row @sm:items-end justify-between gap-4 border-l-2 border-[var(--lf-accent)] pl-4">
             <div>
               <SectionHeading>{labels.projects}</SectionHeading>
             </div>
@@ -334,7 +336,7 @@ export function LedgerTemplate({ data }: AppProps) {
                   placeholder="SEARCH PROJECTS BY NAME, DESCRIPTION, TECH..."
                   value={projectSearch}
                   onChange={(e) => setProjectSearch(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-none py-2.5 pl-10 pr-4 text-xs font-mono uppercase tracking-wider text-white placeholder-slate-600 focus:outline-none transition-colors"
+                  className="w-full bg-slate-950 border border-slate-800 focus:border-[var(--lf-accent)] rounded-none py-2.5 pl-10 pr-4 text-xs font-mono uppercase tracking-wider text-white placeholder-slate-600 focus:outline-none transition-colors"
                 />
                 {projectSearch && (
                   <button
@@ -350,13 +352,13 @@ export function LedgerTemplate({ data }: AppProps) {
               {allProjectTechs.length > 0 && (
                 <div className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 @md:max-w-[55%] @md:pb-0">
                   <span className="text-xs font-mono text-slate-500 whitespace-nowrap flex items-center gap-1 uppercase tracking-wider">
-                    <Filter className="w-3 h-3 text-blue-500" /> TECH STACK:
+                    <Filter className="w-3 h-3 text-[var(--lf-accent)]" /> TECH STACK:
                   </span>
                   <button
                     onClick={() => setSelectedTech(null)}
                     className={`px-2.5 py-1 rounded-none text-[10px] font-mono uppercase tracking-wider transition-colors whitespace-nowrap ${
                       selectedTech === null
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-[var(--lf-accent)] text-white'
                         : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
                     }`}
                     id="filter-tech-all"
@@ -369,7 +371,7 @@ export function LedgerTemplate({ data }: AppProps) {
                       onClick={() => setSelectedTech(tech === selectedTech ? null : tech)}
                       className={`px-2.5 py-1 rounded-none text-[10px] font-mono uppercase tracking-wider transition-colors whitespace-nowrap ${
                         selectedTech === tech
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-[var(--lf-accent)] text-white'
                           : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                       }`}
                       id={`filter-tech-${tech}`}
@@ -386,7 +388,7 @@ export function LedgerTemplate({ data }: AppProps) {
           <CollapsibleList
             initial={4}
             wrapperClassName={cn(PROJECTS_GRID_2, "gap-6")}
-            buttonClassName="@md:col-span-2 mt-2 rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+            buttonClassName="@md:col-span-2 mt-2 rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors"
           >
               {filteredProjects.map((project) => (
                 <div
@@ -409,15 +411,15 @@ export function LedgerTemplate({ data }: AppProps) {
                         loading="lazy"
                         containerClassName="h-full aspect-auto bg-slate-950"
                         className="h-full w-full object-cover object-top opacity-60 transition-all duration-500 group-hover:opacity-80"
-                      />
+                       accentColor={primaryColor} />
                       {/* Gradient overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#111418] to-transparent opacity-80" />
 
                       {/* Tags in header */}
                       <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
                         {project.featured ? (
-                          <span className="px-2 py-1 rounded-none bg-blue-500/15 border border-blue-500/40 text-[9px] font-mono text-blue-400 font-bold uppercase tracking-widest flex items-center gap-1 backdrop-blur-sm">
-                            <Star className="w-3 h-3 fill-blue-400" /> FEATURED
+                          <span className="px-2 py-1 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_15%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_40%,transparent)] text-[9px] font-mono text-[var(--lf-accent)] font-bold uppercase tracking-widest flex items-center gap-1 backdrop-blur-sm">
+                            <Star className="w-3 h-3 fill-[var(--lf-accent)]" /> FEATURED
                           </span>
                         ) : <span />}
 
@@ -433,7 +435,7 @@ export function LedgerTemplate({ data }: AppProps) {
                     <div className={cn(PROJECT_CARD_BODY, "space-y-4")}>
                       <div className={PROJECT_CARD_HEADER}>
                         <div className={PROJECT_CARD_META}>
-                          <h3 className={cn(PROJECT_CARD_TITLE, "text-lg font-mono font-bold text-white uppercase group-hover:text-blue-500 transition-colors")}>
+                          <h3 className={cn(PROJECT_CARD_TITLE, "text-lg font-mono font-bold text-white uppercase group-hover:text-[var(--lf-accent)] transition-colors")}>
                             {project.title}
                           </h3>
                         </div>
@@ -443,7 +445,7 @@ export function LedgerTemplate({ data }: AppProps) {
                         <DescriptionBlock
                           text={project.description}
                           paragraphClassName="text-sm text-slate-400 leading-relaxed"
-                          listClassName="space-y-2 pl-5 text-sm text-slate-400 leading-relaxed marker:text-blue-500"
+                          listClassName="space-y-2 pl-5 text-sm text-slate-400 leading-relaxed marker:text-[var(--lf-accent)]"
                         />
                       )}
 
@@ -456,7 +458,7 @@ export function LedgerTemplate({ data }: AppProps) {
                               onClick={() => setSelectedTech(tag === selectedTech ? null : tag)}
                               className={`px-2 py-0.5 rounded-none text-[9px] font-mono uppercase tracking-wider transition-colors ${
                                 selectedTech === tag
-                                  ? 'bg-blue-600 text-white'
+                                  ? 'bg-[var(--lf-accent)] text-white'
                                   : 'bg-slate-950 border border-slate-800 text-slate-500 hover:text-white hover:border-slate-600'
                               }`}
                             >
@@ -474,13 +476,13 @@ export function LedgerTemplate({ data }: AppProps) {
                     <div className="flex items-center gap-4 font-mono text-[10px] text-slate-500 uppercase tracking-widest">
                       {!!project.githubStars && (
                         <div className="flex items-center gap-1 hover:text-amber-400 transition-colors" title="GitHub Stars">
-                          <Star className="w-3.5 h-3.5 text-blue-500" />
+                          <Star className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
                           <span>{project.githubStars}</span>
                         </div>
                       )}
                       {!!project.githubForks && (
-                        <div className="flex items-center gap-1 hover:text-blue-400 transition-colors" title="GitHub Forks">
-                          <GitFork className="w-3.5 h-3.5 text-blue-500" />
+                        <div className="flex items-center gap-1 hover:text-[var(--lf-accent)] transition-colors" title="GitHub Forks">
+                          <GitFork className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
                           <span>{project.githubForks}</span>
                         </div>
                       )}
@@ -490,7 +492,7 @@ export function LedgerTemplate({ data }: AppProps) {
                     <ProjectActions
                       liveUrl={project.liveUrl}
                       sourceUrl={project.sourceUrl}
-                      liveClassName="px-3 py-1 bg-blue-600 border border-blue-500 hover:bg-transparent text-white hover:text-blue-400 font-semibold text-[10px] font-mono uppercase tracking-widest rounded-none transition-all"
+                      liveClassName="px-3 py-1 bg-[var(--lf-accent)] border border-[var(--lf-accent)] hover:bg-transparent text-white hover:text-[var(--lf-accent)] font-semibold text-[10px] font-mono uppercase tracking-widest rounded-none transition-all"
                       sourceClassName="px-3 py-1 text-slate-500 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-none transition-colors text-[10px] font-mono uppercase tracking-widest"
                     />
                   </div>
@@ -503,7 +505,7 @@ export function LedgerTemplate({ data }: AppProps) {
                 <p className="text-slate-500 font-mono text-sm uppercase tracking-wide">No projects found matching the selection criteria.</p>
                 <button
                   onClick={() => { setProjectSearch(''); setSelectedTech(null); }}
-                  className="mt-4 px-4 py-2 bg-blue-600/5 text-blue-400 text-xs font-mono uppercase tracking-widest rounded-none hover:bg-blue-600/10 border border-blue-500/20"
+                  className="mt-4 px-4 py-2 bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] text-[var(--lf-accent)] text-xs font-mono uppercase tracking-widest rounded-none hover:bg-[color-mix(in_srgb,var(--lf-accent)_10%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)]"
                 >
                   RESET ALL FILTERS
                 </button>
@@ -515,7 +517,7 @@ export function LedgerTemplate({ data }: AppProps) {
     skills: skills.length > 0
       ? (
         <section key="skills" id="skills" className="space-y-8 scroll-mt-20">
-            <div className="border-l-2 border-blue-500 pl-4">
+            <div className="border-l-2 border-[var(--lf-accent)] pl-4">
               <SectionHeading>{labels.skills}</SectionHeading>
             </div>
 
@@ -536,7 +538,7 @@ export function LedgerTemplate({ data }: AppProps) {
                           className="min-w-0 bg-[#111418] border border-slate-800 p-4 rounded-none flex flex-wrap items-center justify-between gap-3 hover:border-slate-700 transition-colors group"
                         >
                           <div className="space-y-1.5">
-                            <p className="font-mono font-bold text-xs uppercase text-white group-hover:text-blue-500 transition-colors">{name}</p>
+                            <p className="font-mono font-bold text-xs uppercase text-white group-hover:text-[var(--lf-accent)] transition-colors">{name}</p>
                           </div>
                           {levelDisplay && (
                             <span className={`px-2 py-0.5 rounded-none text-[9px] font-mono uppercase tracking-widest font-bold ${levelDisplay.classes}`}>
@@ -556,14 +558,14 @@ export function LedgerTemplate({ data }: AppProps) {
     achievements: achievements.length > 0
       ? (
         <section key="achievements" id="achievements" className="space-y-6 scroll-mt-20">
-                <div className="border-l-2 border-blue-500 pl-4">
+                <div className="border-l-2 border-[var(--lf-accent)] pl-4">
                   <SectionHeading as="h3">{labels.achievements}</SectionHeading>
                 </div>
 
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors"
                 >
                   {achievements.map((achievement) => (
                     <div
@@ -571,7 +573,7 @@ export function LedgerTemplate({ data }: AppProps) {
                       className="bg-[#111418] border border-slate-800 p-5 rounded-none hover:border-slate-700 transition-colors flex items-start gap-4"
                       id={`achievement-card-${achievement.id}`}
                     >
-                      <div className="p-2.5 rounded-none bg-blue-500/5 border border-blue-500/20 text-blue-400 shrink-0">
+                      <div className="p-2.5 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)] shrink-0">
                         <Trophy className="w-5 h-5" />
                       </div>
                       <div className="space-y-1 flex-1">
@@ -595,14 +597,14 @@ export function LedgerTemplate({ data }: AppProps) {
     certifications: certifications.length > 0
       ? (
         <section key="certifications" id="certifications" className="space-y-6 scroll-mt-20">
-                <div className="border-l-2 border-blue-500 pl-4">
+                <div className="border-l-2 border-[var(--lf-accent)] pl-4">
                   <SectionHeading as="h3">{labels.certifications}</SectionHeading>
                 </div>
 
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors"
                 >
                   {certifications.map((cert) => (
                     <div
@@ -611,13 +613,13 @@ export function LedgerTemplate({ data }: AppProps) {
                       id={`cert-card-${cert.id}`}
                     >
                       <div className="flex min-w-0 items-start @sm:items-center gap-3 @sm:gap-4">
-                        <div className="p-2.5 rounded-none bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 shrink-0">
+                        <div className="p-2.5 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)] shrink-0">
                           <FileCheck className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
                           <h4 className="break-words font-mono font-bold text-white text-sm @sm:text-base uppercase tracking-wide">
                             {cert.url ? (
-                              <a href={cert.url} target="_blank" rel="noreferrer" className="hover:text-blue-400">
+                              <a href={cert.url} target="_blank" rel="noreferrer" className="hover:text-[var(--lf-accent)]">
                                 {cert.name}
                               </a>
                             ) : (
@@ -645,7 +647,7 @@ export function LedgerTemplate({ data }: AppProps) {
                           title="Verify Certificate"
                           id={`cert-verify-${cert.id}`}
                         >
-                          <ExternalLink className="w-4 h-4 text-blue-500" />
+                          <ExternalLink className="w-4 h-4 text-[var(--lf-accent)]" />
                         </a>
                       )}
                     </div>
@@ -657,14 +659,14 @@ export function LedgerTemplate({ data }: AppProps) {
     articles: articles.length > 0
       ? (
         <section key="articles" id="publications" className="space-y-6 scroll-mt-20">
-                <div className="border-l-2 border-blue-500 pl-4">
+                <div className="border-l-2 border-[var(--lf-accent)] pl-4">
                   <SectionHeading as="h3">{labels.articles}</SectionHeading>
                 </div>
 
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors"
                 >
                   {articles.map((article) => (
                     <a
@@ -677,21 +679,21 @@ export function LedgerTemplate({ data }: AppProps) {
                     >
                       <div className="space-y-2">
                         <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1 uppercase">
-                          <BookOpen className="w-3.5 h-3.5 text-blue-500" />
+                          <BookOpen className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
                           {article.publishedAt ? `Published ${new Date(article.publishedAt).toLocaleDateString("en-US", {
                             month: "short",
                             year: "numeric",
                           })}` : 'Unpublished'}
                           {article.readTime ? ` · ${article.readTime} min read` : ''}
                         </span>
-                        <h4 className="font-mono font-bold text-white text-sm @sm:text-base group-hover:text-blue-500 transition-colors leading-snug uppercase tracking-wide">
+                        <h4 className="font-mono font-bold text-white text-sm @sm:text-base group-hover:text-[var(--lf-accent)] transition-colors leading-snug uppercase tracking-wide">
                           {article.title}
                         </h4>
                         {article.description && (
                           <DescriptionBlock
                             text={article.description}
                             paragraphClassName="text-xs text-slate-400 leading-relaxed line-clamp-2"
-                            listClassName="space-y-1 pl-4 text-xs text-slate-400 leading-relaxed marker:text-blue-500"
+                            listClassName="space-y-1 pl-4 text-xs text-slate-400 leading-relaxed marker:text-[var(--lf-accent)]"
                           />
                         )}
                         {article.tags.length > 0 && (
@@ -703,7 +705,7 @@ export function LedgerTemplate({ data }: AppProps) {
                             ))}
                           </div>
                         )}
-                        <div className="flex items-center gap-1.5 text-xs text-blue-500 font-mono pt-1 group-hover:translate-x-1 transition-transform uppercase tracking-wider">
+                        <div className="flex items-center gap-1.5 text-xs text-[var(--lf-accent)] font-mono pt-1 group-hover:translate-x-1 transition-transform uppercase tracking-wider">
                           <span>Read Article</span>
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </div>
@@ -717,14 +719,14 @@ export function LedgerTemplate({ data }: AppProps) {
     education: educations.length > 0
       ? (
         <section key="education" id="education" className="space-y-6 scroll-mt-20">
-                <div className="border-l-2 border-blue-500 pl-4">
+                <div className="border-l-2 border-[var(--lf-accent)] pl-4">
                   <SectionHeading as="h3">{labels.education}</SectionHeading>
                 </div>
 
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+                  buttonClassName="mt-2 w-full rounded-none border border-slate-800 bg-[#111418] px-4 py-2.5 font-mono text-xs uppercase tracking-wider text-slate-400 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors"
                 >
                   {educations.map((edu) => (
                     <div
@@ -733,7 +735,7 @@ export function LedgerTemplate({ data }: AppProps) {
                       id={`edu-card-${edu.id}`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-none bg-blue-500/5 border border-blue-500/20 text-blue-400 shrink-0">
+                        <div className="p-2 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)] shrink-0">
                           <GraduationCap className="w-5 h-5" />
                         </div>
                         <div>
@@ -751,7 +753,7 @@ export function LedgerTemplate({ data }: AppProps) {
                           {displayYear(edu.endDate)}
                         </span>
                         {edu.gpa && (
-                          <span className="px-2 py-0.5 rounded-none bg-slate-900 border border-slate-800 text-emerald-400 font-bold">
+                          <span className="px-2 py-0.5 rounded-none bg-slate-900 border border-slate-800 text-[var(--lf-accent)] font-bold">
                             GPA {edu.gpa}
                           </span>
                         )}
@@ -765,7 +767,7 @@ export function LedgerTemplate({ data }: AppProps) {
     github: contributionCalendar
       ? (
         <section key="github" className="space-y-6 scroll-mt-20">
-            <div className="border-l-2 border-blue-500 pl-4">
+            <div className="border-l-2 border-[var(--lf-accent)] pl-4">
               <SectionHeading>{labels.github}</SectionHeading>
             </div>
             <div className="bg-[#111418] border border-slate-800 p-5 rounded-none overflow-x-auto">
@@ -783,7 +785,7 @@ export function LedgerTemplate({ data }: AppProps) {
     profiles: hasProfiles
       ? (
         <section key="profiles" id="profiles" className="space-y-6 scroll-mt-20">
-            <div className="border-l-2 border-blue-500 pl-4">
+            <div className="border-l-2 border-[var(--lf-accent)] pl-4">
               <SectionHeading>{labels.profiles}</SectionHeading>
             </div>
             <div className="bg-[#111418] border border-slate-800 p-5 rounded-none">
@@ -791,8 +793,8 @@ export function LedgerTemplate({ data }: AppProps) {
                 portfolio={portfolio}
                 profiles={socialProfiles}
                 chipClassName="rounded-none border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs font-mono text-slate-400"
-                pillClassName="rounded-none border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-mono text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
-                titleClassName="font-mono text-xs uppercase tracking-wider text-blue-400"
+                pillClassName="rounded-none border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-mono text-slate-300 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors"
+                titleClassName="font-mono text-xs uppercase tracking-wider text-[var(--lf-accent)]"
                 textClassName="text-xs text-slate-500"
               />
             </div>
@@ -809,19 +811,20 @@ export function LedgerTemplate({ data }: AppProps) {
         inter.variable,
         spaceGrotesk.variable,
         jetBrainsMono.variable,
-        "min-w-0 overflow-x-hidden font-sans selection:bg-blue-600/30 selection:text-white"
+        "min-w-0 overflow-x-hidden font-sans selection:bg-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] selection:text-white"
       )}
+    style={accentRootStyle(primaryColor)}
     >
 
       {/* Header / Navbar */}
       <header id="header" className="sticky top-0 z-50 bg-[#0A0C10]/95 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-4 @sm:px-6 @lg:px-8 h-16 flex items-center justify-between">
           <a href="#about" id="logo" className="flex min-w-0 items-center gap-2 group">
-            <span className="w-9 h-9 rounded-none border border-blue-500 bg-slate-900 flex items-center justify-center font-display font-bold text-white group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
+            <span className="w-9 h-9 rounded-none border border-[var(--lf-accent)] bg-slate-900 flex items-center justify-center font-display font-bold text-white group-hover:bg-[var(--lf-accent)] group-hover:text-white transition-all duration-200">
               {getInitials(portfolio.title)}
             </span>
             <div className="flex min-w-0 flex-col">
-              <span className="max-w-44 truncate font-display font-semibold text-white leading-none text-sm tracking-wide group-hover:text-blue-400 transition-colors @sm:max-w-64">
+              <span className="max-w-44 truncate font-display font-semibold text-white leading-none text-sm tracking-wide group-hover:text-[var(--lf-accent)] transition-colors @sm:max-w-64">
                 {portfolio.title}
               </span>
             </div>
@@ -840,7 +843,7 @@ export function LedgerTemplate({ data }: AppProps) {
                 </a>
               ))}
               {(portfolio.contactEmail || portfolio.phone) && (
-                <a href="#contact" className="px-4 py-2 rounded-none border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-all">
+                <a href="#contact" className="px-4 py-2 rounded-none border border-[var(--lf-accent)] text-[var(--lf-accent)] hover:bg-[var(--lf-accent)] hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-all">
                   {labels.contact}
                 </a>
               )}
@@ -886,7 +889,7 @@ export function LedgerTemplate({ data }: AppProps) {
                   <a
                     href="#contact"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center py-3 rounded-none border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-colors"
+                    className="w-full text-center py-3 rounded-none border border-[var(--lf-accent)] text-[var(--lf-accent)] hover:bg-[var(--lf-accent)] hover:text-white font-mono uppercase text-xs tracking-wider font-semibold transition-colors"
                   >
                     {labels.contact}
                   </a>
@@ -923,7 +926,7 @@ export function LedgerTemplate({ data }: AppProps) {
                   id="hero-headline"
                   className={cn(
                     HERO_HEADLINE_SCALE,
-                    "font-mono font-bold text-blue-500 tracking-widest uppercase mt-2"
+                    "font-mono font-bold text-[var(--lf-accent)] tracking-widest uppercase mt-2"
                   )}
                 >
                   {portfolio.headline}
@@ -940,7 +943,7 @@ export function LedgerTemplate({ data }: AppProps) {
                 <DescriptionBlock
                   text={portfolio.summary}
                   paragraphClassName="text-base @sm:text-lg text-slate-400 leading-relaxed max-w-xl mx-auto @md:mx-0"
-                  listClassName="space-y-2 pl-5 text-base @sm:text-lg text-slate-400 leading-relaxed max-w-xl mx-auto @md:mx-0 marker:text-blue-500"
+                  listClassName="space-y-2 pl-5 text-base @sm:text-lg text-slate-400 leading-relaxed max-w-xl mx-auto @md:mx-0 marker:text-[var(--lf-accent)]"
                 />
               )}
 
@@ -960,13 +963,13 @@ export function LedgerTemplate({ data }: AppProps) {
                         href={profile.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-2 rounded-none bg-slate-900 border border-slate-800 hover:border-blue-500 text-slate-400 hover:text-white transition-all flex items-center gap-2 font-mono text-xs group"
+                        className="p-2 rounded-none bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] text-slate-400 hover:text-white transition-all flex items-center gap-2 font-mono text-xs group"
                         id={`social-${profile.platform}`}
                       >
-                        {getSocialIcon(profile.platform, 'w-4 h-4 text-blue-500')}
+                        {getSocialIcon(profile.platform, 'w-4 h-4 text-[var(--lf-accent)]')}
                         {profile.username && <span className="hidden @sm:inline">@{profile.username}</span>}
                         {statLabel && (
-                          <span className="px-1.5 py-0.5 rounded-none bg-slate-950 text-[9px] text-slate-500 border border-slate-800/80 group-hover:text-blue-400 transition-colors">
+                          <span className="px-1.5 py-0.5 rounded-none bg-slate-950 text-[9px] text-slate-500 border border-slate-800/80 group-hover:text-[var(--lf-accent)] transition-colors">
                             {statLabel}
                           </span>
                         )}
@@ -985,15 +988,15 @@ export function LedgerTemplate({ data }: AppProps) {
           <div className="space-y-12">
             {customSections.map((sect) => (
               <section key={sect.id} id={`custom-section-${sect.id}`} className="space-y-6">
-                <div className="border-l-2 border-blue-500 pl-4">
+                <div className="border-l-2 border-[var(--lf-accent)] pl-4">
                   <SectionHeading as="h3">{sect.label}</SectionHeading>
                 </div>
                 <CustomSectionItems
                   items={sect.items}
-                  titleClassName="font-mono font-bold text-blue-500 text-sm @sm:text-base uppercase tracking-wider"
+                  titleClassName="font-mono font-bold text-[var(--lf-accent)] text-sm @sm:text-base uppercase tracking-wider"
                   textClassName="text-xs @sm:text-sm text-slate-400 leading-relaxed"
                   chipClassName="rounded-none border border-slate-800 bg-slate-950 px-2 py-0.5 text-[10px] font-mono text-slate-500 uppercase"
-                  buttonClassName="mt-2 text-xs font-mono uppercase tracking-wider text-blue-400 hover:text-blue-300"
+                  buttonClassName="mt-2 text-xs font-mono uppercase tracking-wider text-[var(--lf-accent)] hover:text-[color-mix(in_srgb,var(--lf-accent)_75%,white)]"
                 />
               </section>
             ))}
@@ -1012,18 +1015,18 @@ export function LedgerTemplate({ data }: AppProps) {
                 {portfolio.contactEmail && (
                   <button
                     onClick={() => handleCopy(portfolio.contactEmail, 'email')}
-                    className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-blue-500 p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
+                    className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
                     id="contact-email-btn"
                   >
-                    <div className="p-2.5 rounded-none bg-blue-500/5 border border-blue-500/20 text-blue-400">
-                      {copiedText === 'email' ? <Check className="w-5 h-5 text-emerald-400" /> : <Mail className="w-5 h-5" />}
+                    <div className="p-2.5 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)]">
+                      {copiedText === 'email' ? <Check className="w-5 h-5 text-[var(--lf-accent)]" /> : <Mail className="w-5 h-5" />}
                     </div>
                     <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">Email Address</p>
-                    <p className="text-xs @sm:text-sm font-semibold text-white font-mono break-all group-hover:text-blue-400 transition-colors">
+                    <p className="text-xs @sm:text-sm font-semibold text-white font-mono break-all group-hover:text-[var(--lf-accent)] transition-colors">
                       {portfolio.contactEmail}
                     </p>
                     <span className="text-[10px] text-slate-500 font-mono mt-0.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-wider">
-                      <Copy className="w-3 h-3 text-blue-400" /> {copiedText === 'email' ? 'Copied!' : 'Click to Copy'}
+                      <Copy className="w-3 h-3 text-[var(--lf-accent)]" /> {copiedText === 'email' ? 'Copied!' : 'Click to Copy'}
                     </span>
                   </button>
                 )}
@@ -1032,18 +1035,18 @@ export function LedgerTemplate({ data }: AppProps) {
                 {portfolio.phone && (
                   <button
                     onClick={() => handleCopy(portfolio.phone, 'phone')}
-                    className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-blue-500 p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
+                    className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
                     id="contact-phone-btn"
                   >
-                    <div className="p-2.5 rounded-none bg-blue-500/5 border border-blue-500/20 text-blue-400">
-                      {copiedText === 'phone' ? <Check className="w-5 h-5 text-emerald-400" /> : <Phone className="w-5 h-5" />}
+                    <div className="p-2.5 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)]">
+                      {copiedText === 'phone' ? <Check className="w-5 h-5 text-[var(--lf-accent)]" /> : <Phone className="w-5 h-5" />}
                     </div>
                     <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">Phone Number</p>
-                    <p className="text-xs @sm:text-sm font-semibold text-white font-mono group-hover:text-blue-400 transition-colors">
+                    <p className="text-xs @sm:text-sm font-semibold text-white font-mono group-hover:text-[var(--lf-accent)] transition-colors">
                       {portfolio.phone}
                     </p>
                     <span className="text-[10px] text-slate-500 font-mono mt-0.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-wider">
-                      <Copy className="w-3 h-3 text-blue-400" /> {copiedText === 'phone' ? 'Copied!' : 'Click to Copy'}
+                      <Copy className="w-3 h-3 text-[var(--lf-accent)]" /> {copiedText === 'phone' ? 'Copied!' : 'Click to Copy'}
                     </span>
                   </button>
                 )}
@@ -1068,13 +1071,13 @@ export function LedgerTemplate({ data }: AppProps) {
 
           <div className="flex flex-wrap items-center justify-center gap-3 @sm:gap-4 text-xs font-mono text-slate-500 uppercase">
             {isSectionEnabled('experience') && experiences.length > 0 && (
-              <a href="#experience" className="hover:text-blue-500 transition-colors">{labels.experience}</a>
+              <a href="#experience" className="hover:text-[var(--lf-accent)] transition-colors">{labels.experience}</a>
             )}
             {isSectionEnabled('work') && projects.length > 0 && (
-              <a href="#work" className="hover:text-blue-500 transition-colors">{labels.projects}</a>
+              <a href="#work" className="hover:text-[var(--lf-accent)] transition-colors">{labels.projects}</a>
             )}
             {skills.length > 0 && (
-              <a href="#skills" className="hover:text-blue-500 transition-colors">{labels.skills}</a>
+              <a href="#skills" className="hover:text-[var(--lf-accent)] transition-colors">{labels.skills}</a>
             )}
             <a href="#header" className="p-2 rounded-none bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-all">
               ↑ Back to top
@@ -1101,7 +1104,7 @@ function SectionHeading({
           : "text-2xl @sm:text-3xl font-display font-extrabold text-white uppercase tracking-tight flex items-center gap-2"
       }
     >
-      <span className="w-2.5 h-2.5 bg-blue-500 shrink-0 inline-block" /> {children}
+      <span className="w-2.5 h-2.5 bg-[var(--lf-accent)] shrink-0 inline-block" /> {children}
     </Tag>
   );
 }

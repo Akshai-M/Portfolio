@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -49,6 +50,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("cyberpunk", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -75,11 +77,11 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
       <section key="about" id="about" className="scroll-mt-24">
 
             <SectionHeading icon={<Cpu className="w-5 h-5" />}>{labels.about}</SectionHeading>
-            <div className="border border-[#00ff00]/30 bg-[#00ff00]/5 p-6 md:p-8 shadow-[inset_0_0_20px_rgba(0,255,0,0.05)]">
+            <div className="border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] bg-[color-mix(in_srgb,var(--lf-accent)_5%,transparent)] p-6 md:p-8 shadow-[inset_0_0_20px_rgba(0,255,0,0.05)]">
               <DescriptionBlock
                 text={portfolio.summary}
                 paragraphClassName="text-sm md:text-base leading-relaxed text-slate-300"
-                listClassName="space-y-2 pl-5 text-sm md:text-base leading-relaxed text-slate-300 marker:text-[#ff00ff]"
+                listClassName="space-y-2 pl-5 text-sm md:text-base leading-relaxed text-slate-300 marker:text-[color-mix(in_srgb,var(--lf-accent)_65%,white)]"
               />
             </div>
       </section>
@@ -92,13 +94,13 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
             <CollapsibleList
               initial={4}
               wrapperClassName={PROJECTS_GRID_2}
-              buttonClassName="col-span-full mt-8 mx-auto block border border-[#00ffff] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#00ffff] transition-colors hover:bg-[#00ffff] hover:text-black shadow-[0_0_15px_rgba(0,255,255,0.3)]"
+              buttonClassName="col-span-full mt-8 mx-auto block border border-[var(--lf-accent)] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[var(--lf-accent)] transition-colors hover:bg-[var(--lf-accent)] hover:text-black shadow-[0_0_15px_rgba(0,255,255,0.3)]"
             >
               {visibleProjects.map((project) => (
-                <article key={project.id} className={cn(PROJECT_CARD, "group relative border border-[#00ff00]/30 bg-[#050505] hover:border-[#00ff00] transition-colors")}>
-                  <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#00ff00] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <article key={project.id} className={cn(PROJECT_CARD, "group relative border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] bg-[#050505] hover:border-[var(--lf-accent)] transition-colors")}>
+                  <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[var(--lf-accent)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                  <div className="relative border-b border-[#00ff00]/30">
+                  <div className="relative border-b border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)]">
                     <TemplateProjectPreview templateId="cyberpunk"
                       liveUrl={project.liveUrl ?? null}
                       projectId={project.id}
@@ -107,18 +109,18 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                       loading="lazy"
                       containerClassName="bg-[#050505]"
                       className="h-full w-full object-cover object-top opacity-70 filter contrast-125 transition-all duration-500 group-hover:opacity-100"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-[#00ff00]/10 mix-blend-overlay" />
+                     accentColor={primaryColor} />
+                    <div className="pointer-events-none absolute inset-0 bg-[color-mix(in_srgb,var(--lf-accent)_10%,transparent)] mix-blend-overlay" />
                   </div>
 
                   <div className={cn(PROJECT_CARD_BODY, "flex flex-col grow")}>
                     <div className={cn(PROJECT_CARD_HEADER, "mb-4")}>
                       <div className={PROJECT_CARD_META}>
-                        <h3 className={cn(PROJECT_CARD_TITLE, "text-xl font-bold text-white uppercase tracking-wider group-hover:text-[#00ff00] transition-colors")}>
+                        <h3 className={cn(PROJECT_CARD_TITLE, "text-xl font-bold text-white uppercase tracking-wider group-hover:text-[var(--lf-accent)] transition-colors")}>
                           {project.title}
                         </h3>
                         {project.featured && (
-                          <span className="text-[10px] font-bold uppercase tracking-widest bg-[#ff00ff] text-white px-2 py-1 shrink-0 shadow-[0_0_10px_rgba(255,0,255,0.5)]">
+                          <span className="text-[10px] font-bold uppercase tracking-widest bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] text-white px-2 py-1 shrink-0 shadow-[0_0_10px_rgba(255,0,255,0.5)]">
                             Prime
                           </span>
                         )}
@@ -129,13 +131,13 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                       <DescriptionBlock
                         text={project.description}
                         paragraphClassName="text-sm text-slate-400 leading-relaxed mb-6 grow"
-                        listClassName="mb-6 grow space-y-2 pl-5 text-sm text-slate-400 leading-relaxed marker:text-[#ff00ff]"
+                        listClassName="mb-6 grow space-y-2 pl-5 text-sm text-slate-400 leading-relaxed marker:text-[color-mix(in_srgb,var(--lf-accent)_65%,white)]"
                       />
                     )}
 
                     <div className="flex flex-wrap gap-2 mb-6">
                       {project.techStack.map((tech) => (
-                        <span key={tech} className="text-[10px] font-bold uppercase tracking-widest border border-[#00ffff]/50 text-[#00ffff] px-2 py-1 bg-[#00ffff]/5">
+                        <span key={tech} className="text-[10px] font-bold uppercase tracking-widest border border-[color-mix(in_srgb,var(--lf-accent)_50%,transparent)] text-[var(--lf-accent)] px-2 py-1 bg-[color-mix(in_srgb,var(--lf-accent)_5%,transparent)]">
                           {tech}
                         </span>
                       ))}
@@ -147,8 +149,8 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                         sourceUrl={project.sourceUrl}
                         label={project.title}
                         projectId={project.id}
-                        liveClassName="text-xs font-bold uppercase tracking-widest bg-[#00ff00] text-black px-4 py-2 hover:bg-white transition-colors mr-3 shadow-[0_0_10px_rgba(0,255,0,0.4)]"
-                        sourceClassName="text-xs font-bold uppercase tracking-widest border border-[#00ff00] text-[#00ff00] px-4 py-2 hover:bg-[#00ff00] hover:text-black transition-colors"
+                        liveClassName="text-xs font-bold uppercase tracking-widest bg-[var(--lf-accent)] text-black px-4 py-2 hover:bg-white transition-colors mr-3 shadow-[0_0_10px_rgba(0,255,0,0.4)]"
+                        sourceClassName="text-xs font-bold uppercase tracking-widest border border-[var(--lf-accent)] text-[var(--lf-accent)] px-4 py-2 hover:bg-[var(--lf-accent)] hover:text-black transition-colors"
                       />
                     </div>
                   </div>
@@ -165,13 +167,13 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
               <CollapsibleList
                 initial={4}
                 wrapperClassName="space-y-6"
-                buttonClassName="mt-6 border border-[#ff00ff] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#ff00ff] transition-colors hover:bg-[#ff00ff] hover:text-white shadow-[0_0_10px_rgba(255,0,255,0.2)]"
+                buttonClassName="mt-6 border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] transition-colors hover:bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] hover:text-white shadow-[0_0_10px_rgba(255,0,255,0.2)]"
               >
                 {experiences.map((exp) => (
-                  <article key={exp.id} className="border-l-2 border-[#ff00ff] pl-4 py-2 relative group">
-                    <div className="absolute left-[-5px] top-3 w-2 h-2 bg-[#050505] border border-[#ff00ff] group-hover:bg-[#ff00ff] transition-colors" />
+                  <article key={exp.id} className="border-l-2 border-[color-mix(in_srgb,var(--lf-accent)_65%,white)] pl-4 py-2 relative group">
+                    <div className="absolute left-[-5px] top-3 w-2 h-2 bg-[#050505] border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)] group-hover:bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] transition-colors" />
                     <h3 className="text-lg font-bold text-white uppercase tracking-wider">{exp.role}</h3>
-                    <p className="text-[#00ffff] text-sm mt-1 uppercase tracking-widest">{exp.company}</p>
+                    <p className="text-[var(--lf-accent)] text-sm mt-1 uppercase tracking-widest">{exp.company}</p>
                     {(exp.startDate || exp.endDate) && (
                       <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-2">
                         [{formatDateRange(exp.startDate, exp.endDate)}]
@@ -182,7 +184,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                         <DescriptionBlock
                           text={exp.description}
                           paragraphClassName="mb-2"
-                          listClassName="list-disc pl-4 space-y-1 marker:text-[#00ffff]"
+                          listClassName="list-disc pl-4 space-y-1 marker:text-[var(--lf-accent)]"
                         />
                       </div>
                     )}
@@ -196,15 +198,15 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
       <section key="skills">
 
                 <SectionHeading>{labels.skills}</SectionHeading>
-                <div className="space-y-6 border border-[#00ff00]/30 p-6 bg-[#00ff00]/5">
+                <div className="space-y-6 border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] p-6 bg-[color-mix(in_srgb,var(--lf-accent)_5%,transparent)]">
                   {Object.entries(groupedSkills).map(([category, names]) => (
                     <div key={category}>
-                      <h3 className="text-xs font-bold uppercase tracking-widest text-[#00ff00] mb-3">
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--lf-accent)] mb-3">
                         {"//"} {category}
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {names.map((name) => (
-                          <span key={name} className="text-xs font-bold uppercase tracking-wider bg-[#050505] border border-[#00ff00]/50 text-slate-300 px-3 py-1 hover:border-[#00ff00] hover:text-[#00ff00] transition-colors cursor-default">
+                          <span key={name} className="text-xs font-bold uppercase tracking-wider bg-[#050505] border border-[color-mix(in_srgb,var(--lf-accent)_50%,transparent)] text-slate-300 px-3 py-1 hover:border-[var(--lf-accent)] hover:text-[var(--lf-accent)] transition-colors cursor-default">
                             {name}
                           </span>
                         ))}
@@ -222,12 +224,12 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={3}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-6 border border-[#00ffff] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#00ffff] transition-colors hover:bg-[#00ffff] hover:text-black shadow-[0_0_10px_rgba(0,255,255,0.2)]"
+                  buttonClassName="mt-6 border border-[var(--lf-accent)] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[var(--lf-accent)] transition-colors hover:bg-[var(--lf-accent)] hover:text-black shadow-[0_0_10px_rgba(0,255,255,0.2)]"
                 >
                   {educations.map((edu) => (
-                    <article key={edu.id} className="border border-[#00ffff]/30 p-4 bg-[#00ffff]/5 hover:border-[#00ffff] transition-colors">
+                    <article key={edu.id} className="border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] p-4 bg-[color-mix(in_srgb,var(--lf-accent)_5%,transparent)] hover:border-[var(--lf-accent)] transition-colors">
                       <h3 className="text-base font-bold text-white uppercase tracking-wider">{edu.degree}</h3>
-                      <p className="text-[#00ffff] text-sm mt-1">{edu.institution}</p>
+                      <p className="text-[var(--lf-accent)] text-sm mt-1">{edu.institution}</p>
                       <div className="flex justify-between items-center mt-3 text-[10px] uppercase tracking-widest text-slate-500">
                         {(edu.startDate || edu.endDate) && (
                           <span>[{formatDateRange(edu.startDate, edu.endDate)}]</span>
@@ -247,24 +249,24 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-6 border border-[#ff00ff] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#ff00ff] transition-colors hover:bg-[#ff00ff] hover:text-white"
+                  buttonClassName="mt-6 border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] transition-colors hover:bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] hover:text-white"
                 >
                   {certifications.map((cert) => (
-                    <article key={cert.id} className="flex justify-between items-center border-b border-[#00ff00]/30 pb-3 group">
+                    <article key={cert.id} className="flex justify-between items-center border-b border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] pb-3 group">
                       <div>
                         <h3 className="text-sm font-bold text-white uppercase tracking-wider">
                           {cert.url ? (
-                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="hover:text-[#00ff00] transition-colors">
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--lf-accent)] transition-colors">
                               {cert.name}
                             </a>
                           ) : (
                             cert.name
                           )}
                         </h3>
-                        <p className="text-xs text-[#00ffff] mt-1">{cert.issuer}</p>
+                        <p className="text-xs text-[var(--lf-accent)] mt-1">{cert.issuer}</p>
                       </div>
                       {cert.issueDate && (
-                        <span className="text-[10px] font-bold uppercase tracking-widest bg-[#ff00ff]/20 text-[#ff00ff] px-2 py-1 border border-[#ff00ff]/50">
+                        <span className="text-[10px] font-bold uppercase tracking-widest bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/20 text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] px-2 py-1 border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/50">
                           {new Date(cert.issueDate).getFullYear()}
                         </span>
                       )}
@@ -281,11 +283,11 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-6 border border-[#00ffff] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#00ffff] transition-colors hover:bg-[#00ffff] hover:text-black"
+                  buttonClassName="mt-6 border border-[var(--lf-accent)] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[var(--lf-accent)] transition-colors hover:bg-[var(--lf-accent)] hover:text-black"
                 >
                   {achievements.map((ach) => (
-                    <article key={ach.id} className="flex items-start gap-4 border border-[#00ff00]/30 p-4 bg-[#050505] group hover:border-[#00ff00] transition-colors">
-                      <div className="text-[#ff00ff] mt-0.5 group-hover:animate-pulse">
+                    <article key={ach.id} className="flex items-start gap-4 border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] p-4 bg-[#050505] group hover:border-[var(--lf-accent)] transition-colors">
+                      <div className="text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] mt-0.5 group-hover:animate-pulse">
                         <Zap className="w-4 h-4" />
                       </div>
                       <div>
@@ -309,11 +311,11 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
             <CollapsibleList
               initial={4}
               wrapperClassName="grid grid-cols-1 sm:grid-cols-2 gap-6"
-              buttonClassName="col-span-full mt-8 mx-auto block border border-[#00ff00] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#00ff00] transition-colors hover:bg-[#00ff00] hover:text-black shadow-[0_0_15px_rgba(0,255,0,0.3)]"
+              buttonClassName="col-span-full mt-8 mx-auto block border border-[var(--lf-accent)] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[var(--lf-accent)] transition-colors hover:bg-[var(--lf-accent)] hover:text-black shadow-[0_0_15px_rgba(0,255,0,0.3)]"
             >
               {articles.map((article) => (
-                <article key={article.id} className="border border-[#00ffff]/30 p-5 bg-[#00ffff]/5 hover:border-[#00ffff] transition-colors group flex flex-col">
-                  <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-3 group-hover:text-[#00ffff] transition-colors">
+                <article key={article.id} className="border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] p-5 bg-[color-mix(in_srgb,var(--lf-accent)_5%,transparent)] hover:border-[var(--lf-accent)] transition-colors group flex flex-col">
+                  <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-3 group-hover:text-[var(--lf-accent)] transition-colors">
                     <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
                       {article.title}
                     </a>
@@ -323,7 +325,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                       {article.description}
                     </p>
                   )}
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-[#00ff00] flex gap-4 mt-auto pt-4 border-t border-[#00ffff]/20">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--lf-accent)] flex gap-4 mt-auto pt-4 border-t border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)]">
                     {article.publishedAt && (
                       <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
                     )}
@@ -339,12 +341,12 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
       <section key="profiles" id="profiles" className="scroll-mt-24">
 
             <SectionHeading>{labels.profiles}</SectionHeading>
-            <div className="border border-[#00ff00]/30 p-8 bg-[#00ff00]/5 text-center">
+            <div className="border border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] p-8 bg-[color-mix(in_srgb,var(--lf-accent)_5%,transparent)] text-center">
               <ProfileLinksSection
                 portfolio={portfolio}
                 profiles={socialProfiles}
-                chipClassName="text-xs font-bold uppercase tracking-widest border border-[#00ffff] text-[#00ffff] px-4 py-2 hover:bg-[#00ffff] hover:text-black transition-colors"
-                pillClassName="text-xs font-bold uppercase tracking-widest border border-[#00ffff] text-[#00ffff] px-4 py-2 hover:bg-[#00ffff] hover:text-black transition-colors"
+                chipClassName="text-xs font-bold uppercase tracking-widest border border-[var(--lf-accent)] text-[var(--lf-accent)] px-4 py-2 hover:bg-[var(--lf-accent)] hover:text-black transition-colors"
+                pillClassName="text-xs font-bold uppercase tracking-widest border border-[var(--lf-accent)] text-[var(--lf-accent)] px-4 py-2 hover:bg-[var(--lf-accent)] hover:text-black transition-colors"
                 titleClassName="text-white font-bold uppercase tracking-wider"
                 textClassName="text-slate-400"
               />
@@ -356,7 +358,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
       <section key="github" className="scroll-mt-24">
 
             <SectionHeading>{labels.github}</SectionHeading>
-            <div className="border border-[#00ff00] p-6 bg-[#050505] overflow-x-auto custom-scrollbar shadow-[0_0_20px_rgba(0,255,0,0.1)]">
+            <div className="border border-[var(--lf-accent)] p-6 bg-[#050505] overflow-x-auto custom-scrollbar shadow-[0_0_20px_rgba(0,255,0,0.1)]">
               <GitHubContributionHeatmap
                 calendar={contributionCalendar}
                 profileUrl={githubProfile?.url}
@@ -370,7 +372,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#050505] text-[#00ff00] font-mono selection:bg-[#ff00ff] selection:text-white overflow-hidden relative pb-20")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#050505] text-[var(--lf-accent)] font-mono selection:bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] selection:text-white overflow-hidden relative pb-20")} style={accentRootStyle(primaryColor)}>
       {/* Grid Background */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20"
         style={{
@@ -387,20 +389,20 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
           <div className="sticky top-4 z-50 flex justify-center mb-16">
             <TemplateNavbar
               items={sections}
-              className="flex gap-2 bg-[#050505]/90 border border-[#00ff00]/50 p-2 backdrop-blur-md shadow-[0_0_15px_rgba(0,255,0,0.2)]"
-              linkClassName="px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#00ff00] hover:bg-[#00ff00] hover:text-black transition-colors"
+              className="flex gap-2 bg-[#050505]/90 border border-[color-mix(in_srgb,var(--lf-accent)_50%,transparent)] p-2 backdrop-blur-md shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+              linkClassName="px-4 py-2 text-xs font-bold uppercase tracking-widest text-[var(--lf-accent)] hover:bg-[var(--lf-accent)] hover:text-black transition-colors"
             />
           </div>
         )}
 
-        <header className="relative border-l-4 border-[#00ff00] pl-6 md:pl-10">
-          <div className="absolute top-0 left-[-14px] w-6 h-6 bg-[#050505] border-2 border-[#00ff00] flex items-center justify-center">
-            <div className="w-2 h-2 bg-[#ff00ff] animate-pulse" />
+        <header className="relative border-l-4 border-[var(--lf-accent)] pl-6 md:pl-10">
+          <div className="absolute top-0 left-[-14px] w-6 h-6 bg-[#050505] border-2 border-[var(--lf-accent)] flex items-center justify-center">
+            <div className="w-2 h-2 bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] animate-pulse" />
           </div>
 
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <div className="grow">
-              <div className="inline-flex items-center border border-[#ff00ff] bg-[#ff00ff]/10 px-3 py-1 text-xs font-bold text-[#ff00ff] mb-6 uppercase tracking-widest shadow-[0_0_10px_rgba(255,0,255,0.3)]">
+              <div className="inline-flex items-center border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)] bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/10 px-3 py-1 text-xs font-bold text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] mb-6 uppercase tracking-widest shadow-[0_0_10px_rgba(255,0,255,0.3)]">
                 <Terminal className="w-3 h-3 mr-2" />
                 System.Init()
               </div>
@@ -408,7 +410,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
                 {portfolio.title}
               </h1>
               {portfolio.headline && (
-                <p className="text-xl text-[#00ffff] font-medium max-w-2xl mb-8 uppercase tracking-wide">
+                <p className="text-xl text-[var(--lf-accent)] font-medium max-w-2xl mb-8 uppercase tracking-wide">
                   &gt; {portfolio.headline}_
                 </p>
               )}
@@ -416,14 +418,14 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
               <div className="flex flex-wrap gap-4 mb-6">
                 <ContactChips
                   portfolio={portfolio}
-                  chipClassName="border border-[#00ff00] bg-transparent px-4 py-2 text-xs font-bold text-[#00ff00] uppercase tracking-widest hover:bg-[#00ff00] hover:text-black transition-colors shadow-[0_0_10px_rgba(0,255,0,0.2)]"
+                  chipClassName="border border-[var(--lf-accent)] bg-transparent px-4 py-2 text-xs font-bold text-[var(--lf-accent)] uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-black transition-colors shadow-[0_0_10px_rgba(0,255,0,0.2)]"
                 />
               </div>
 
               <div className="flex flex-wrap gap-4">
                 <HeroProfileButtons
                   profiles={socialProfiles}
-                  className="bg-[#ff00ff] text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#ff00ff] transition-colors shadow-[0_0_15px_rgba(255,0,255,0.5)]"
+                  className="bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)] text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] transition-colors shadow-[0_0_15px_rgba(255,0,255,0.5)]"
                 />
               </div>
             </div>
@@ -431,11 +433,11 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
           </div>
 
           {socialProfiles.length > 0 && (
-            <div className="mt-8 pt-6 border-t border-[#00ff00]/30">
+            <div className="mt-8 pt-6 border-t border-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)]">
               <SocialPills
                 profiles={socialProfiles}
                 showUsername
-                className="text-xs font-bold uppercase tracking-widest text-[#008800] hover:text-[#00ff00] transition-colors"
+                className="text-xs font-bold uppercase tracking-widest text-[#008800] hover:text-[var(--lf-accent)] transition-colors"
               />
             </div>
           )}
@@ -446,12 +448,12 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
         {customSections.length > 0 && customSections.map((cs) => (
           <section key={cs.id} className="scroll-mt-24">
             <SectionHeading>{cs.label}</SectionHeading>
-            <div className="border border-[#ff00ff]/30 p-6 bg-[#ff00ff]/5">
+            <div className="border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/30 p-6 bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/5">
               <CustomSectionItems
                 items={cs.items}
                 titleClassName="text-base font-bold text-white uppercase tracking-wider mb-2"
                 textClassName="text-sm text-slate-400 leading-relaxed"
-                chipClassName="text-[10px] font-bold uppercase tracking-widest border border-[#ff00ff]/50 text-[#ff00ff] px-2 py-1 bg-[#ff00ff]/5"
+                chipClassName="text-[10px] font-bold uppercase tracking-widest border border-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/50 text-[color-mix(in_srgb,var(--lf-accent)_65%,white)] px-2 py-1 bg-[color-mix(in_srgb,var(--lf-accent)_65%,white)]/5"
               />
             </div>
           </section>
@@ -465,7 +467,7 @@ export function CyberpunkTemplate({ data }: { data: PortfolioData }) {
 function SectionHeading({ children, icon }: { children: React.ReactNode, icon?: React.ReactNode }) {
   return (
     <h2 className="text-base @md:text-lg @lg:text-2xl font-bold uppercase tracking-widest text-white mb-8 flex items-center gap-3">
-      <span className="text-[#00ff00]">{icon || <Terminal className="w-5 h-5" />}</span>
+      <span className="text-[var(--lf-accent)]">{icon || <Terminal className="w-5 h-5" />}</span>
       {children}
       <span className="ml-4 h-px grow bg-[linear-gradient(90deg,#00ff00_0%,transparent_100%)] opacity-50" />
     </h2>

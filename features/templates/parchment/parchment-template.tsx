@@ -1,4 +1,5 @@
 "use client";
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 
 import type { PortfolioData } from "../types";
 import { getTemplateSectionLayout } from "../section-layouts";
@@ -42,6 +43,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("parchment", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const { navbarEnabled, sections } = buildTemplateSections(data);
   const groupedSkills = groupSkillsByCategory(skills);
@@ -88,12 +90,12 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                               alt={project.title}
                               containerClassName="overflow-hidden bg-white"
                               className="h-full w-full object-cover object-top filter transition-all duration-700"
-                            />
+                             accentColor={primaryColor} />
                           </div>
                         </div>
 
                         <div className="@md:col-span-7 flex flex-col h-full justify-center">
-                          <h3 className={cn(PROJECT_CARD_TITLE, "text-4xl font-black uppercase mb-4 text-[#8C2727]")}>{project.title}</h3>
+                          <h3 className={cn(PROJECT_CARD_TITLE, "text-4xl font-black uppercase mb-4 text-[var(--lf-accent)]")}>{project.title}</h3>
                           {project.description && (
                             <DescriptionBlock
                               text={project.description}
@@ -110,12 +112,12 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                           </div>
                           <div className="flex gap-6 mt-auto">
                             {project.liveUrl && (
-                              <a href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#8C2727] text-[#8C2727] hover:text-[#2B2B2B] hover:border-[#2B2B2B] transition-colors pb-1">
+                              <a href={project.liveUrl} data-lf-track="project_live" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[var(--lf-accent)] text-[var(--lf-accent)] hover:text-[#2B2B2B] hover:border-[#2B2B2B] transition-colors pb-1">
                                 Examine
                               </a>
                             )}
                             {project.sourceUrl && (
-                              <a href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#2B2B2B] text-[#2B2B2B] hover:text-[#8C2727] hover:border-[#8C2727] transition-colors pb-1">
+                              <a href={project.sourceUrl} data-lf-track="project_source" data-lf-label={project.title} data-lf-id={project.id} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-bold uppercase tracking-widest border-b-2 border-[#2B2B2B] text-[#2B2B2B] hover:text-[var(--lf-accent)] hover:border-[var(--lf-accent)] transition-colors pb-1">
                                 Manuscript
                               </a>
                             )}
@@ -138,7 +140,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                         <div className="border-b-2 border-[#2B2B2B] mb-4 pb-4">
                           <h3 className="text-2xl font-black uppercase">{exp.role}</h3>
                           <div className="flex justify-between items-baseline mt-2">
-                            <p className="text-xl font-bold italic text-[#8C2727]">{exp.company}</p>
+                            <p className="text-xl font-bold italic text-[var(--lf-accent)]">{exp.company}</p>
                             <span className="font-bold tracking-widest uppercase text-sm">{formatDateRange(exp.startDate, exp.endDate)}</span>
                           </div>
                         </div>
@@ -156,13 +158,13 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                       <h2 className="text-3xl font-black uppercase tracking-widest whitespace-nowrap">{labels.education}</h2>
                       <div className="h-px w-full bg-[#2B2B2B]" />
                     </div>
-                    <CollapsibleList initial={3} wrapperClassName="space-y-10" buttonClassName="mt-8 uppercase tracking-[0.2em] font-bold border-b-2 border-[#2B2B2B] pb-1 hover:text-[#8C2727] transition-colors">
+                    <CollapsibleList initial={3} wrapperClassName="space-y-10" buttonClassName="mt-8 uppercase tracking-[0.2em] font-bold border-b-2 border-[#2B2B2B] pb-1 hover:text-[var(--lf-accent)] transition-colors">
                       {educations.map((edu) => (
                         <div key={edu.id} className="relative pl-6 border-l-4 border-[#2B2B2B]">
                           <h3 className="text-xl font-black uppercase">
                             {edu.degree} {edu.field ? `in ${edu.field}` : ""}
                           </h3>
-                          <p className="text-lg font-bold italic text-[#8C2727] mt-1">{edu.institution}</p>
+                          <p className="text-lg font-bold italic text-[var(--lf-accent)] mt-1">{edu.institution}</p>
                           <p className="mt-3 text-sm font-bold tracking-widest uppercase">{formatDateRange(edu.startDate, edu.endDate)}</p>
                         </div>
                       ))}
@@ -197,15 +199,15 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                         <h2 className="text-3xl font-black uppercase tracking-widest whitespace-nowrap">{labels.certifications}</h2>
                         <div className="h-px w-full bg-[#2B2B2B]" />
                       </div>
-                      <CollapsibleList initial={3} wrapperClassName="space-y-8" buttonClassName="mt-8 uppercase tracking-[0.2em] font-bold border-b-2 border-[#2B2B2B] pb-1 hover:text-[#8C2727] transition-colors">
+                      <CollapsibleList initial={3} wrapperClassName="space-y-8" buttonClassName="mt-8 uppercase tracking-[0.2em] font-bold border-b-2 border-[#2B2B2B] pb-1 hover:text-[var(--lf-accent)] transition-colors">
                         {certifications.map((cert) => (
                           <div key={cert.id} className="border border-[#2B2B2B] p-6 text-center">
                             <h3 className="text-lg font-black uppercase">
                               {cert.url ? (
-                                <a href={cert.url} target="_blank" rel="noreferrer" className="hover:text-[#8C2727] transition-colors">{cert.name}</a>
+                                <a href={cert.url} target="_blank" rel="noreferrer" className="hover:text-[var(--lf-accent)] transition-colors">{cert.name}</a>
                               ) : cert.name}
                             </h3>
-                            <p className="text-base font-bold italic mt-2 text-[#8C2727]">{cert.issuer}</p>
+                            <p className="text-base font-bold italic mt-2 text-[var(--lf-accent)]">{cert.issuer}</p>
                           </div>
                         ))}
                       </CollapsibleList>
@@ -217,10 +219,10 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                         <h2 className="text-3xl font-black uppercase tracking-widest whitespace-nowrap">{labels.achievements}</h2>
                         <div className="h-px w-full bg-[#2B2B2B]" />
                       </div>
-                      <CollapsibleList initial={3} wrapperClassName="space-y-8" buttonClassName="mt-8 uppercase tracking-[0.2em] font-bold border-b-2 border-[#2B2B2B] pb-1 hover:text-[#8C2727] transition-colors">
+                      <CollapsibleList initial={3} wrapperClassName="space-y-8" buttonClassName="mt-8 uppercase tracking-[0.2em] font-bold border-b-2 border-[#2B2B2B] pb-1 hover:text-[var(--lf-accent)] transition-colors">
                         {achievements.map((ach) => (
                           <div key={ach.id} className="flex gap-6 items-center">
-                            <Trophy className="h-10 w-10 text-[#8C2727] shrink-0" strokeWidth={1.5} />
+                            <Trophy className="h-10 w-10 text-[var(--lf-accent)] shrink-0" strokeWidth={1.5} />
                             <div>
                               <h3 className="text-lg font-black uppercase">{ach.title}</h3>
                               {ach.date && (
@@ -243,7 +245,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                   <CollapsibleList initial={3} wrapperClassName="grid md:grid-cols-2 gap-8" buttonClassName="mt-12 mx-auto block uppercase tracking-[0.2em] font-bold border-2 border-[#2B2B2B] px-8 py-3 hover:bg-[#2B2B2B] hover:text-[#F1EEDC] transition-colors">
                     {articles.map((article) => (
                       <a key={article.id} href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noreferrer" className="block border-2 border-[#2B2B2B] p-8 hover:bg-[#2B2B2B] hover:text-[#F1EEDC] transition-all group">
-                        <h3 className="text-2xl font-black uppercase mb-4 group-hover:text-[#8C2727] transition-colors">{article.title}</h3>
+                        <h3 className="text-2xl font-black uppercase mb-4 group-hover:text-[var(--lf-accent)] transition-colors">{article.title}</h3>
                         {article.description && <p className="text-lg leading-relaxed mb-6 font-normal group-hover:text-[#F1EEDC]/80">{article.description}</p>}
                         <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
                           {article.publishedAt && <span>{new Date(article.publishedAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</span>}
@@ -274,7 +276,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#F1EEDC] text-[#2B2B2B] font-serif overflow-x-hidden selection:bg-[#8C2727] selection:text-[#F1EEDC]")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#F1EEDC] text-[#2B2B2B] font-serif overflow-x-hidden selection:bg-[var(--lf-accent)] selection:text-[#F1EEDC]")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-8 md:py-16">
 
         <header className="mb-16 border-b-4 border-double border-[#2B2B2B] pb-12 text-center relative">
@@ -295,7 +297,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="mt-6 text-lg @md:text-xl @lg:text-3xl font-normal italic text-[#8C2727] px-4 @md:px-8"
+                className="mt-6 text-lg @md:text-xl @lg:text-3xl font-normal italic text-[var(--lf-accent)] px-4 @md:px-8"
               >
                 {portfolio.headline}
               </motion.p>
@@ -313,7 +315,7 @@ export function ParchmentTemplate({ data }: { data: PortfolioData }) {
             <TemplateNavbar
               items={sections}
               className="justify-center gap-6 md:gap-12 border-none bg-transparent"
-              linkClassName="text-sm md:text-base font-bold uppercase tracking-[0.2em] text-[#2B2B2B] hover:text-[#8C2727] transition-colors"
+              linkClassName="text-sm md:text-base font-bold uppercase tracking-[0.2em] text-[#2B2B2B] hover:text-[var(--lf-accent)] transition-colors"
             />
           </nav>
         )}

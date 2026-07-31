@@ -132,7 +132,13 @@ function getPalette(
       accent: accentColor,
     };
   }
-  return palette;
+
+  // Prefer CSS variable when the template root sets --lf-accent.
+  return {
+    ...palette,
+    primary: `var(--lf-accent, ${palette.primary})`,
+    accent: `var(--lf-accent, ${palette.accent})`,
+  };
 }
 
 function resolveVariant(

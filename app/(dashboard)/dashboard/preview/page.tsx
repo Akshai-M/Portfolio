@@ -26,7 +26,6 @@ import { getStoredSectionLayout } from "@/features/templates/section-order";
 import type { SectionLayoutCustomization } from "@/features/templates/section-order";
 import {
   getTemplateDefaultAccent,
-  isAccentSupportedTemplate,
   resolveAccentColor,
 } from "@/features/templates/template-accent-palettes";
 import { portfolioToTemplateData } from "@/features/templates/transform";
@@ -94,7 +93,7 @@ export default function PreviewPage() {
       return;
     }
     const current =
-      previewTemplate ?? portfolio?.templateId ?? "minimal";
+      previewTemplate ?? portfolio?.templateId ?? "pulse";
     setPreviewTemplate(next);
     // Preview template switches always land on that template's default accent.
     if (next !== current) {
@@ -102,7 +101,7 @@ export default function PreviewPage() {
     }
   };
 
-  const savedTemplateId = portfolio?.templateId ?? "minimal";
+  const savedTemplateId = portfolio?.templateId ?? "pulse";
 
   const handleTemplateSave = async () => {
     const templateToSave = previewTemplate ?? savedTemplateId;
@@ -127,12 +126,10 @@ export default function PreviewPage() {
       if (templateChanged) {
         await updateTemplate.mutateAsync(templateToSave);
       }
-      // Persist accent on apply (supported pick, or default reset when switching templates).
-      if (templateChanged || isAccentSupportedTemplate(templateToSave)) {
-        await updatePortfolio.mutateAsync({
-          customization: { primaryColor: accentToSave },
-        });
-      }
+      // Always persist accent with Apply so template switches reset to defaults.
+      await updatePortfolio.mutateAsync({
+        customization: { primaryColor: accentToSave },
+      });
       setPreviewTemplate(null);
       setPreviewPrimaryColor(null);
       const appliedName = getTemplate(templateToSave).name;
@@ -182,7 +179,15 @@ export default function PreviewPage() {
     setPublishDialogOpen(true);
   };
 
-  const templateOptions = useMemo(() => Object.values(templateRegistry), []);
+  const templateOptions = useMemo(
+    () =>
+      Object.values(templateRegistry).filter(
+        // Spotlight hidden from preview for now — accent/polish not ready.
+        (template) => template.id !== "spotlight",
+        // (template) => true, // restore: include spotlight
+      ),
+    [],
+  );
 
   const isTemplateLocked = (templateId: string) =>
     allowedTemplateIds ? !allowedTemplateIds.includes(templateId) : false;
@@ -222,13 +227,13 @@ export default function PreviewPage() {
     );
   }
 
-  const effectiveTemplate = previewTemplate ?? portfolio.templateId ?? "minimal";
+  const effectiveTemplate = previewTemplate ?? portfolio.templateId ?? "pulse";
   const templateId =
     allowedTemplateIds && !allowedTemplateIds.includes(effectiveTemplate)
       ? "minimal"
       : effectiveTemplate;
   const hasUnsavedTemplate =
-    templateId !== (portfolio.templateId ?? "minimal");
+    templateId !== (portfolio.templateId ?? "pulse");
   const template = getTemplate(templateId);
   const TemplateComponent = template.component;
   const liveTemplate = getTemplate(savedTemplateId);
@@ -248,17 +253,14 @@ export default function PreviewPage() {
     portfolio.customization as { primaryColor?: string } | null | undefined,
   );
   const hasUnsavedAccent =
-    isAccentSupportedTemplate(templateId) &&
     previewPrimaryColor !== null &&
     effectiveAccent.toLowerCase() !== savedAccent.toLowerCase();
   const hasUnsavedDesign = hasUnsavedTemplate || hasUnsavedAccent;
 
-  if (isAccentSupportedTemplate(templateId)) {
-    data.portfolio.customization = {
-      ...data.portfolio.customization,
-      primaryColor: effectiveAccent,
-    };
-  }
+  data.portfolio.customization = {
+    ...data.portfolio.customization,
+    primaryColor: effectiveAccent,
+  };
 
   const isPublished = portfolio.isPublished ?? false;
   const slug = portfolio.slug ?? "";
@@ -266,7 +268,7 @@ export default function PreviewPage() {
 
   const panelProps = {
     templateId,
-    savedTemplateId: portfolio.templateId ?? "minimal",
+    savedTemplateId: portfolio.templateId ?? "pulse",
     isPublished,
     hasUnsavedTemplate: hasUnsavedDesign,
     isSavingTemplate: updateTemplate.isPending || updatePortfolio.isPending,
@@ -282,7 +284,7 @@ export default function PreviewPage() {
     isSavingSectionLayout: updatePortfolio.isPending,
   };
 
-  const showAccentPicker = isAccentSupportedTemplate(templateId);
+  const showAccentPicker = true;
 
   return (
     <div className="flex min-h-0 w-full max-w-full flex-col gap-4 lg:h-[calc(100dvh-4rem)] lg:min-h-0 lg:flex-row lg:overflow-hidden">
@@ -348,14 +350,15 @@ export default function PreviewPage() {
               showAnalytics={isPublished && !hasUnsavedDesign}
             />
           </div>
-          {showAccentPicker ? (
-            <div className="flex justify-end px-2">
-              <AccentSwatches
-                value={effectiveAccent}
-                onChange={setPreviewPrimaryColor}
-              />
-            </div>
-          ) : null}
+            {showAccentPicker ? (
+              <div className="flex justify-end px-2">
+                <AccentSwatches
+                  value={effectiveAccent}
+                  defaultHex={getTemplateDefaultAccent(templateId)}
+                  onChange={setPreviewPrimaryColor}
+                />
+              </div>
+            ) : null}
         </div>
 
         <div className="-mx-[var(--space-5)] flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-sunken sm:mx-0 sm:rounded-[var(--radius-lg)] sm:border sm:border-border-default sm:p-3 sm:shadow-[var(--shadow-modal)]">

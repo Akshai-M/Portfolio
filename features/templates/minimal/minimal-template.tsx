@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -53,6 +54,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("minimal", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -116,16 +118,16 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                 alt={project.title}
                 loading="lazy"
                 containerClassName="overflow-hidden bg-stone-100"
-              />
+               accentColor={primaryColor} />
               <div className={PROJECT_CARD_BODY}>
                 <div className={PROJECT_CARD_HEADER}>
                   <div className="min-w-0 flex-1">
                     <div className={PROJECT_CARD_META}>
-                      <h3 className={cn(PROJECT_CARD_TITLE, "font-serif text-2xl font-semibold text-stone-950")}>
+                      <h3 className={cn(PROJECT_CARD_TITLE, "font-serif text-2xl font-semibold text-[var(--lf-accent)]")}>
                         {project.title}
                       </h3>
                       {project.featured && (
-                        <span className="rounded-full border border-stone-900 bg-stone-900 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-stone-100">
+                        <span className="rounded-full border border-stone-900 bg-[var(--lf-accent)] px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-stone-100">
                           Featured
                         </span>
                       )}
@@ -142,7 +144,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                     sourceUrl={project.sourceUrl}
                     label={project.title}
                     projectId={project.id}
-                    liveClassName="rounded-full bg-stone-950 px-4 py-2 text-xs font-medium text-stone-100 transition-colors hover:bg-stone-800"
+                    liveClassName="rounded-full bg-[var(--lf-accent)] px-4 py-2 text-xs font-medium text-stone-100 transition-colors hover:bg-[color-mix(in_srgb,var(--lf-accent)_85%,black)]"
                     sourceClassName="rounded-full border border-stone-200 bg-white px-4 py-2 text-xs font-medium text-stone-600 transition-colors hover:border-stone-300 hover:text-stone-900"
                   />
                 </div>
@@ -442,7 +444,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
         <ProfileLinksSection
           portfolio={portfolio}
           profiles={socialProfiles}
-          chipClassName="rounded-full border border-stone-200/80 bg-stone-50 px-3 py-1.5 text-sm text-stone-500"
+          chipClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_28%,white)]/80 bg-stone-50 px-3 py-1.5 text-sm text-stone-500"
           pillClassName="rounded-full border border-stone-200/80 bg-white px-3 py-1.5 text-sm text-stone-600 transition-colors hover:border-stone-300 hover:bg-stone-50 hover:text-stone-900"
           titleClassName="text-stone-900"
           textClassName="text-stone-500"
@@ -468,7 +470,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[radial-gradient(circle_at_top,rgba(148,163,184,0.14),transparent_34%),linear-gradient(180deg,#f8f7f4_0%,#efede6_100%)] text-stone-800")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[radial-gradient(circle_at_top,rgba(148,163,184,0.14),transparent_34%),linear-gradient(180deg,#f8f7f4_0%,#efede6_100%)] text-stone-800 selection:bg-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)]")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-6 md:px-10 md:pb-24 md:pt-14">
         <header className="relative overflow-hidden rounded-[2.25rem] border border-white/80 bg-white/75 p-6 shadow-[0_24px_90px_rgba(15,23,42,0.08)] backdrop-blur-xl @md:p-10">
           <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-linear-to-r from-transparent via-stone-300/70 to-transparent" />
@@ -478,7 +480,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                 className={cn(
                   HERO_TITLE_BASE,
                   HERO_TITLE_SCALE_7XL,
-                  "max-w-3xl font-serif font-semibold tracking-tight text-stone-950"
+                  "max-w-3xl font-serif font-semibold tracking-tight text-[var(--lf-accent)]"
                 )}
               >
                 {portfolio.title}
@@ -492,14 +494,14 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
               <div className="mt-7">
                 <ContactChips
                   portfolio={portfolio}
-                  chipClassName="rounded-full border border-stone-200/80 bg-stone-50/90 px-3.5 py-1.5 text-sm text-stone-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]"
+                  chipClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_28%,white)]/80 bg-stone-50/90 px-3.5 py-1.5 text-sm text-stone-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]"
                 />
               </div>
 
               <div className="mt-4">
                 <HeroProfileButtons
                   profiles={socialProfiles}
-                  className="rounded-full border border-stone-200/80 bg-stone-950 px-4 py-2 text-sm text-stone-100 transition-colors hover:bg-stone-800"
+                  className="rounded-full border border-stone-200/80 bg-[var(--lf-accent)] px-4 py-2 text-sm text-stone-100 transition-colors hover:bg-[color-mix(in_srgb,var(--lf-accent)_85%,black)]"
                 />
               </div>
 
@@ -521,7 +523,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
             <TemplateNavbar
               items={sections}
               className="rounded-full border-white/80 bg-white/80 shadow-[0_12px_30px_rgba(15,23,42,0.05)]"
-              linkClassName="rounded-full px-4 py-2 text-sm text-stone-500 transition-colors hover:bg-stone-950 hover:text-stone-50"
+              linkClassName="rounded-full px-4 py-2 text-sm text-stone-500 transition-colors hover:bg-[var(--lf-accent)] hover:text-stone-50"
             />
           </div>
         )}
@@ -539,7 +541,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
                   items={cs.items}
                   titleClassName="font-medium text-stone-900"
                   textClassName="text-sm text-stone-500"
-                  chipClassName="rounded-full border border-stone-200 bg-white px-2.5 py-1 text-xs text-stone-500"
+                  chipClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_28%,white)] bg-white px-2.5 py-1 text-xs text-stone-500"
                 />
               </section>
             ))}
@@ -553,7 +555,7 @@ export function MinimalTemplate({ data }: { data: PortfolioData }) {
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="mb-5 flex items-center gap-3 font-serif text-2xl font-semibold tracking-tight text-stone-900 md:mb-6 md:text-3xl">
-      <span className="h-px w-8 bg-stone-300" />
+      <span className="h-px w-8 bg-[var(--lf-accent)]" />
       {children}
     </h2>
   );

@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { getTemplateSectionLayout } from "../section-layouts";
 import {
@@ -45,6 +46,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("paper", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -84,7 +86,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-12"
-                  buttonClassName="mt-8 mx-auto block border border-[#2c2c2c] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[#2c2c2c] hover:text-[#f4f1ea]"
+                  buttonClassName="mt-8 mx-auto block border border-[#2c2c2c] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea]"
                 >
                   {visibleProjects.map((project) => (
                     <article key={project.id} className={cn(PROJECT_CARD, "grid grid-cols-1 min-w-0 @md:grid-cols-12 gap-8 items-start")}>
@@ -98,7 +100,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                             loading="lazy"
                             containerClassName="overflow-hidden bg-[#f4f1ea]"
                             className="h-full w-full object-cover object-top filter transition-all duration-500"
-                          />
+                           accentColor={primaryColor} />
                         </div>
                       </div>
                       <div className="@md:col-span-7 space-y-4">
@@ -146,11 +148,11 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="space-y-8"
-                    buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[#2c2c2c] hover:text-[#f4f1ea]"
+                    buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea]"
                   >
                     {experiences.map((exp) => (
                       <article key={exp.id} className="relative pl-6 border-l border-[#2c2c2c]/30">
-                        <div className="absolute w-2 h-2 bg-[#2c2c2c] rounded-full left-[-4.5px] top-2" />
+                        <div className="absolute w-2 h-2 bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] rounded-full left-[-4.5px] top-2" />
                         <h3 className="text-xl font-bold">{exp.role}</h3>
                         <p className="text-lg italic text-[#555] mt-1">{exp.company}</p>
                         {(exp.startDate || exp.endDate) && (
@@ -178,7 +180,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                     <CollapsibleList
                       initial={3}
                       wrapperClassName="space-y-6"
-                      buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[#2c2c2c] hover:text-[#f4f1ea]"
+                      buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea]"
                     >
                       {educations.map((edu) => (
                         <article key={edu.id}>
@@ -216,7 +218,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                     <CollapsibleList
                       initial={4}
                       wrapperClassName="space-y-6"
-                      buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[#2c2c2c] hover:text-[#f4f1ea]"
+                      buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea]"
                     >
                       {certifications.map((cert) => (
                         <article key={cert.id} className="border-b border-[#2c2c2c]/30 pb-4">
@@ -246,7 +248,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                     <CollapsibleList
                       initial={4}
                       wrapperClassName="space-y-6"
-                      buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[#2c2c2c] hover:text-[#f4f1ea]"
+                      buttonClassName="mt-6 border border-[#2c2c2c] bg-transparent px-6 py-2 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea]"
                     >
                       {achievements.map((ach) => (
                         <article key={ach.id} className="border-b border-[#2c2c2c]/30 pb-4">
@@ -267,7 +269,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="grid grid-cols-1 sm:grid-cols-2 gap-8"
-                  buttonClassName="col-span-full mt-8 mx-auto block border border-[#2c2c2c] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[#2c2c2c] hover:text-[#f4f1ea]"
+                  buttonClassName="col-span-full mt-8 mx-auto block border border-[#2c2c2c] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] transition-colors hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea]"
                 >
                   {articles.map((article) => (
                     <article key={article.id} className="border-t border-[#2c2c2c] pt-4">
@@ -299,8 +301,8 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
                   <ProfileLinksSection
                     portfolio={portfolio}
                     profiles={socialProfiles}
-                    chipClassName="text-xs font-sans tracking-wider uppercase border border-[#2c2c2c] px-4 py-2 hover:bg-[#2c2c2c] hover:text-[#f4f1ea] transition-colors"
-                    pillClassName="text-xs font-sans tracking-wider uppercase border border-[#2c2c2c] px-4 py-2 hover:bg-[#2c2c2c] hover:text-[#f4f1ea] transition-colors"
+                    chipClassName="text-xs font-sans tracking-wider uppercase border border-[var(--lf-accent)] px-4 py-2 hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea] transition-colors"
+                    pillClassName="text-xs font-sans tracking-wider uppercase border border-[var(--lf-accent)] px-4 py-2 hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea] transition-colors"
                     titleClassName="text-lg font-bold"
                     textClassName="text-[#555]"
                   />
@@ -324,7 +326,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#f4f1ea] text-[#2c2c2c] font-serif selection:bg-[#2c2c2c] selection:text-[#f4f1ea]")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#f4f1ea] text-[#2c2c2c] font-serif selection:bg-[var(--lf-accent)] selection:text-[#f4f1ea]")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-4xl px-6 py-12 md:py-20 space-y-16">
 
         {navbarEnabled && (
@@ -350,11 +352,11 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
           <div className="flex flex-col items-center gap-4 mt-8 pt-8 border-t border-[#2c2c2c]/30">
             <ContactChips
               portfolio={portfolio}
-              chipClassName="text-sm font-sans tracking-wider uppercase border border-[#2c2c2c] px-4 py-2 hover:bg-[#2c2c2c] hover:text-[#f4f1ea] transition-colors"
+              chipClassName="text-sm font-sans tracking-wider uppercase border border-[var(--lf-accent)] px-4 py-2 hover:bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] hover:text-[#f4f1ea] transition-colors"
             />
             <HeroProfileButtons
               profiles={socialProfiles}
-              className="text-sm font-sans tracking-wider uppercase bg-[#2c2c2c] text-[#f4f1ea] px-6 py-2 hover:bg-black transition-colors"
+              className="text-sm font-sans tracking-wider uppercase bg-[var(--lf-accent)] hover:bg-[color-mix(in_srgb,var(--lf-accent)_88%,black)] text-[#f4f1ea] px-6 py-2 hover:bg-black transition-colors"
             />
           </div>
 
@@ -363,7 +365,7 @@ export function PaperTemplate({ data }: { data: PortfolioData }) {
               <SocialPills
                 profiles={socialProfiles}
                 showUsername
-                className="text-xs font-sans tracking-wider uppercase text-[#555] hover:text-[#2c2c2c]"
+                className="text-xs font-sans tracking-wider uppercase text-[#555] hover:text-[var(--lf-accent)]"
               />
             </div>
           )}

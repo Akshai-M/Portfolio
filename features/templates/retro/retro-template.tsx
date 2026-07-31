@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -53,6 +54,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("retro", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -93,7 +95,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
       <section
         key="projects"
         id="work"
-        className="scroll-mt-24 border-4 border-black bg-[#ffc900] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:p-8"
+        className="scroll-mt-24 border-4 border-black bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:p-8"
       >
         <SectionHeading>{labels.projects}</SectionHeading>
         <CollapsibleList
@@ -117,7 +119,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
                 loading="lazy"
                 containerClassName="border-b-4 border-black"
                 className="h-full w-full object-cover object-top filter transition-all duration-500"
-              />
+               accentColor={primaryColor} />
               <div className={PROJECT_CARD_BODY}>
                 <div className={PROJECT_CARD_HEADER}>
                   <div className="min-w-0 flex-1">
@@ -126,7 +128,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
                         {project.title}
                       </h3>
                       {project.featured && (
-                        <span className="shrink-0 border-2 border-black bg-[#ff90e8] px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <span className="shrink-0 border-2 border-black bg-[var(--lf-accent)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                           Featured
                         </span>
                       )}
@@ -199,7 +201,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-6"
-          buttonClassName="mt-4 border-4 border-black bg-[#ff90e8] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
+          buttonClassName="mt-4 border-4 border-black bg-[var(--lf-accent)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
         >
           {experiences.map((exp) => (
             <article
@@ -269,7 +271,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
               )}
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-bold text-gray-600">
                 {article.publishedAt && (
-                  <span className="border-2 border-black bg-[#ffc900] px-2 py-1 text-black">
+                  <span className="border-2 border-black bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] px-2 py-1 text-black">
                     {new Date(article.publishedAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -278,7 +280,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
                   </span>
                 )}
                 {article.readTime != null && (
-                  <span className="border-2 border-black bg-[#ff90e8] px-2 py-1 text-black">
+                  <span className="border-2 border-black bg-[var(--lf-accent)] px-2 py-1 text-black">
                     {article.readTime} min read
                   </span>
                 )}
@@ -317,7 +319,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
                 {names.map((name) => (
                   <span
                     key={name}
-                    className="border-2 border-black bg-[#ffc900] px-3 py-1.5 text-sm font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[#ff90e8]"
+                    className="border-2 border-black bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] px-3 py-1.5 text-sm font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-[var(--lf-accent)]"
                   >
                     {name}
                   </span>
@@ -371,7 +373,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-4"
-          buttonClassName="mt-4 border-4 border-black bg-[#ffc900] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
+          buttonClassName="mt-4 border-4 border-black bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
         >
           {certifications.map((cert) => (
             <article
@@ -445,7 +447,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
       <section
         key="profiles"
         id="profiles"
-        className="scroll-mt-24 border-4 border-black bg-[#ff90e8] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:p-8"
+        className="scroll-mt-24 border-4 border-black bg-[var(--lf-accent)] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:p-8"
       >
         <SectionHeading>{labels.profiles}</SectionHeading>
         <ProfileLinksSection
@@ -477,9 +479,9 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#f4f0ea] font-mono text-black")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#f4f0ea] font-mono text-black")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 md:px-8 md:pb-24 md:pt-14">
-        <header className="relative border-4 border-black bg-[#ff90e8] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] @md:p-10">
+        <header className="relative border-4 border-black bg-[var(--lf-accent)] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] @md:p-10">
           <div className="min-w-0">
             <div className={HERO_HEADER_COLUMN}>
               <h1
@@ -505,7 +507,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
               <div className="mt-7">
                 <ContactChips
                   portfolio={portfolio}
-                  chipClassName="border-2 border-black bg-[#ffc900] px-3.5 py-1.5 text-sm font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  chipClassName="border-2 border-black bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] px-3.5 py-1.5 text-sm font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                 />
               </div>
 
@@ -534,7 +536,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
             <TemplateNavbar
               items={sections}
               className="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-              linkClassName="px-4 py-2 text-sm font-bold uppercase text-black transition-colors hover:bg-[#ff90e8]"
+              linkClassName="px-4 py-2 text-sm font-bold uppercase text-black transition-colors hover:bg-[var(--lf-accent)]"
             />
           </div>
         )}
@@ -552,7 +554,7 @@ export function RetroTemplate({ data }: { data: PortfolioData }) {
                   items={cs.items}
                   titleClassName="font-sans font-black uppercase text-black"
                   textClassName="text-sm font-medium text-gray-700"
-                  chipClassName="border-2 border-black bg-[#ffc900] px-2.5 py-1 text-xs font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                  chipClassName="border-2 border-black bg-[color-mix(in_srgb,var(--lf-accent)_40%,white)] px-2.5 py-1 text-xs font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                 />
               </section>
             ))}

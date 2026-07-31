@@ -33,5 +33,5 @@
 }
 
 .root ::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+  background: var(--lf-accent, #3b82f6);
 }

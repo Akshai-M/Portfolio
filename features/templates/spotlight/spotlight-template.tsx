@@ -1,4 +1,5 @@
 "use client";
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PortfolioData } from "../types";
@@ -48,6 +49,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("spotlight", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
@@ -150,7 +152,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                     <DescriptionBlock
                       text={portfolio.summary}
                       paragraphClassName="text-base leading-relaxed text-gray-600 md:text-lg"
-                      listClassName="space-y-2 pl-5 text-base leading-relaxed text-gray-600 marker:text-[hsl(45,100%,60%)] md:text-lg"
+                      listClassName="space-y-2 pl-5 text-base leading-relaxed text-gray-600 marker:text-[var(--lf-accent)] md:text-lg"
                     />
                   </div>
                 </section>
@@ -162,11 +164,11 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                     id="projects"
                   >
                     <h2 className="text-3xl text-[38px] font-extrabold leading-[140%] lg:text-5xl lg:font-medium">
-                      Where <span className="text-[hsl(45,100%,60%)]">logic</span>{" "}
+                      Where <span className="text-[var(--lf-accent)]">logic</span>{" "}
                       <span className="m-0 block h-0 p-0 md:block lg:hidden">
                         <br />
                       </span>
-                      meets <span className="text-[hsl(45,100%,60%)]">pixel</span>
+                      meets <span className="text-[var(--lf-accent)]">pixel</span>
                       <span>.</span>
                     </h2>
                   </div>
@@ -174,7 +176,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <CollapsibleList
                     initial={4}
                     wrapperClassName={cn(PROJECTS_GRID_2, "mb-16 gap-8")}
-                    buttonClassName="@md:col-span-2 rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[hsl(45,100%,60%)]"
+                    buttonClassName="@md:col-span-2 rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[var(--lf-accent)]"
                   >
                     {projects.map((project) => (
                       <ProjectCard
@@ -192,12 +194,12 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="space-y-6"
-                    buttonClassName="mx-auto mt-4 block rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[hsl(45,100%,60%)]"
+                    buttonClassName="mx-auto mt-4 block rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[var(--lf-accent)]"
                   >
                     {experiences.map((exp) => (
                       <article
                         key={exp.id}
-                        className="rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[hsl(45,100%,60%)]"
+                        className="rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[var(--lf-accent)]"
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div>
@@ -231,12 +233,12 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="grid gap-6 sm:grid-cols-1 md:grid-cols-2"
-                    buttonClassName="md:col-span-2 mx-auto mt-4 block rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[hsl(45,100%,60%)]"
+                    buttonClassName="md:col-span-2 mx-auto mt-4 block rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[var(--lf-accent)]"
                   >
                     {educations.map((edu) => (
                       <article
                         key={edu.id}
-                        className="rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[hsl(45,100%,60%)]"
+                        className="rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[var(--lf-accent)]"
                       >
                         <h3 className="text-lg font-bold text-gray-950">
                           {edu.degree}
@@ -285,10 +287,10 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <SpotlightSectionHeading title={labels.achievements} />
 
                   <div className="relative">
-                    <div className="pointer-events-none absolute bottom-16 left-4 top-0 w-0.5 bg-[hsl(45,100%,60%)] md:left-1/2 md:-translate-x-px" />
+                    <div className="pointer-events-none absolute bottom-16 left-4 top-0 w-0.5 bg-[var(--lf-accent)] md:left-1/2 md:-translate-x-px" />
                     <CollapsibleList
                       initial={4}
-                      buttonClassName="relative z-10 mx-auto mt-4 block rounded-full border border-gray-200 bg-[#fbfffe] px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[hsl(45,100%,60%)]"
+                      buttonClassName="relative z-10 mx-auto mt-4 block rounded-full border border-gray-200 bg-[#fbfffe] px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[var(--lf-accent)]"
                     >
                       {milestones.map((m, t) => (
                         <motion.div
@@ -302,15 +304,15 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                             t % 2 === 0 ? "md:flex-row-reverse" : ""
                           )}
                         >
-                          <div className="absolute left-4 z-10 mt-1.5 h-4 w-4 -translate-x-2 rounded-full bg-[hsl(45,100%,60%)] md:left-1/2 md:-translate-x-1/2" />
+                          <div className="absolute left-4 z-10 mt-1.5 h-4 w-4 -translate-x-2 rounded-full bg-[var(--lf-accent)] md:left-1/2 md:-translate-x-1/2" />
                           <div className="ml-12 p-4 md:ml-0 md:w-1/2">
-                            <div className="rounded-lg border border-[hsl(45,100%,60%)] bg-[#fbfffe] p-6 shadow-lg">
-                              <span className="font-bold text-[hsl(45,100%,60%)]">{m.year}</span>
+                            <div className="rounded-lg border border-[var(--lf-accent)] bg-[#fbfffe] p-6 shadow-lg">
+                              <span className="font-bold text-[var(--lf-accent)]">{m.year}</span>
                               <h3 className="mt-2 text-xl font-bold text-gray-950">{m.title}</h3>
                               {m.body ? (
                                 <p className="mt-2 text-gray-500">{m.body}</p>
                               ) : null}
-                              <span className="mt-3 inline-block rounded-full bg-[hsl(45,100%,60%)]/20 px-3 py-1 text-sm capitalize text-gray-950">
+                              <span className="mt-3 inline-block rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] px-3 py-1 text-sm capitalize text-gray-950">
                                 {m.kind}
                               </span>
                             </div>
@@ -327,7 +329,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <CollapsibleList
                     initial={4}
                     wrapperClassName="grid gap-8 sm:grid-cols-1 md:mx-auto md:grid-cols-2 lg:grid-cols-2"
-                    buttonClassName="md:col-span-2 rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[hsl(45,100%,60%)]"
+                    buttonClassName="md:col-span-2 rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[var(--lf-accent)]"
                   >
                     {articles.map((article) => (
                       <a
@@ -335,7 +337,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                         href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[hsl(45,100%,60%)]"
+                        className="block rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-[var(--lf-accent)]"
                       >
                         <h3 className="text-xl font-bold text-gray-950">{article.title}</h3>
                         {article.description && (
@@ -358,7 +360,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                             {article.tags.map((tag) => (
                               <span
                                 key={tag}
-                                className="rounded-full bg-[hsl(45,100%,60%)]/20 px-2.5 py-1 text-xs capitalize text-gray-950"
+                                className="rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] px-2.5 py-1 text-xs capitalize text-gray-950"
                               >
                                 {tag}
                               </span>
@@ -376,14 +378,14 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <div className="rounded-lg border border-gray-200 bg-white p-6 md:p-8">
                     <ContactChips
                       portfolio={portfolio}
-                      chipClassName="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[hsl(45,100%,60%)]"
+                      chipClassName="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[var(--lf-accent)]"
                     />
                     <div className="mt-6">
                       <ProfileLinksSection
                         portfolio={portfolio}
                         profiles={socialProfiles}
-                        chipClassName="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[hsl(45,100%,60%)]"
-                        pillClassName="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[hsl(45,100%,60%)]"
+                        chipClassName="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[var(--lf-accent)]"
+                        pillClassName="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[var(--lf-accent)]"
                         titleClassName="font-semibold text-gray-950"
                         textClassName="text-sm text-gray-600"
                       />
@@ -438,6 +440,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
         className={cn(TEMPLATE_CONTAINER, "spotlight-root min-h-screen bg-[#fbfffe] text-gray-950")}
         style={{
           fontFamily: "'Made Tommy', 'Made Tommy 2', ui-sans-serif, system-ui, sans-serif",
+          ...accentRootStyle(primaryColor),
         }}
       >
         <header className="sticky top-0 z-20 w-full border-b border-gray-100 bg-[#fbfffe] px-2 md:px-[200px]">
@@ -476,7 +479,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                         <a
                           key={item.name}
                           href={item.link}
-                          className="custom-underline relative block font-normal capitalize text-gray-950 underline-offset-8 decoration-[hsl(45,100%,60%)]"
+                          className="custom-underline relative block font-normal capitalize text-gray-950 underline-offset-8 decoration-[var(--lf-accent)]"
                           onClick={() => setMenuOpen(false)}
                         >
                           {item.name}
@@ -497,7 +500,7 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   <a
                     key={item.name}
                     href={item.link}
-                    className="custom-underline relative block font-normal capitalize text-gray-950 underline-offset-8 decoration-[hsl(45,100%,60%)]"
+                    className="custom-underline relative block font-normal capitalize text-gray-950 underline-offset-8 decoration-[var(--lf-accent)]"
                   >
                     {item.name}
                   </a>
@@ -513,10 +516,10 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
               <h1 className="-mt-7 text-center text-4xl font-extrabold leading-[130%] text-gray-950 md:font-semibold lg:mt-0 lg:text-6xl lg:font-semibold lg:leading-[128%]">
                 Hey! <br />
                 I am {portfolio.title}
-                <span className="text-[hsl(45,100%,60%)]">.</span>
+                <span className="text-[var(--lf-accent)]">.</span>
               </h1>
               <p
-                className="-mt-[140px] h-[256px] w-[3px] rotate-90 rounded-full bg-[hsl(45,100%,60%)]"
+                className="-mt-[140px] h-[256px] w-[3px] rotate-90 rounded-full bg-[var(--lf-accent)]"
                 aria-hidden
               />
               <div className="-mt-[125px] text-[20px] text-[rgb(53,53,58)] lg:leading-[140%]">
@@ -570,8 +573,8 @@ export function SpotlightTemplate({ data }: { data: PortfolioData }) {
                   items={section.items}
                   titleClassName="text-lg font-bold text-gray-950"
                   textClassName="mt-2 text-sm leading-relaxed text-gray-600"
-                  chipClassName="rounded-full bg-[hsl(45,100%,60%)]/20 px-2.5 py-1 text-xs capitalize text-gray-950"
-                  buttonClassName="mx-auto mt-4 block rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[hsl(45,100%,60%)]"
+                  chipClassName="rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] px-2.5 py-1 text-xs capitalize text-gray-950"
+                  buttonClassName="mx-auto mt-4 block rounded-full border border-gray-200 bg-white px-6 py-2 text-sm font-medium text-gray-950 transition-colors hover:border-[var(--lf-accent)]"
                 />
               </div>
             </section>
@@ -610,7 +613,7 @@ function SpotlightSectionHeading({ title }: { title: string }) {
     <div className="mb-12">
       <h2 className="text-5xl font-medium tracking-wide">
         {title}
-        <span className="text-[hsl(45,100%,60%)]">.</span>
+        <span className="text-[var(--lf-accent)]">.</span>
       </h2>
     </div>
   );
@@ -655,8 +658,8 @@ function ProjectCard({
   const hasLinks = Boolean(project.liveUrl || project.sourceUrl);
 
   return (
-    <article className={cn(PROJECT_CARD, "group flex h-full w-full flex-col rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[hsl(45,100%,60%)] hover:shadow-lg")}>
-      <div className="h-1 w-full bg-[hsl(45,100%,60%)]/70" />
+    <article className={cn(PROJECT_CARD, "group flex h-full w-full flex-col rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--lf-accent)] hover:shadow-lg")}>
+      <div className="h-1 w-full bg-[color-mix(in_srgb,var(--lf-accent)_70%,transparent)]" />
 
       <LivePreviewImage
         liveUrl={project.liveUrl ?? null}

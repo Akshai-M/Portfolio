@@ -116,7 +116,7 @@ model Portfolio {
   avatarUrl String?
   resumeUrl String?
 
-  templateId  String  @default("minimal")
+  templateId  String  @default("pulse")
   isPublished Boolean @default(false)
 
   metaTitle       String?

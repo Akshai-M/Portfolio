@@ -40,7 +40,7 @@ export default function TemplatesPage() {
   >(null);
   const [trialDaysRemaining, setTrialDaysRemaining] = useState<number>(0);
   const [isApplying, setIsApplying] = useState(false);
-  const currentTemplate = portfolio?.templateId ?? "minimal";
+  const currentTemplate = portfolio?.templateId ?? "pulse";
 
   useEffect(() => {
     let cancelled = false;
