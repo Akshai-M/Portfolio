@@ -300,7 +300,7 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
                 >
                   <div>
 
-                    <div className="relative h-60 overflow-hidden border-b-4 border-white bg-black">
+                    <div className="relative overflow-hidden border-b-4 border-white bg-black">
                       <TemplateProjectPreview
                         templateId="maximalist"
                         liveUrl={proj.liveUrl}
@@ -309,8 +309,8 @@ export function MaximalistTemplate({ data: initialData }: AppProps) {
                         alt={proj.title}
                         loading="lazy"
                         accentColor={primaryColor}
-                        containerClassName="h-full aspect-auto bg-black"
-                        className="h-full w-full object-cover object-top grayscale contrast-125 transition-all duration-300 group-hover:scale-105 group-hover:grayscale-0"
+                        containerClassName="bg-black"
+                        className="grayscale contrast-125 transition-all duration-300 group-hover:scale-105 group-hover:grayscale-0"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
 

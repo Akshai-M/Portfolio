@@ -674,48 +674,42 @@ function ProjectsShowcase({
               key={project.id}
               className={cn(
                 PROJECT_CARD,
-                "relative rounded-3xl bg-white/5 border transition-all hover:bg-white/10 hover:scale-[1.01] flex flex-col justify-between",
+                "group relative rounded-3xl bg-white/5 border transition-all hover:bg-white/10 hover:scale-[1.01] flex flex-col justify-between",
                 project.featured
                   ? "border-white/20 ring-1 ring-white/10"
                   : "border-white/10"
               )}
               id={`project-card-${project.id}`}
             >
+              <div className="relative">
+                <TemplateProjectPreview
+                  templateId="pulse"
+                  liveUrl={project.liveUrl}
+                  projectId={project.id}
+                  livePreviewProjectIds={livePreviewProjectIds}
+                  alt={project.title}
+                  loading="lazy"
+                  accentColor={primaryColor}
+                  containerClassName="bg-[#0a0a0a] border-b border-white/10"
+                  className="opacity-75 transition-all duration-300 group-hover:opacity-90"
+                />
+                {project.language && (
+                  <div className="absolute top-4 left-4 z-10 max-w-[45%] truncate bg-[#0a0a0a]/95 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-300">
+                    {project.language}
+                  </div>
+                )}
+                {project.featured && (
+                  <div className="absolute top-4 right-4 z-10 max-w-[45%] truncate bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-right text-[11px] font-mono text-white font-semibold">
+                    Featured
+                  </div>
+                )}
+              </div>
 
-              {/* Card Body */}
               <div className={cn(PROJECT_CARD_BODY, "space-y-6")}>
-
-                {/* Visual Image Header */}
-                <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-[#0a0a0a] border border-white/10">
-                  <TemplateProjectPreview
-                    templateId="pulse"
-                    liveUrl={project.liveUrl}
-                    projectId={project.id}
-                    livePreviewProjectIds={livePreviewProjectIds}
-                    alt={project.title}
-                    loading="lazy"
-                    accentColor={primaryColor}
-                    containerClassName="h-full aspect-auto bg-[#0a0a0a]"
-                    className="h-full w-full object-cover object-top opacity-75 transition-all duration-300 group-hover:opacity-90"
-                  />
-                  {/* Category overlay */}
-                  {project.language && (
-                    <div className="absolute top-4 left-4 max-w-[45%] truncate bg-[#0a0a0a]/95 border border-white/10 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-300">
-                      {project.language}
-                    </div>
-                  )}
-
-                  {project.featured && (
-                    <div className="absolute top-4 right-4 max-w-[45%] truncate bg-white/5 border border-white/10 rounded-lg px-2.5 py-1 text-right text-[11px] font-mono text-white font-semibold">
-                      Featured
-                    </div>
-                  )}
-                </div>
-
                 <div className="space-y-2">
                   <div className={PROJECT_CARD_HEADER}>
                     <div className={PROJECT_CARD_META}>
-                      <h3 className={cn(PROJECT_CARD_TITLE, "font-display text-xl font-bold text-white leading-tight")}>
+                      <h3 className={cn(PROJECT_CARD_TITLE, "font-display text-2xl font-bold text-white leading-tight")}>
                         {project.title}
                       </h3>
                     </div>

@@ -25,6 +25,7 @@ import {
   DescriptionBlock,
   HeroProfileButtons,
   PROJECT_CARD,
+  PROJECT_CARD_BODY,
   PROJECT_CARD_HEADER,
   PROJECT_CARD_META,
   PROJECT_CARD_TITLE,
@@ -117,15 +118,17 @@ export default function DeveloperTemplate({ data }: { data: PortfolioData }) {
                         "group rounded-lg border border-[var(--lf-g-900-40)] bg-gray-900/50 hover:border-[var(--lf-g-700-60)] hover:bg-gray-900/80 transition-all duration-300"
                       )}
                     >
-                      <TemplateProjectPreview templateId="developer"
+                      <TemplateProjectPreview
+                        templateId="developer"
                         liveUrl={project.liveUrl ?? null}
                         projectId={project.id}
                         livePreviewProjectIds={livePreviewProjectIds}
                         alt={project.title}
                         loading="lazy"
                         accentColor={primaryColor}
+                        containerClassName="bg-gray-950/80 border-b border-[var(--lf-g-900-40)]"
                       />
-                      <div className="p-5">
+                      <div className={PROJECT_CARD_BODY}>
                         <div className={PROJECT_CARD_HEADER}>
                           <div className="min-w-0 flex-1">
                             <div className={PROJECT_CARD_META}>

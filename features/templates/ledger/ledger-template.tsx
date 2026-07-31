@@ -400,8 +400,7 @@ export function LedgerTemplate({ data }: AppProps) {
                   id={`project-card-${project.id}`}
                 >
                   <div>
-                    {/* Project Header Image */}
-                    <div className="relative h-48 overflow-hidden bg-slate-950 border-b border-slate-800">
+                    <div className="relative overflow-hidden border-b border-slate-800 bg-slate-950">
                       <TemplateProjectPreview
                         templateId="ledger"
                         liveUrl={project.liveUrl}
@@ -409,13 +408,12 @@ export function LedgerTemplate({ data }: AppProps) {
                         livePreviewProjectIds={livePreviewProjectIds}
                         alt={project.title}
                         loading="lazy"
-                        containerClassName="h-full aspect-auto bg-slate-950"
-                        className="h-full w-full object-cover object-top opacity-60 transition-all duration-500 group-hover:opacity-80"
-                       accentColor={primaryColor} />
-                      {/* Gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#111418] to-transparent opacity-80" />
+                        accentColor={primaryColor}
+                        containerClassName="bg-slate-950"
+                        className="opacity-60 transition-all duration-500 group-hover:opacity-80"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#111418] to-transparent opacity-80" />
 
-                      {/* Tags in header */}
                       <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
                         {project.featured ? (
                           <span className="px-2 py-1 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_15%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_40%,transparent)] text-[9px] font-mono text-[var(--lf-accent)] font-bold uppercase tracking-widest flex items-center gap-1 backdrop-blur-sm">
