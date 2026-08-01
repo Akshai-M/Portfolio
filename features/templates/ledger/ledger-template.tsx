@@ -54,18 +54,12 @@ import {
   Trophy,
   BookOpen,
   GraduationCap,
-  Code,
   Search,
   Check,
   Copy,
   ArrowUpRight,
   Menu,
   X,
-  Cpu,
-  Database,
-  Terminal,
-  Layers,
-  Cloud,
   ChevronRight,
   FileCheck,
   Filter,
@@ -203,26 +197,6 @@ export function LedgerTemplate({ data }: AppProps) {
     });
   }, [visibleProjects, projectSearch, selectedTech]);
 
-  // Skill category icon helper
-  const getCategoryIcon = (category: string) => {
-    switch (category.toLowerCase()) {
-      case 'languages':
-        return <Code className="w-4 h-4 text-[var(--lf-accent)]" />;
-      case 'runtimes':
-        return <Cpu className="w-4 h-4 text-green-400" />;
-      case 'frameworks':
-        return <Layers className="w-4 h-4 text-purple-400" />;
-      case 'databases':
-        return <Database className="w-4 h-4 text-amber-400" />;
-      case 'orms':
-        return <Terminal className="w-4 h-4 text-[var(--lf-accent)]" />;
-      case 'cloud':
-        return <Cloud className="w-4 h-4 text-indigo-400" />;
-      default:
-        return <Code className="w-4 h-4 text-slate-400" />;
-    }
-  };
-
   // Render social profile icon helper
   const getSocialIcon = (platform: string, className = 'w-5 h-5') => (
     <PlatformIcon platform={platform} className={className} />
@@ -238,24 +212,48 @@ export function LedgerTemplate({ data }: AppProps) {
               <SectionHeading>{labels.experience}</SectionHeading>
             </div>
 
-            <div className="grid grid-cols-1 @lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 @lg:grid-cols-12 gap-6 @lg:gap-8">
               {/* Sidebar list for active experience */}
-              <div id="experience-tabs" className="@lg:col-span-4 flex flex-row @lg:flex-col overflow-x-auto @lg:overflow-x-visible gap-2 pb-2 @lg:pb-0 border-b @lg:border-b-0 @lg:border-r border-slate-800">
-                {experiences.map((exp) => (
-                  <button
-                    key={exp.id}
-                    onClick={() => setActiveExperienceTab(exp.id)}
-                    className={`flex-none max-w-[85vw] @lg:max-w-none @lg:flex-1 text-left px-4 py-3 border transition-all flex flex-col gap-1 items-start whitespace-nowrap @lg:whitespace-normal rounded-none ${
-                      activeExperienceTab === exp.id
-                        ? 'bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border-l-2 border-l-[var(--lf-accent)] border-slate-800 text-white'
-                        : 'bg-transparent border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
-                    }`}
-                    id={`tab-${exp.id}`}
-                  >
-                    <span className="font-mono font-bold text-xs uppercase tracking-wider">{exp.role}</span>
-                    <span className="text-xs font-mono text-slate-500">{exp.company}</span>
-                  </button>
-                ))}
+              <div className="@lg:col-span-4 space-y-2">
+                <div className="flex items-center justify-between @lg:hidden px-1">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                    Roles
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--lf-accent)]">
+                    {Math.max(1, experiences.findIndex((e) => e.id === activeExperienceTab) + 1)} / {experiences.length}
+                    {experiences.length > 1 ? " · swipe" : ""}
+                  </span>
+                </div>
+                <div
+                  id="experience-tabs"
+                  className="flex flex-row @lg:flex-col gap-2 overflow-x-auto @lg:overflow-x-visible pb-2 @lg:pb-0 border-b @lg:border-b-0 @lg:border-r border-slate-800 snap-x snap-mandatory @lg:snap-none scrollbar-none"
+                >
+                  {experiences.map((exp, index) => (
+                    <button
+                      key={exp.id}
+                      onClick={() => setActiveExperienceTab(exp.id)}
+                      className={`snap-start flex-none w-[min(78vw,18rem)] @sm:w-[min(60vw,20rem)] @lg:w-auto @lg:max-w-none @lg:flex-1 text-left px-4 py-3 border transition-all flex flex-col gap-1 items-start rounded-none ${
+                        activeExperienceTab === exp.id
+                          ? 'bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border-l-2 border-l-[var(--lf-accent)] border-slate-800 text-white'
+                          : 'bg-slate-950/40 border border-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-900/40 @lg:bg-transparent @lg:border-transparent'
+                      }`}
+                      id={`tab-${exp.id}`}
+                    >
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-slate-600 @lg:hidden">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span
+                        className="font-mono font-bold text-xs uppercase tracking-wider whitespace-normal break-words w-full"
+                        style={{ color: primaryColor }}
+                      >
+                        {exp.role}
+                      </span>
+                      <span className="text-xs font-mono text-slate-500 whitespace-normal break-words w-full">
+                        {exp.company}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Active experience detail container */}
@@ -271,28 +269,29 @@ export function LedgerTemplate({ data }: AppProps) {
                       className="bg-[#111418] border border-slate-800 p-4 @sm:p-6 @md:p-8 rounded-none space-y-4 @sm:space-y-6"
                       id={`exp-content-${exp.id}`}
                     >
-                      <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                        <div>
-                          <h3 className="text-base @sm:text-lg font-mono font-bold text-white flex items-center gap-2 flex-wrap">
-                            <span className="text-[var(--lf-accent)] uppercase">{exp.role}</span>
-                            <span className="text-slate-500 font-normal">@</span>
-                            <span className="text-white uppercase tracking-wide">{exp.company}</span>
+                      <div className="space-y-3 border-b border-slate-800 pb-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <h3 className="min-w-0 flex-1 text-base @sm:text-lg font-mono font-bold uppercase break-words">
+                            <span style={{ color: primaryColor }}>{exp.role}</span>
                           </h3>
-                          {exp.location && (
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1 font-mono">
-                              <MapPin className="w-3.5 h-3.5 text-slate-600" />
-                              <span className="uppercase">{exp.location}</span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono shrink-0">
+                            <Calendar className="w-3.5 h-3.5" style={{ color: primaryColor }} />
+                            <span className="whitespace-nowrap">
+                              {formatDateRange(exp.startDate, exp.endDate)?.toUpperCase() ||
+                                "N/A"}
+                            </span>
+                          </div>
                         </div>
-
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono self-start @sm:self-center">
-                          <Calendar className="w-3.5 h-3.5 text-[var(--lf-accent)]" />
-                          <span>
-                            {formatDateRange(exp.startDate, exp.endDate)?.toUpperCase() ||
-                              "N/A"}
-                          </span>
+                        <div className="flex items-center gap-2 font-mono text-sm text-white uppercase tracking-wide w-full">
+                          <span className="text-slate-500 font-normal shrink-0">@</span>
+                          <span className="min-w-0">{exp.company}</span>
                         </div>
+                        {exp.location && (
+                          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
+                            <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                            <span className="uppercase break-words">{exp.location}</span>
+                          </div>
+                        )}
                       </div>
 
                       {exp.description && (
@@ -524,8 +523,7 @@ export function LedgerTemplate({ data }: AppProps) {
             <div id="skills-container" className="space-y-8">
               {Object.entries(groupedSkills).map(([category, names]) => (
                 <div key={category} className="space-y-4">
-                  <h3 className="text-xs font-mono uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                    {getCategoryIcon(category)}
+                  <h3 className="text-xs font-mono uppercase tracking-widest text-slate-500">
                     {category}
                   </h3>
                   <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 @lg:grid-cols-4 gap-4">
@@ -949,7 +947,7 @@ export function LedgerTemplate({ data }: AppProps) {
 
               <ContactChips
                 portfolio={portfolio}
-                chipClassName="rounded-none border border-slate-800 bg-[#111418] px-3 py-1.5 text-xs font-mono text-slate-400"
+                chipClassName="w-full @sm:w-auto justify-center @md:justify-start rounded-none border border-slate-800 bg-[#111418] px-3 py-2 text-xs font-mono text-slate-400 text-center @md:text-left"
               />
 
               {/* Social profiles stats & links */}
@@ -1010,12 +1008,12 @@ export function LedgerTemplate({ data }: AppProps) {
               <h2 className="break-words text-2xl @sm:text-4xl font-display font-extrabold text-white uppercase tracking-tight">{labels.contact}</h2>
             </div>
 
-            <div className="max-w-md mx-auto grid grid-cols-1 @sm:grid-cols-2 gap-4 pt-4">
+            <div className="max-w-md mx-auto grid grid-cols-1 @sm:grid-cols-2 gap-3 @sm:gap-4 pt-4 w-full">
                 {/* Email Copier */}
                 {portfolio.contactEmail && (
                   <button
                     onClick={() => handleCopy(portfolio.contactEmail, 'email')}
-                    className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
+                    className="w-full bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
                     id="contact-email-btn"
                   >
                     <div className="p-2.5 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)]">
@@ -1035,7 +1033,7 @@ export function LedgerTemplate({ data }: AppProps) {
                 {portfolio.phone && (
                   <button
                     onClick={() => handleCopy(portfolio.phone, 'phone')}
-                    className="bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
+                    className="w-full bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-[var(--lf-accent)] p-4 rounded-none flex flex-col items-center justify-center gap-2 group transition-all text-center focus:outline-none"
                     id="contact-phone-btn"
                   >
                     <div className="p-2.5 rounded-none bg-[color-mix(in_srgb,var(--lf-accent)_8%,transparent)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] text-[var(--lf-accent)]">

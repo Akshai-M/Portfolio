@@ -1036,9 +1036,11 @@ function CertificationsSectionComponent({
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="flex items-center gap-3 text-4xl sm:text-5xl font-black uppercase tracking-tighter text-white">
-      <span className="h-3 w-8 bg-[var(--lf-accent)] shrink-0" />
-      {children}
+    <h2 className="flex min-w-0 items-start gap-2 sm:gap-3 text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter text-white">
+      <span className="mt-1.5 sm:mt-2 h-2.5 w-5 sm:h-3 sm:w-8 bg-[var(--lf-accent)] shrink-0" />
+      <span className="min-w-0 break-words [overflow-wrap:anywhere] leading-[1.05]">
+        {children}
+      </span>
     </h2>
   );
 }

@@ -236,7 +236,7 @@ export function ContactChips({
   if (items.length === 0) return null;
 
   return (
-    <div className="flex min-w-0 flex-wrap gap-2">
+    <div className="flex min-w-0 flex-col @sm:flex-row @sm:flex-wrap gap-2">
       {items.map((item) => (
         <span
           key={item}
