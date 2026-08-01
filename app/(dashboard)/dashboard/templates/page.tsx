@@ -17,16 +17,21 @@ import {
 import { FlowFooter } from "@/features/dashboard/components/flow-footer";
 import {
   usePortfolio,
+  useUpdatePortfolio,
   useUpdateTemplate,
 } from "@/features/portfolio/api/use-portfolio";
 import { CreatePortfolioPrompt, PORTFOLIO_ACTION_BUTTON_CLASS } from "@/features/portfolio/components/create-portfolio-prompt";
 import { templateRegistry } from "@/features/templates/registry";
+import {
+  getTemplateDefaultAccent,
+} from "@/features/templates/template-accent-palettes";
 import { TemplatePreviewThumbnail } from "@/features/templates/template-preview-thumbnail";
 
 export default function TemplatesPage() {
   const router = useRouter();
   const { data: portfolio, isLoading } = usePortfolio();
   const updateTemplate = useUpdateTemplate();
+  const updatePortfolio = useUpdatePortfolio();
   const [allowedTemplateIds, setAllowedTemplateIds] = useState<string[] | null>(
     null
   );
@@ -34,7 +39,8 @@ export default function TemplatesPage() {
     "free" | "trial" | "pro" | null
   >(null);
   const [trialDaysRemaining, setTrialDaysRemaining] = useState<number>(0);
-  const currentTemplate = portfolio?.templateId ?? "minimal";
+  const [isApplying, setIsApplying] = useState(false);
+  const currentTemplate = portfolio?.templateId ?? "pulse";
 
   useEffect(() => {
     let cancelled = false;
@@ -64,7 +70,7 @@ export default function TemplatesPage() {
     };
   }, []);
 
-  const handleSelect = (templateId: string) => {
+  const handleSelect = async (templateId: string) => {
     if (allowedTemplateIds && !allowedTemplateIds.includes(templateId)) {
       toast.error("Upgrade to Pro to unlock this template.", {
         action: {
@@ -75,13 +81,23 @@ export default function TemplatesPage() {
       return;
     }
 
-    updateTemplate.mutate(templateId, {
-      onSuccess: () => toast.success(`Template changed to ${templateId}`),
-      onError: (error) =>
-        toast.error(
-          error instanceof Error ? error.message : "Failed to change template"
-        ),
-    });
+    setIsApplying(true);
+    try {
+      await updateTemplate.mutateAsync(templateId);
+      // Immediate apply always resets to the template's default accent.
+      await updatePortfolio.mutateAsync({
+        customization: {
+          primaryColor: getTemplateDefaultAccent(templateId),
+        },
+      });
+      toast.success(`Template changed to ${templateId}`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to change template",
+      );
+    } finally {
+      setIsApplying(false);
+    }
   };
 
   if (isLoading) {
@@ -203,8 +219,8 @@ export default function TemplatesPage() {
                   <Button
                     variant={isActive ? "secondary" : "outline"}
                     className="w-full"
-                    onClick={() => handleSelect(template.id)}
-                    disabled={updateTemplate.isPending}
+                    onClick={() => void handleSelect(template.id)}
+                    disabled={isApplying || updateTemplate.isPending || updatePortfolio.isPending}
                   >
                     {isActive ? (
                       <>

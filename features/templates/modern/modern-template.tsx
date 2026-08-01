@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -54,6 +55,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("modern", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -116,7 +118,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                 livePreviewProjectIds={livePreviewProjectIds}
                 alt={project.title}
                 loading="lazy"
-              />
+               accentColor={primaryColor} />
 
               <div className={PROJECT_CARD_BODY}>
                 <div className={PROJECT_CARD_HEADER}>
@@ -126,7 +128,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                         {project.title}
                       </h3>
                       {project.featured && (
-                        <span className="rounded-full border border-cyan-300/20 bg-linear-to-r from-violet-500 to-cyan-400 px-2.5 py-1 text-[10px] uppercase tracking-[0.22em] text-white">
+                        <span className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] bg-linear-to-r from-[var(--lf-accent)] to-[var(--lf-accent)] px-2.5 py-1 text-[10px] uppercase tracking-[0.22em] text-white">
                           Featured
                         </span>
                       )}
@@ -209,7 +211,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h3 className="text-xl font-semibold text-white">{exp.role}</h3>
-                  <p className="mt-1 text-sm text-cyan-300">{exp.company}</p>
+                  <p className="mt-1 text-sm text-[color-mix(in_srgb,var(--lf-accent)_80%,white)]">{exp.company}</p>
                   {exp.location && (
                     <p className="mt-1 text-sm text-zinc-500">{exp.location}</p>
                   )}
@@ -255,7 +257,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                   href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-colors hover:text-cyan-300"
+                  className="transition-colors hover:text-[color-mix(in_srgb,var(--lf-accent)_80%,white)]"
                 >
                   {article.title}
                 </a>
@@ -376,7 +378,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
                     href={cert.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-cyan-300"
+                    className="transition-colors hover:text-[color-mix(in_srgb,var(--lf-accent)_80%,white)]"
                   >
                     {cert.name}
                   </a>
@@ -415,7 +417,7 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
               key={ach.id}
               className="flex items-start gap-3 rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
             >
-              <Trophy className="h-4 w-4 text-cyan-400 mt-0.5 shrink-0" />
+              <Trophy className="h-4 w-4 text-[var(--lf-accent)] mt-0.5 shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white leading-relaxed">{ach.title}</p>
                 {ach.date && (
@@ -469,10 +471,10 @@ export function ModernTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#060816] text-zinc-100")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#060816] text-zinc-100")} style={accentRootStyle(primaryColor)}>
       <div className="relative w-full max-w-full overflow-x-clip">
-        <div className="pointer-events-none absolute -left-40 -top-32 h-96 w-96 rounded-full bg-violet-500/16 blur-3xl" />
-        <div className="pointer-events-none absolute -right-32 top-20 h-96 w-96 rounded-full bg-cyan-400/12 blur-3xl" />
+        <div className="pointer-events-none absolute -left-40 -top-32 h-96 w-96 rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_16%,transparent)] blur-3xl" />
+        <div className="pointer-events-none absolute -right-32 top-20 h-96 w-96 rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_12%,transparent)] blur-3xl" />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.18]" />
 
         <div className="relative mx-auto min-w-0 max-w-6xl overflow-x-clip px-5 pb-14 pt-8 sm:px-6 md:px-10 md:pb-24 md:pt-16">

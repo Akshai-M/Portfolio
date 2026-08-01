@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -49,6 +50,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("blueprint", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -95,10 +97,10 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
             <CollapsibleList
               initial={4}
               wrapperClassName={cn(PROJECTS_GRID_2, "gap-8")}
-              buttonClassName="col-span-full mt-10 mx-auto block border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+              buttonClassName="col-span-full mt-10 mx-auto block border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
             >
               {visibleProjects.map((project, index) => (
-                <article key={project.id} className={cn(PROJECT_CARD, "group relative flex flex-col border-2 border-white/50 bg-[#003366]/80 backdrop-blur-sm transition-colors hover:border-white")}>
+                <article key={project.id} className={cn(PROJECT_CARD, "group relative flex flex-col border-2 border-white/50 bg-[#003366]/80 backdrop-blur-sm transition-colors hover:border-[var(--lf-accent)]")}>
                   <div className="absolute -top-3 -left-3 bg-[#003366] px-2 text-[10px] uppercase tracking-widest text-white/50">
                     REF.{index + 1}
                   </div>
@@ -112,7 +114,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                       loading="lazy"
                       containerClassName="overflow-hidden border border-dashed border-white/30 bg-[#002244]"
                       className="h-full w-full object-cover object-top opacity-70 mix-blend-screen filter contrast-150 transition-opacity group-hover:opacity-100"
-                    />
+                     accentColor={primaryColor} />
                   </div>
 
                   <div className={cn(PROJECT_CARD_BODY, "flex flex-col grow")}>
@@ -151,8 +153,8 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                         sourceUrl={project.sourceUrl}
                         label={project.title}
                         projectId={project.id}
-                        liveClassName="text-[10px] font-bold uppercase tracking-widest bg-white text-[#003366] px-4 py-2 hover:bg-transparent hover:text-white border border-white transition-colors"
-                        sourceClassName="text-[10px] font-bold uppercase tracking-widest border border-white/50 px-4 py-2 hover:border-white transition-colors"
+                        liveClassName="text-[10px] font-bold uppercase tracking-widest bg-[var(--lf-accent)] text-[#003366] px-4 py-2 hover:bg-transparent hover:text-white border border-white transition-colors"
+                        sourceClassName="text-[10px] font-bold uppercase tracking-widest border border-white/50 px-4 py-2 hover:border-[var(--lf-accent)] transition-colors"
                       />
                     </div>
                   </div>
@@ -169,7 +171,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
               <CollapsibleList
                 initial={4}
                 wrapperClassName="space-y-8"
-                buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+                buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
               >
                 {experiences.map((exp, index) => (
                   <article key={exp.id} className="relative pl-8 border-l-2 border-white/50">
@@ -212,7 +214,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {names.map((name) => (
-                            <span key={name} className="border border-white/50 text-[10px] uppercase tracking-widest px-2 py-1 hover:bg-white hover:text-[#003366] transition-colors cursor-default">
+                            <span key={name} className="border border-white/50 text-[10px] uppercase tracking-widest px-2 py-1 hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors cursor-default">
                               {name}
                             </span>
                           ))}
@@ -231,7 +233,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={3}
                   wrapperClassName="space-y-6"
-                  buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+                  buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
                 >
                   {educations.map((edu) => (
                     <article key={edu.id} className="border border-white/50 p-6 bg-[#003366]/80 backdrop-blur-sm relative">
@@ -257,7 +259,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+                  buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
                 >
                   {certifications.map((cert) => (
                     <article key={cert.id} className="border border-white/30 p-4 flex items-center justify-between bg-[#003366]/80 backdrop-blur-sm">
@@ -291,7 +293,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                 <CollapsibleList
                   initial={4}
                   wrapperClassName="space-y-4"
-                  buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+                  buttonClassName="mt-8 border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
                 >
                   {achievements.map((ach) => (
                     <article key={ach.id} className="border border-white/30 p-4 flex items-start gap-4 bg-[#003366]/80 backdrop-blur-sm">
@@ -317,10 +319,10 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
             <CollapsibleList
               initial={4}
               wrapperClassName="grid grid-cols-1 md:grid-cols-3 gap-6"
-              buttonClassName="col-span-full mt-10 mx-auto block border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+              buttonClassName="col-span-full mt-10 mx-auto block border-2 border-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
             >
               {articles.map((article) => (
-                <article key={article.id} className="border-2 border-white/50 p-6 bg-[#003366]/80 backdrop-blur-sm hover:bg-white/10 transition-colors flex flex-col relative">
+                <article key={article.id} className="border-2 border-white/50 p-6 bg-[#003366]/80 backdrop-blur-sm hover:bg-[color-mix(in_srgb,var(--lf-accent)_18%,transparent)] transition-colors flex flex-col relative">
                   <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/50" />
                   <h3 className="text-base font-bold uppercase tracking-wider mb-4 leading-snug">
                     <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer">
@@ -358,8 +360,8 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
                 <ProfileLinksSection
                   portfolio={portfolio}
                   profiles={socialProfiles}
-                  chipClassName="border border-white/50 px-6 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
-                  pillClassName="border border-white/50 px-6 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+                  chipClassName="border border-white/50 px-6 py-3 text-xs uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
+                  pillClassName="border border-white/50 px-6 py-3 text-xs uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
                   titleClassName="text-white font-bold uppercase tracking-wider"
                   textClassName="text-white/60"
                 />
@@ -386,7 +388,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#003366] text-white font-mono selection:bg-white selection:text-[#003366] overflow-hidden relative pb-20")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#003366] text-white font-mono selection:bg-[var(--lf-accent)] selection:text-[#003366] overflow-hidden relative pb-20")} style={accentRootStyle(primaryColor)}>
 
       {/* Blueprint Grid Background */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20"
@@ -408,7 +410,7 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
             <TemplateNavbar
               items={sections}
               className="flex gap-2 bg-[#003366] border-2 border-white/50 p-2 shadow-lg"
-              linkClassName="px-4 py-2 text-xs font-bold text-white hover:bg-white hover:text-[#003366] transition-colors uppercase tracking-widest"
+              linkClassName="px-4 py-2 text-xs font-bold text-white hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors uppercase tracking-widest"
             />
           </div>
         )}
@@ -436,11 +438,11 @@ export function BlueprintTemplate({ data }: { data: PortfolioData }) {
             <div className="flex flex-wrap gap-4 mb-8">
               <ContactChips
                 portfolio={portfolio}
-                chipClassName="border border-white/50 bg-transparent px-4 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-[#003366] transition-colors"
+                chipClassName="border border-white/50 bg-transparent px-4 py-2 text-xs uppercase tracking-widest hover:bg-[var(--lf-accent)] hover:text-[#003366] transition-colors"
               />
               <HeroProfileButtons
                 profiles={socialProfiles}
-                className="bg-white text-[#003366] px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-transparent hover:text-white border border-white transition-colors"
+                className="bg-[var(--lf-accent)] text-[#003366] px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-transparent hover:text-white border border-white transition-colors"
               />
             </div>
 

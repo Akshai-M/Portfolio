@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("windows", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -103,13 +105,13 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
                       loading="lazy"
                       containerClassName="win95-inset bg-black"
                       className="h-full w-full object-cover object-top filter transition-all"
-                    />
+                     accentColor={primaryColor} />
                   </div>
                   <div className="p-3 flex flex-col grow text-black">
                     <div className={cn(PROJECT_CARD_HEADER, "mb-2")}>
                       <h3 className={cn(PROJECT_CARD_TITLE, "font-bold text-sm pr-2")}>{project.title}</h3>
                       {project.featured && (
-                        <span className="bg-[#000080] text-white text-[10px] px-1">★</span>
+                        <span className="bg-[var(--lf-accent)] text-white text-[10px] px-1">★</span>
                       )}
                     </div>
                     {project.description && (
@@ -159,7 +161,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
                         <span className="text-xs">{formatDateRange(exp.startDate, exp.endDate)}</span>
                       )}
                     </div>
-                    <p className="text-[#000080] mb-2">{exp.company}</p>
+                    <p className="text-[var(--lf-accent)] mb-2">{exp.company}</p>
                     {exp.description && (
                       <div className="text-xs leading-relaxed">
                         <DescriptionBlock
@@ -232,14 +234,14 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
                       <div>
                         <h3 className="font-bold">
                           {cert.url ? (
-                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[#0000ff] underline hover:text-[#ff0000]">
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[var(--lf-accent)] underline hover:text-[#ff0000]">
                               {cert.name}
                             </a>
                           ) : (
                             cert.name
                           )}
                         </h3>
-                        <p className="text-xs mt-1 text-[#000080]">{cert.issuer}</p>
+                        <p className="text-xs mt-1 text-[var(--lf-accent)]">{cert.issuer}</p>
                       </div>
                       {cert.issueDate && (
                         <span className="text-xs bg-[#c0c0c0] win95-outset px-2 py-1">
@@ -287,7 +289,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
             >
               {articles.map((article) => (
                 <div key={article.id} className="win95-inset bg-white p-3 text-sm flex flex-col">
-                  <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer" className="text-[#0000ff] underline hover:text-[#ff0000] font-bold mb-2">
+                  <a href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id} target="_blank" rel="noopener noreferrer" className="text-[var(--lf-accent)] underline hover:text-[#ff0000] font-bold mb-2">
                     {article.title}
                   </a>
                   {article.description && (
@@ -338,7 +340,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#3a6ea5] font-sans text-black selection:bg-[#000080] selection:text-white pb-16 relative")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#3a6ea5] font-sans text-black selection:bg-[var(--lf-accent)] selection:text-white pb-16 relative")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-5xl p-4 md:p-8 space-y-8">
 
         {/* Header Window */}
@@ -388,7 +390,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
       {navbarEnabled && (
         <div className="sticky bottom-0 left-0 right-0 h-10 bg-[#c0c0c0] border-t-2 border-white z-50 flex items-center px-1 gap-1">
           <div className="win95-button px-2 py-1 font-bold flex items-center gap-2 mr-4">
-            <div className="w-4 h-4 bg-linear-to-br from-blue-500 via-red-500 to-yellow-500" />
+            <div className="w-4 h-4 bg-linear-to-br from-[var(--lf-accent)] via-red-500 to-yellow-500" />
             Start
           </div>
           <div className="w-px h-6 bg-gray-400 border-r border-white mx-1" />
@@ -448,7 +450,7 @@ export function WindowsTemplate({ data }: { data: PortfolioData }) {
 function Window({ title, children, id, icon }: { title: string; children: ReactNode; id?: string; icon?: ReactNode }) {
   return (
     <section id={id} className="win95-outset bg-[#c0c0c0] p-[2px] scroll-mt-12">
-      <div className="bg-[#000080] text-white px-2 py-1 flex items-center justify-between mb-[2px]">
+      <div className="bg-[var(--lf-accent)] text-white px-2 py-1 flex items-center justify-between mb-[2px]">
         <div className="flex items-center gap-2 font-bold text-sm">
           {icon || <Terminal className="w-4 h-4" />}
           {title}

@@ -1,4 +1,10 @@
-import type { ReactNode } from "react";
+import {
+  cloneElement,
+  createElement,
+  Fragment,
+  isValidElement,
+  type ReactNode,
+} from "react";
 import type { SectionKey } from "./section-labels";
 import type { PortfolioCustomization, PortfolioData } from "./types";
 
@@ -151,7 +157,13 @@ export function renderSections(
 ): ReactNode[] {
   return resolved.order[groupId]
     .filter((key) => !resolved.isHidden(key) && blocks[key] != null)
-    .map((key) => blocks[key]!);
+    .map((key) => {
+      const node = blocks[key]!;
+      if (isValidElement(node)) {
+        return cloneElement(node, { key });
+      }
+      return createElement(Fragment, { key }, node);
+    });
 }
 
 /** Build a SectionLayoutCustomization payload from resolved draft state. */

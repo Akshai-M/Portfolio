@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -53,6 +54,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("corporate", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const skillsByCategory = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -115,7 +117,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
                 livePreviewProjectIds={livePreviewProjectIds}
                 alt={project.title}
                 loading="lazy"
-              />
+               accentColor={primaryColor} />
               <div className={PROJECT_CARD_BODY}>
                 <div className={PROJECT_CARD_HEADER}>
                   <div className="min-w-0 flex-1">
@@ -179,7 +181,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
                     sourceUrl={project.sourceUrl}
                     label={project.title}
                     projectId={project.id}
-                    liveClassName="rounded-full bg-sky-700 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-sky-800"
+                    liveClassName="rounded-full bg-[var(--lf-accent)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[color-mix(in_srgb,var(--lf-accent)_85%,black)]"
                     sourceClassName="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition-colors hover:border-slate-400 hover:text-slate-900"
                   />
                 </div>
@@ -212,7 +214,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
                   <h3 className="text-xl font-semibold text-slate-900">
                     {exp.role}
                   </h3>
-                  <p className="mt-1 text-sm font-medium text-sky-800">
+                  <p className="mt-1 text-sm font-medium text-[color-mix(in_srgb,var(--lf-accent)_85%,black)]">
                     {exp.company}
                   </p>
                   {exp.location && (
@@ -260,7 +262,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
                   href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-colors hover:text-sky-700"
+                  className="transition-colors hover:text-[var(--lf-accent)]"
                 >
                   {article.title}
                 </a>
@@ -381,7 +383,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
                     href={cert.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-sky-700"
+                    className="transition-colors hover:text-[var(--lf-accent)]"
                   >
                     {cert.name}
                   </a>
@@ -420,7 +422,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
               key={ach.id}
               className="flex items-start gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50/60 p-5"
             >
-              <Trophy className="h-4 w-4 text-sky-600 mt-0.5 shrink-0" />
+              <Trophy className="h-4 w-4 text-[var(--lf-accent)] mt-0.5 shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-slate-900 leading-relaxed">{ach.title}</p>
                 {ach.date && (
@@ -474,7 +476,7 @@ export function CorporateTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#f3f6fb] text-slate-900 antialiased")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[#f3f6fb] text-slate-900 antialiased")} style={accentRootStyle(primaryColor)}>
       <div className="mx-auto max-w-6xl px-5 py-8 sm:px-6 md:px-10 md:py-12">
         <header className="overflow-hidden rounded-[2.2rem] border border-slate-200/40 bg-[#0f172a] text-white shadow-[0_30px_90px_rgba(15,23,42,0.18)]">
           <div className="min-w-0">

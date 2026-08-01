@@ -3,6 +3,7 @@ import {
   normalizeOptionalEmail,
   normalizeOptionalStoredUrl,
 } from "@/lib/content-policy";
+import { getTemplateDefaultAccent } from "@/features/templates/template-accent-palettes";
 
 type EnsurePortfolioUser = {
   name?: string | null;
@@ -38,12 +39,18 @@ export async function ensureUserPortfolio(
     // An invalid provider email must not become stored portfolio content.
   }
 
+  const defaultTemplateId = "pulse";
+
   return prisma.portfolio.create({
     data: {
       userId,
       slug: null,
       title: dbUser?.name ?? "",
       contactEmail,
+      templateId: defaultTemplateId,
+      customization: {
+        primaryColor: getTemplateDefaultAccent(defaultTemplateId),
+      },
       ...(avatarUrl ? { avatarUrl } : {}),
     },
   });

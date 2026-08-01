@@ -1,3 +1,4 @@
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import type { PortfolioData } from "../types";
 import { cn } from "@/lib/utils";
 import {
@@ -49,6 +50,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
     customSections,
     livePreviewProjectIds,
   } = data;
+  const primaryColor = resolveAccentColor("vibrant", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const groupedSkills = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -74,12 +76,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
     about: portfolio.summary ? (
       <section key="about" id="about" className="scroll-mt-32">
 <div className="rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[var(--lf-accent)] to-transparent opacity-50" />
                 <SectionHeading>{labels.about}</SectionHeading>
                 <DescriptionBlock
                   text={portfolio.summary}
                   paragraphClassName="text-lg leading-relaxed text-slate-300"
-                  listClassName="space-y-2 pl-5 text-lg leading-relaxed text-slate-300 marker:text-cyan-400"
+                  listClassName="space-y-2 pl-5 text-lg leading-relaxed text-slate-300 marker:text-[var(--lf-accent)]"
                 />
               </div>
       </section>
@@ -98,7 +100,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                     key={project.id}
                     className={cn(
                       PROJECT_CARD,
-                      "group flex flex-col rounded-3xl border border-white/10 bg-slate-900/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-fuchsia-500/50 hover:shadow-[0_0_40px_rgba(217,70,239,0.15)]"
+                      "group flex flex-col rounded-3xl border border-white/10 bg-slate-900/40 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-[color-mix(in_srgb,var(--lf-accent)_50%,transparent)] hover:shadow-[0_0_40px_rgba(217,70,239,0.15)]"
                     )}
                   >
                     <div className="relative">
@@ -110,12 +112,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         loading="lazy"
                         containerClassName="overflow-hidden bg-slate-800"
                         className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
-                      />
+                       accentColor={primaryColor} />
                       <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-slate-900 via-transparent to-transparent opacity-60" />
                     </div>
                     <div className={cn(PROJECT_CARD_BODY, "relative z-20 flex flex-col grow p-8")}>
                       <div className={cn(PROJECT_CARD_HEADER, "mb-4")}>
-                        <h3 className={cn(PROJECT_CARD_TITLE, "text-2xl font-bold text-white group-hover:text-fuchsia-400 transition-colors")}>
+                        <h3 className={cn(PROJECT_CARD_TITLE, "text-2xl font-bold text-white group-hover:text-[var(--lf-accent)] transition-colors")}>
                           {project.title}
                         </h3>
                         <ProjectActions
@@ -123,7 +125,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                           sourceUrl={project.sourceUrl}
                           label={project.title}
                           projectId={project.id}
-                          liveClassName="rounded-full bg-white/10 p-2 text-white hover:bg-fuchsia-500 hover:text-white transition-colors"
+                          liveClassName="rounded-full bg-white/10 p-2 text-white hover:bg-[var(--lf-accent)] hover:text-white transition-colors"
                           sourceClassName="rounded-full bg-white/5 p-2 text-slate-300 hover:bg-white/20 transition-colors"
                         />
                       </div>
@@ -132,7 +134,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         <DescriptionBlock
                           text={project.description}
                           paragraphClassName="text-slate-400 leading-relaxed mb-6 grow"
-                          listClassName="mb-6 grow space-y-2 pl-5 text-slate-400 leading-relaxed marker:text-cyan-400"
+                          listClassName="mb-6 grow space-y-2 pl-5 text-slate-400 leading-relaxed marker:text-[var(--lf-accent)]"
                         />
                       )}
 
@@ -140,7 +142,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         {project.techStack.map((tech) => (
                           <span
                             key={tech}
-                            className="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-cyan-300 border border-cyan-500/20"
+                            className="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-[color-mix(in_srgb,var(--lf-accent)_80%,white)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)]"
                           >
                             {tech}
                           </span>
@@ -171,7 +173,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                           <h3 className="text-xl font-bold text-white">
                             {exp.role}
                           </h3>
-                          <p className="text-fuchsia-400 font-medium mt-1">
+                          <p className="text-[var(--lf-accent)] font-medium mt-1">
                             {exp.company}
                             {exp.location ? <span className="text-slate-500"> · {exp.location}</span> : ""}
                           </p>
@@ -186,7 +188,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         <DescriptionBlock
                           text={exp.description}
                           paragraphClassName="text-slate-400 leading-relaxed"
-                          listClassName="space-y-2 pl-5 text-slate-400 leading-relaxed marker:text-fuchsia-500"
+                          listClassName="space-y-2 pl-5 text-slate-400 leading-relaxed marker:text-[var(--lf-accent)]"
                         />
                       )}
                     </article>
@@ -209,7 +211,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                             {names.map((name) => (
                               <span
                                 key={name}
-                                className="rounded-xl bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 border border-white/5 hover:border-violet-500/50 hover:text-white transition-colors cursor-default"
+                                className="rounded-xl bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 border border-white/5 hover:border-[color-mix(in_srgb,var(--lf-accent)_50%,transparent)] hover:text-white transition-colors cursor-default"
                               >
                                 {name}
                               </span>
@@ -239,7 +241,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                           {edu.degree}
                           {edu.field && <span className="text-slate-400 font-normal"> in {edu.field}</span>}
                         </h3>
-                        <p className="text-cyan-400 mt-1">{edu.institution}</p>
+                        <p className="text-[var(--lf-accent)] mt-1">{edu.institution}</p>
                         <div className="flex items-center justify-between mt-4">
                           {(edu.startDate || edu.endDate) && (
                             <span className="text-sm text-slate-500">
@@ -270,7 +272,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         <div className="min-w-0">
                           <h3 className="text-lg font-bold text-white">
                             {cert.url ? (
-                              <a href={cert.url} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">
+                              <a href={cert.url} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--lf-accent)] transition-colors">
                                 {cert.name}
                               </a>
                             ) : (
@@ -303,7 +305,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         key={ach.id}
                         className="rounded-2xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-6 flex items-start gap-4"
                       >
-                        <div className="rounded-full bg-fuchsia-500/20 p-2 text-fuchsia-400 shrink-0">
+                        <div className="rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] p-2 text-[var(--lf-accent)] shrink-0">
                           <Trophy className="w-5 h-5" />
                         </div>
                         <div>
@@ -338,7 +340,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                         href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-cyan-400 transition-colors"
+                        className="hover:text-[var(--lf-accent)] transition-colors"
                       >
                         {article.title}
                       </a>
@@ -368,7 +370,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
 
     profiles: hasProfiles ? (
       <section key="profiles" id="profiles" className="scroll-mt-32">
-<div className="rounded-3xl bg-linear-to-br from-fuchsia-600/20 to-violet-600/20 backdrop-blur-xl border border-white/10 p-12 text-center shadow-2xl relative overflow-hidden">
+<div className="rounded-3xl bg-linear-to-br from-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] to-[color-mix(in_srgb,var(--lf-accent)_16%,transparent)] backdrop-blur-xl border border-white/10 p-12 text-center shadow-2xl relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
                 <h2 className="text-3xl font-bold text-white mb-8 relative z-10">{labels.profiles}</h2>
                 <div className="flex justify-center relative z-10">
@@ -402,12 +404,12 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-fuchsia-500/30 selection:text-fuchsia-200 overflow-hidden relative")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] selection:text-[color-mix(in_srgb,var(--lf-accent)_70%,white)] overflow-hidden relative")} style={accentRootStyle(primaryColor)}>
       {/* Dynamic Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-fuchsia-600/20 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/20 blur-[120px]" />
-        <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-violet-600/20 blur-[100px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] blur-[120px]" />
+        <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_16%,transparent)] blur-[100px]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
       </div>
 
@@ -440,7 +442,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
             />
             <HeroProfileButtons
               profiles={socialProfiles}
-              className="rounded-full bg-linear-to-r from-fuchsia-600 to-violet-600 px-8 py-3 text-sm font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-105"
+              className="rounded-full bg-linear-to-r from-[var(--lf-accent)] to-[var(--lf-accent)] px-8 py-3 text-sm font-bold text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-105"
             />
           </div>
 
@@ -466,7 +468,7 @@ export function VibrantTemplate({ data }: { data: PortfolioData }) {
                   items={cs.items}
                   titleClassName="text-xl font-bold text-white mb-2"
                   textClassName="text-slate-400 leading-relaxed"
-                  chipClassName="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-cyan-300 border border-cyan-500/20"
+                  chipClassName="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-[color-mix(in_srgb,var(--lf-accent)_80%,white)] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)]"
                 />
               </div>
             </section>

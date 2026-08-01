@@ -158,6 +158,23 @@ export function GitHubContributionHeatmap({
   );
 }
 
+/** Intensity steps for contribution cells — tinted from `--lf-accent`. */
+const LIGHT_ACCENT_CELLS = [
+  "bg-white ring-1 ring-inset ring-black/10",
+  "bg-[color-mix(in_srgb,var(--lf-accent)_18%,white)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--lf-accent)_28%,transparent)]",
+  "bg-[color-mix(in_srgb,var(--lf-accent)_38%,white)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--lf-accent)_40%,transparent)]",
+  "bg-[color-mix(in_srgb,var(--lf-accent)_62%,white)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--lf-accent)_35%,transparent)]",
+  "bg-[var(--lf-accent)] ring-1 ring-inset ring-black/10",
+] as const;
+
+const DARK_ACCENT_CELLS = [
+  "bg-zinc-900 ring-1 ring-inset ring-white/5",
+  "bg-[color-mix(in_srgb,var(--lf-accent)_22%,#0a0a0a)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)]",
+  "bg-[color-mix(in_srgb,var(--lf-accent)_42%,#0a0a0a)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--lf-accent)_40%,transparent)]",
+  "bg-[color-mix(in_srgb,var(--lf-accent)_65%,#0a0a0a)] ring-1 ring-inset ring-[color-mix(in_srgb,var(--lf-accent)_45%,transparent)]",
+  "bg-[var(--lf-accent)] ring-1 ring-inset ring-white/15",
+] as const;
+
 function getHeatmapTheme(variant: "developer" | "modern" | "corporate" | "minimal" | "creative") {
   switch (variant) {
     case "corporate":
@@ -170,17 +187,11 @@ function getHeatmapTheme(variant: "developer" | "modern" | "corporate" | "minima
         totalClassName: "font-semibold text-slate-900",
         separatorClassName: "text-slate-300",
         linkClassName:
-          "text-sky-700 underline decoration-sky-200 underline-offset-2 transition-colors hover:text-sky-800",
+          "text-[var(--lf-accent)] underline decoration-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] underline-offset-2 transition-colors hover:opacity-80",
         frameClassName:
           "inline-block min-w-full rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm",
         axisClassName: "text-slate-400",
-        cells: [
-          "bg-white ring-1 ring-inset ring-slate-200",
-          "bg-sky-100 ring-1 ring-inset ring-sky-200",
-          "bg-sky-200 ring-1 ring-inset ring-sky-300",
-          "bg-sky-400 ring-1 ring-inset ring-sky-500/40",
-          "bg-sky-600 ring-1 ring-inset ring-sky-700/30",
-        ],
+        cells: [...LIGHT_ACCENT_CELLS],
       };
     case "minimal":
       return {
@@ -192,39 +203,27 @@ function getHeatmapTheme(variant: "developer" | "modern" | "corporate" | "minima
         totalClassName: "font-medium text-stone-900",
         separatorClassName: "text-stone-300",
         linkClassName:
-          "text-stone-700 underline decoration-stone-300 underline-offset-2 transition-colors hover:text-stone-900",
+          "text-[var(--lf-accent)] underline decoration-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] underline-offset-2 transition-colors hover:opacity-80",
         frameClassName:
           "inline-block min-w-full rounded-xl border border-stone-200 bg-[#fffdf8] p-4",
         axisClassName: "text-stone-400",
-        cells: [
-          "bg-white ring-1 ring-inset ring-stone-200",
-          "bg-stone-100 ring-1 ring-inset ring-stone-200",
-          "bg-stone-200 ring-1 ring-inset ring-stone-300",
-          "bg-amber-300 ring-1 ring-inset ring-amber-400/40",
-          "bg-stone-700 ring-1 ring-inset ring-stone-800/20",
-        ],
+        cells: [...LIGHT_ACCENT_CELLS],
       };
     case "creative":
       return {
         rootClassName: "mt-8 border-t border-pink-100 pt-6",
         labelClassName:
-          "mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-pink-500",
+          "mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--lf-accent)]",
         metaClassName:
           "mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500",
         totalClassName: "font-semibold text-gray-900",
-        separatorClassName: "text-pink-300",
+        separatorClassName: "text-[color-mix(in_srgb,var(--lf-accent)_45%,transparent)]",
         linkClassName:
-          "text-pink-500 underline decoration-pink-200 underline-offset-2 transition-colors hover:text-pink-600",
+          "text-[var(--lf-accent)] underline decoration-[color-mix(in_srgb,var(--lf-accent)_30%,transparent)] underline-offset-2 transition-colors hover:opacity-80",
         frameClassName:
           "inline-block min-w-full rounded-2xl border border-pink-100 bg-white p-4 shadow-sm",
         axisClassName: "text-gray-400",
-        cells: [
-          "bg-gray-100 ring-1 ring-inset ring-gray-200",
-          "bg-pink-100 ring-1 ring-inset ring-pink-200",
-          "bg-orange-200 ring-1 ring-inset ring-orange-300",
-          "bg-orange-400 ring-1 ring-inset ring-orange-500/40",
-          "bg-pink-500 ring-1 ring-inset ring-pink-600/30",
-        ],
+        cells: [...LIGHT_ACCENT_CELLS],
       };
     case "modern":
       return {
@@ -236,39 +235,28 @@ function getHeatmapTheme(variant: "developer" | "modern" | "corporate" | "minima
         totalClassName: "font-semibold text-white",
         separatorClassName: "text-zinc-600",
         linkClassName:
-          "text-cyan-300 underline decoration-cyan-500/20 underline-offset-2 transition-colors hover:text-cyan-200",
+          "text-[var(--lf-accent)] underline decoration-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] underline-offset-2 transition-colors hover:opacity-90",
         frameClassName:
-          "inline-block min-w-full rounded-xl border border-white/10 bg-black/20 p-4 shadow-[0_0_0_1px_rgba(34,211,238,0.03)]",
+          "inline-block min-w-full rounded-xl border border-white/10 bg-black/20 p-4 shadow-[0_0_0_1px_color-mix(in_srgb,var(--lf-accent)_8%,transparent)]",
         axisClassName: "text-zinc-500",
-        cells: [
-          "bg-zinc-900 ring-1 ring-inset ring-white/5",
-          "bg-violet-950/90 ring-1 ring-inset ring-violet-900/60",
-          "bg-violet-700/70 ring-1 ring-inset ring-violet-600/50",
-          "bg-cyan-600/70 ring-1 ring-inset ring-cyan-500/40",
-          "bg-cyan-400/85 ring-1 ring-inset ring-cyan-300/40",
-        ],
+        cells: [...DARK_ACCENT_CELLS],
       };
     case "developer":
     default:
       return {
-        rootClassName: "mt-10 border-t border-green-900/30 pt-8",
+        rootClassName:
+          "mt-10 border-t border-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] pt-8",
         labelClassName: "mb-1 text-xs text-gray-600",
         metaClassName:
           "mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500",
-        totalClassName: "font-medium text-emerald-400",
+        totalClassName: "font-medium text-[var(--lf-accent)]",
         separatorClassName: "text-gray-700",
         linkClassName:
-          "text-emerald-500/80 underline decoration-emerald-900/60 underline-offset-2 transition-colors hover:text-emerald-300",
+          "text-[var(--lf-accent)]/80 underline decoration-[color-mix(in_srgb,var(--lf-accent)_35%,transparent)] underline-offset-2 transition-colors hover:text-[var(--lf-accent)]",
         frameClassName:
-          "inline-block min-w-full rounded-xl border border-white/5 bg-black/20 p-4 shadow-[0_0_0_1px_rgba(16,185,129,0.03)]",
+          "inline-block min-w-full rounded-xl border border-white/5 bg-black/20 p-4 shadow-[0_0_0_1px_color-mix(in_srgb,var(--lf-accent)_8%,transparent)]",
         axisClassName: "text-gray-600",
-        cells: [
-          "bg-gray-900/80 ring-1 ring-inset ring-white/5",
-          "bg-emerald-950/90 ring-1 ring-inset ring-emerald-900/60",
-          "bg-emerald-800/70 ring-1 ring-inset ring-emerald-700/50",
-          "bg-emerald-600/70 ring-1 ring-inset ring-emerald-500/40",
-          "bg-emerald-400/85 ring-1 ring-inset ring-emerald-300/40",
-        ],
+        cells: [...DARK_ACCENT_CELLS],
       };
   }
 }

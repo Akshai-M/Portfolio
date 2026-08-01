@@ -127,6 +127,45 @@ export const TEMPLATE_SECTION_LAYOUTS: Record<string, TemplateSectionLayout> = {
     "github",
   ]),
 
+  maximalist: singleColumn([
+    "about",
+    "experience",
+    "projects",
+    "skills",
+    "education",
+    "articles",
+    "certifications",
+    "achievements",
+    "profiles",
+    "github",
+  ]),
+
+  pulse: singleColumn([
+    "about",
+    "experience",
+    "education",
+    "skills",
+    "projects",
+    "github",
+    "certifications",
+    "articles",
+    "achievements",
+    "profiles",
+  ]),
+
+  ledger: singleColumn([
+    "about",
+    "experience",
+    "projects",
+    "skills",
+    "achievements",
+    "certifications",
+    "articles",
+    "education",
+    "github",
+    "profiles",
+  ]),
+
   bento: {
     fixed: true,
     groups: [

@@ -16,6 +16,8 @@ export interface PortfolioCustomization {
   heroTagline?: string;
   /** User-controlled body section order and visibility. */
   sectionLayout?: SectionLayoutCustomization;
+  /** Accent color hex (e.g. #3b82f6) for templates that support the shared palette. */
+  primaryColor?: string;
   [key: string]: unknown;
 }
 

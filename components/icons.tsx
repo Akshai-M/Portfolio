@@ -64,6 +64,54 @@ export function TwitterIcon({ className }: { className?: string }) {
   );
 }
 
+export function LeetCodeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path d="M16.102 17.93l-2.697 2.607c-.466.467-1.111.662-1.823.662s-1.357-.195-1.824-.662l-4.332-4.363c-.467-.467-.702-1.15-.702-1.863s.235-1.357.702-1.824l4.319-4.346c.467-.467 1.125-.645 1.837-.645s1.357.195 1.824.662l2.697 2.606c.514.515 1.365.497 1.9-.038.535-.536.553-1.387.039-1.901l-2.609-2.636a5.055 5.055 0 00-2.445-1.337l2.467-2.503c.516-.514.498-1.366-.037-1.901-.535-.535-1.387-.553-1.902-.039l-10.1 10.101c-.981.982-1.464 2.337-1.464 3.835 0 1.498.483 2.853 1.464 3.835l4.347 4.361c.981.983 2.337 1.467 3.835 1.467s2.853-.484 3.835-1.467l10.1-10.101c.515-.514.533-1.366.037-1.901-.535-.535-1.387-.553-1.902-.039l-2.585 2.611a5.043 5.043 0 00-1.337 2.445z" />
+    </svg>
+  );
+}
+
+/** Maps a social platform id/label to the matching brand icon. */
+export function PlatformIcon({
+  platform,
+  className = "h-4 w-4",
+}: {
+  platform: string;
+  className?: string;
+}) {
+  const key = platform.toLowerCase();
+  if (key.includes("github")) return <GithubIcon className={className} />;
+  if (key.includes("linkedin")) return <LinkedinIcon className={className} />;
+  if (key.includes("medium")) return <MediumIcon className={className} />;
+  if (key.includes("leetcode")) return <LeetCodeIcon className={className} />;
+  if (key.includes("instagram")) return <InstagramIcon className={className} />;
+  if (key.includes("twitter") || key === "x") return <TwitterIcon className={className} />;
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  );
+}
+
 export function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg

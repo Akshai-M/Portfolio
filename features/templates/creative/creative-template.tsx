@@ -28,6 +28,7 @@ import {
 } from "@/features/templates/shared";
 import { CollapsibleList } from "@/features/templates/collapsible-list";
 import type { PortfolioData } from "@/features/templates/types";
+import { resolveAccentColor, accentRootStyle } from "@/features/templates/template-accent-palettes";
 import { formatDate, formatDateRange, groupSkillsByCategory } from "@/features/templates/utils";
 import { Trophy } from "lucide-react";
 // import { getPreviewImage } from "@/lib/link-preview-code";
@@ -43,6 +44,7 @@ import {
 export default function CreativeTemplate({ data }: { data: PortfolioData }) {
   const { portfolio, experiences, educations, skills, projects, articles, socialProfiles, certifications, achievements, customSections, livePreviewProjectIds } =
     data;
+  const primaryColor = resolveAccentColor("creative", portfolio.customization);
   const labels = getSectionLabels(portfolio.customization);
   const skillsByCategory = groupSkillsByCategory(skills);
   const githubProfile = socialProfiles.find(
@@ -74,7 +76,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <DescriptionBlock
           text={portfolio.summary}
           paragraphClassName="whitespace-pre-line text-base leading-8 text-stone-600"
-          listClassName="space-y-3 pl-5 text-base leading-8 text-stone-600 marker:text-rose-300"
+          listClassName="space-y-3 pl-5 text-base leading-8 text-stone-600 marker:text-[var(--lf-accent)]"
         />
       </section>
     ) : null,
@@ -89,14 +91,14 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName={PROJECTS_GRID_2}
-          buttonClassName="col-span-full mt-2 rounded-full border border-rose-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+          buttonClassName="col-span-full mt-2 rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
         >
           {visibleProjects.map((project, index) => (
             <article
               key={project.id}
               className={cn(
                 PROJECT_CARD,
-                "rounded-[1.6rem] border border-rose-100/80 bg-[#fffaf7] shadow-[0_14px_40px_rgba(190,24,93,0.05)]"
+                "rounded-[1.6rem] border border-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] bg-[#fffaf7] shadow-[0_14px_40px_color-mix(in_srgb,var(--lf-accent)_8%,transparent)]"
               )}
             >
               <TemplateProjectPreview templateId="creative"
@@ -105,6 +107,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                 livePreviewProjectIds={livePreviewProjectIds}
                 alt={project.title}
                 loading="lazy"
+                accentColor={primaryColor}
               />
               <div className={PROJECT_CARD_BODY}>
                 <div className={PROJECT_CARD_HEADER}>
@@ -114,7 +117,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                         {project.title}
                       </h3>
                       {project.featured && (
-                        <span className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.22em] text-rose-500">
+                        <span className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-[color-mix(in_srgb,var(--lf-accent)_10%,white)] px-2.5 py-1 text-[10px] uppercase tracking-[0.22em] text-[var(--lf-accent)]">
                           Featured
                         </span>
                       )}
@@ -132,7 +135,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                     label={project.title}
                     projectId={project.id}
                     liveClassName="rounded-full bg-stone-950 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-stone-800"
-                    sourceClassName="rounded-full border border-rose-200 bg-white px-4 py-2 text-xs font-medium text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+                    sourceClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-4 py-2 text-xs font-medium text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
                   />
                 </div>
 
@@ -140,7 +143,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                   <DescriptionBlock
                     text={project.description}
                     paragraphClassName="mt-4 text-sm leading-7 text-stone-600"
-                    listClassName="mt-4 space-y-2 pl-5 text-sm leading-7 text-stone-600 marker:text-rose-300"
+                    listClassName="mt-4 space-y-2 pl-5 text-sm leading-7 text-stone-600 marker:text-[var(--lf-accent)]"
                   />
                 )}
 
@@ -151,13 +154,13 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                       {project.techStack.map((tech) => (
                         <span
                           key={tech}
-                          className="rounded-full border border-rose-100 bg-white px-3 py-1 text-xs text-stone-500"
+                          className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-white px-3 py-1 text-xs text-stone-500"
                         >
                           {tech}
                         </span>
                       ))}
                       {project.githubStars !== null && (
-                        <span className="rounded-full bg-rose-50 px-3 py-1 text-xs text-stone-500">
+                        <span className="rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_10%,white)] px-3 py-1 text-xs text-stone-500">
                           {project.githubStars} stars
                         </span>
                       )}
@@ -185,17 +188,17 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-5"
-          buttonClassName="mt-2 rounded-full border border-rose-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+          buttonClassName="mt-2 rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
         >
           {experiences.map((exp) => (
             <article
               key={exp.id}
-              className="rounded-[1.55rem] border border-orange-100/80 bg-[#fffaf7] p-5"
+              className="rounded-[1.55rem] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] bg-[#fffaf7] p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h3 className="text-xl font-semibold text-stone-950">{exp.role}</h3>
-                  <p className="mt-1 text-sm font-medium text-rose-500">
+                  <p className="mt-1 text-sm font-medium text-[var(--lf-accent)]">
                     {exp.company}
                     {exp.location ? ` · ${exp.location}` : ""}
                   </p>
@@ -210,7 +213,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                 <DescriptionBlock
                   text={exp.description}
                   paragraphClassName="mt-4 text-sm leading-7 text-stone-600"
-                  listClassName="mt-4 space-y-2 pl-5 text-sm leading-7 text-stone-600 marker:text-rose-300"
+                  listClassName="mt-4 space-y-2 pl-5 text-sm leading-7 text-stone-600 marker:text-[var(--lf-accent)]"
                 />
               )}
             </article>
@@ -229,19 +232,19 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-4"
-          buttonClassName="mt-2 rounded-full border border-rose-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+          buttonClassName="mt-2 rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
         >
           {articles.map((article) => (
             <article
               key={article.id}
-              className="rounded-[1.55rem] border border-rose-100/80 bg-[#fffaf7] p-5"
+              className="rounded-[1.55rem] border border-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] bg-[#fffaf7] p-5"
             >
               <h3 className="text-lg font-semibold text-stone-950">
                 <a
                   href={article.url} data-lf-track="article" data-lf-label={article.title} data-lf-id={article.id}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="transition-colors hover:text-rose-500"
+                  className="transition-colors hover:text-[var(--lf-accent)]"
                 >
                   {article.title}
                 </a>
@@ -266,7 +269,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                   {article.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full border border-rose-100 bg-white px-3 py-1 text-xs text-stone-500"
+                      className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-white px-3 py-1 text-xs text-stone-500"
                     >
                       {tag}
                     </span>
@@ -295,7 +298,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                 {names.map((name) => (
                   <span
                     key={name}
-                    className="rounded-full border border-rose-100 bg-rose-50/80 px-3 py-1.5 text-sm text-stone-700"
+                    className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-[color-mix(in_srgb,var(--lf-accent)_12%,white)] px-3 py-1.5 text-sm text-stone-700"
                   >
                     {name}
                   </span>
@@ -316,12 +319,12 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-4"
-          buttonClassName="mt-2 rounded-full border border-rose-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+          buttonClassName="mt-2 rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
         >
           {educations.map((edu) => (
             <article
               key={edu.id}
-              className="rounded-[1.55rem] border border-rose-100/80 bg-[#fffaf7] p-5"
+              className="rounded-[1.55rem] border border-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] bg-[#fffaf7] p-5"
             >
               <h3 className="text-lg font-semibold text-stone-950">
                 {edu.degree}
@@ -349,12 +352,12 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-4"
-          buttonClassName="mt-2 rounded-full border border-rose-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+          buttonClassName="mt-2 rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
         >
           {certifications.map((cert) => (
             <article
               key={cert.id}
-              className="rounded-[1.55rem] border border-orange-100/80 bg-[#fffaf7] p-5"
+              className="rounded-[1.55rem] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] bg-[#fffaf7] p-5"
             >
               <h3 className="text-base font-semibold text-stone-950">
                 {cert.url ? (
@@ -362,7 +365,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                     href={cert.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transition-colors hover:text-rose-500"
+                    className="transition-colors hover:text-[var(--lf-accent)]"
                   >
                     {cert.name}
                   </a>
@@ -391,14 +394,14 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <CollapsibleList
           initial={4}
           wrapperClassName="space-y-3"
-          buttonClassName="mt-2 rounded-full border border-rose-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-rose-300 hover:text-stone-900"
+          buttonClassName="mt-2 rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.22em] text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_55%,white)] hover:text-stone-900"
         >
           {achievements.map((ach) => (
             <article
               key={ach.id}
-              className="flex items-start gap-3 rounded-[1.55rem] border border-orange-100/80 bg-[#fffaf7] p-5"
+              className="flex items-start gap-3 rounded-[1.55rem] border border-[color-mix(in_srgb,var(--lf-accent)_20%,transparent)] bg-[#fffaf7] p-5"
             >
-              <Trophy className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
+              <Trophy className="mt-0.5 h-4 w-4 shrink-0 text-[var(--lf-accent)]" />
               <div className="min-w-0 flex-1">
                 <p className="text-sm leading-relaxed text-stone-900">{ach.title}</p>
                 {ach.date && (
@@ -426,8 +429,8 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         <ProfileLinksSection
           portfolio={portfolio}
           profiles={socialProfiles}
-          chipClassName="rounded-full border border-rose-100 bg-rose-50/80 px-3 py-1.5 text-sm text-stone-500"
-          pillClassName="rounded-full border border-rose-100 bg-white px-3 py-1.5 text-sm text-stone-600 transition-colors hover:border-rose-200 hover:text-stone-900"
+          chipClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-[color-mix(in_srgb,var(--lf-accent)_12%,white)] px-3 py-1.5 text-sm text-stone-500"
+          pillClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-white px-3 py-1.5 text-sm text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] hover:text-stone-900"
           titleClassName="text-stone-950"
           textClassName="text-stone-500"
         />
@@ -440,7 +443,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
         className="rounded-[1.9rem] border border-white/90 bg-white/80 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.05)] backdrop-blur-xl md:p-8"
       >
         <SectionHeading accent="rose">{labels.github}</SectionHeading>
-        <div className="rounded-[1.5rem] border border-rose-100/80 bg-[#fffaf7] p-4 md:p-6">
+        <div className="rounded-[1.5rem] border border-[color-mix(in_srgb,var(--lf-accent)_25%,transparent)] bg-[#fffaf7] p-4 md:p-6">
           <GitHubContributionHeatmap
             calendar={contributionCalendar}
             profileUrl={githubProfile?.url}
@@ -454,14 +457,14 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
   };
 
   return (
-    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[linear-gradient(180deg,#fffaf7_0%,#fff7fb_45%,#ffffff_100%)] text-stone-900 selection:bg-rose-200/50")}>
+    <div className={cn(TEMPLATE_CONTAINER, "min-h-screen bg-[linear-gradient(180deg,#fffaf7_0%,#fff7fb_45%,#ffffff_100%)] text-stone-900 selection:bg-[color-mix(in_srgb,var(--lf-accent)_35%,transparent)]")} style={accentRootStyle(primaryColor)}>
       <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-rose-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute right-0 top-24 h-96 w-96 rounded-full bg-orange-100/45 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/3 top-64 h-72 w-72 rounded-full bg-fuchsia-100/25 blur-3xl" />
+        <div className="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_35%,transparent)] blur-3xl" />
+        <div className="pointer-events-none absolute right-0 top-24 h-96 w-96 rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_18%,transparent)] blur-3xl" />
+        <div className="pointer-events-none absolute left-1/3 top-64 h-72 w-72 rounded-full bg-[color-mix(in_srgb,var(--lf-accent)_14%,transparent)] blur-3xl" />
 
         <div className="relative mx-auto max-w-6xl px-5 pb-16 pt-8 sm:px-6 md:px-10 md:pb-24 md:pt-14">
-          <header className="overflow-hidden rounded-[2.25rem] border border-white/80 bg-white/75 p-6 shadow-[0_24px_80px_rgba(190,24,93,0.08)] backdrop-blur-xl @md:p-10">
+          <header className="overflow-hidden rounded-[2.25rem] border border-white/80 bg-white/75 p-6 shadow-[0_24px_80px_color-mix(in_srgb,var(--lf-accent)_12%,transparent)] backdrop-blur-xl @md:p-10">
             <div className="min-w-0">
               <div className={HERO_HEADER_COLUMN}>
                 <h1
@@ -482,14 +485,14 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                 <div className="mt-7">
                   <ContactChips
                     portfolio={portfolio}
-                    chipClassName="rounded-full border border-rose-100 bg-rose-50/80 px-3.5 py-1.5 text-sm text-stone-600"
+                    chipClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-[color-mix(in_srgb,var(--lf-accent)_12%,white)] px-3.5 py-1.5 text-sm text-stone-600"
                   />
                 </div>
 
                 <div className="mt-4">
                   <HeroProfileButtons
                     profiles={socialProfiles}
-                    className="rounded-full border border-rose-200 bg-stone-950 px-4 py-2 text-sm text-white transition-colors hover:bg-stone-800"
+                    className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] bg-stone-950 px-4 py-2 text-sm text-white transition-colors hover:bg-stone-800"
                   />
                 </div>
 
@@ -498,7 +501,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                     <SocialPills
                       profiles={socialProfiles}
                       showUsername
-                      className="rounded-full border border-rose-100 bg-white/90 px-3 py-1.5 text-sm text-stone-600 transition-colors hover:border-rose-200 hover:text-stone-900"
+                      className="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-white/90 px-3 py-1.5 text-sm text-stone-600 transition-colors hover:border-[color-mix(in_srgb,var(--lf-accent)_40%,white)] hover:text-stone-900"
                     />
                   </div>
                 )}
@@ -529,7 +532,7 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
                     items={cs.items}
                     titleClassName="font-medium text-stone-900"
                     textClassName="text-sm text-stone-500"
-                    chipClassName="rounded-full border border-rose-100 bg-rose-50/80 px-2.5 py-1 text-xs text-stone-500"
+                    chipClassName="rounded-full border border-[color-mix(in_srgb,var(--lf-accent)_22%,white)] bg-[color-mix(in_srgb,var(--lf-accent)_12%,white)] px-2.5 py-1 text-xs text-stone-500"
                   />
                 </section>
               ))}
@@ -543,21 +546,14 @@ export default function CreativeTemplate({ data }: { data: PortfolioData }) {
 
 function SectionHeading({
   children,
-  accent,
 }: {
   children: React.ReactNode;
-  accent: "rose" | "orange" | "amber" | "fuchsia";
+  /** Kept for call-site compatibility; all headings use the shared accent. */
+  accent?: "rose" | "orange" | "amber" | "fuchsia";
 }) {
-  const accents = {
-    rose: "bg-rose-300",
-    orange: "bg-orange-300",
-    amber: "bg-amber-300",
-    fuchsia: "bg-fuchsia-300",
-  };
-
   return (
     <h2 className="mb-5 flex items-center gap-3 text-2xl font-semibold tracking-tight text-stone-950 md:mb-6 md:text-3xl">
-      <span className={`h-px w-8 ${accents[accent]}`} />
+      <span className="h-px w-8 bg-[var(--lf-accent)]" />
       {children}
     </h2>
   );
