@@ -114,6 +114,15 @@ export async function extractTextAndQualityFromPdf(
       quality: assessPdfExtractionQuality(joined, pageCount),
     };
   } finally {
-    await document.destroy();
+    // unpdf/PDF.js on Bun exposes cleanup via loadingTask, not document.destroy().
+    const doc = document as {
+      destroy?: () => Promise<void> | void;
+      loadingTask?: { destroy?: () => Promise<void> | void };
+    };
+    if (typeof doc.destroy === "function") {
+      await doc.destroy();
+    } else if (typeof doc.loadingTask?.destroy === "function") {
+      await doc.loadingTask.destroy();
+    }
   }
 }
