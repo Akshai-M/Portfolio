@@ -411,33 +411,32 @@ function Timeline({ experiences, primaryColor, labels }: TimelineProps) {
 
                         <div className="space-y-4">
                           {/* Title & Metadata Card Header */}
-                          <div className="flex flex-col gap-3 @sm:flex-row @sm:items-start @sm:justify-between">
-                            <div className="min-w-0 space-y-0.5">
-                              <h4 className="font-display text-base @sm:text-lg font-bold text-white group-hover:text-slate-200 transition-colors break-words">
+                          <div className="space-y-2">
+                            <div className="flex items-start justify-between gap-3">
+                              <h4 className="min-w-0 flex-1 font-display text-base @sm:text-lg font-bold text-white group-hover:text-slate-200 transition-colors break-words">
                                 {exp.role}
                               </h4>
-                              <span
-                                className="font-sans text-sm font-semibold transition-colors break-words"
-                                style={{ color: primaryColor }}
-                              >
-                                {exp.company}
-                              </span>
-                            </div>
-
-                            {/* Period Tag */}
-                            <div className="inline-flex items-start gap-2 text-xs font-mono text-slate-500 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-md self-start shrink-0">
-                              <Calendar className="h-3 w-3 shrink-0 mt-0.5" />
-                              <div className="flex flex-col gap-0.5">
-                                <span className="whitespace-nowrap text-slate-400">
-                                  {formatDateRange(exp.startDate, exp.endDate) || "N/A"}
-                                </span>
-                                {duration && (
-                                  <span className="text-slate-400 whitespace-nowrap">
-                                    {duration}
+                              {/* Period Tag — sits beside title so company can use full width below */}
+                              <div className="inline-flex items-start gap-2 text-xs font-mono text-slate-500 bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-md shrink-0">
+                                <Calendar className="h-3 w-3 shrink-0 mt-0.5" />
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="whitespace-nowrap text-slate-400">
+                                    {formatDateRange(exp.startDate, exp.endDate) || "N/A"}
                                   </span>
-                                )}
+                                  {duration && (
+                                    <span className="text-slate-400 whitespace-nowrap">
+                                      {duration}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
+                            <span
+                              className="block w-full font-sans text-sm font-semibold transition-colors"
+                              style={{ color: primaryColor }}
+                            >
+                              {exp.company}
+                            </span>
                           </div>
 
                           {/* Location details */}
