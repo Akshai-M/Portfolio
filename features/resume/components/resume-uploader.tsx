@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -61,10 +61,6 @@ import {
   sanitizeImportedStringList,
   sanitizeImportedStoredUrl,
 } from "@/lib/content-policy";
-import {
-  LivePreviewSelectionDialog,
-  type LivePreviewCandidate,
-} from "@/features/resume/components/live-preview-selection-dialog";
 import { RotatingLoader } from "@/components/rotating-loader";
 import {
   PORTFOLIO_IMPORT_MESSAGES,
@@ -107,10 +103,6 @@ export function ResumeUploader({
   const [importing, setImporting] = useState(false);
   const [clearBeforeImport, setClearBeforeImport] = useState(true);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
-  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
-  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(
-    null
-  );
 
   const parseResume = useParseResume();
   const { data: portfolio } = usePortfolio();
@@ -118,82 +110,7 @@ export function ResumeUploader({
   const updatePortfolio = useUpdatePortfolio();
   const clearImportable = useClearImportableContent();
 
-  useEffect(() => {
-    let cancelled = false;
-    const loadBilling = async () => {
-      try {
-        const res = await fetch("/api/billing/me", { cache: "no-store" });
-        if (!res.ok) return;
-        const data = (await res.json().catch(() => ({}))) as {
-          subscription?: { status?: string | null } | null;
-        };
-        if (cancelled) return;
-        const status = data.subscription?.status ?? null;
-        setSubscriptionStatus(
-          status?.toLowerCase() === "active" ? "active" : "none"
-        );
-      } catch {
-        if (cancelled) return;
-        setSubscriptionStatus("none");
-      }
-    };
-    loadBilling();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const livePreviewCandidates = useMemo<LivePreviewCandidate[]>(() => {
-    return (
-      portfolio?.projects
-        ?.filter((project: { liveUrl?: string | null }) => project.liveUrl)
-        .map((project: { id: string; title: string; liveUrl: string }) => ({
-          id: project.id,
-          title: project.title,
-          liveUrl: project.liveUrl,
-        })) ?? []
-    );
-  }, [portfolio?.projects]);
-
-  const selectedLivePreviewProjectIds = useMemo(
-    () =>
-      Array.isArray(portfolio?.livePreviewProjectIds)
-        ? portfolio.livePreviewProjectIds
-        : [],
-    [portfolio]
-  );
-
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      if (file.type !== "application/pdf") {
-        toast.error("Please upload a PDF file");
-        return;
-      }
-
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File size must be less than 10MB");
-        return;
-      }
-
-      parseResume.mutate(file, {
-        onSuccess: (data) => {
-          setParsedData(data);
-          toast.success("Resume parsed successfully");
-        },
-        onError: (error) => {
-          console.error("Resume parse error:", error);
-          toast.error(error.message);
-        },
-      });
-    },
-    [parseResume]
-  );
-
-  const handleImport = async () => {
-    if (!parsedData) return;
+  const handleImport = useCallback(async (data: ParsedResume) => {
     setImporting(true);
 
     let activePortfolio = portfolio;
@@ -212,18 +129,18 @@ export function ResumeUploader({
 
     try {
       await updatePortfolio.mutateAsync({
-        title: sanitizeImportedLabel(parsedData.name) || "Portfolio",
-        headline: sanitizeImportedLabel(parsedData.headline),
-        summary: sanitizeImportedLongText(parsedData.summary),
-        contactEmail: sanitizeImportedEmail(parsedData.contact?.email),
-        phone: sanitizeImportedPhone(parsedData.contact?.phone),
+        title: sanitizeImportedLabel(data.name) || "Portfolio",
+        headline: sanitizeImportedLabel(data.headline),
+        summary: sanitizeImportedLongText(data.summary),
+        contactEmail: sanitizeImportedEmail(data.contact?.email),
+        phone: sanitizeImportedPhone(data.contact?.phone),
         websiteUrl: sanitizeImportedStoredUrl(
-          parsedData.contact?.websiteUrl,
+          data.contact?.websiteUrl,
           "Portfolio website URL",
         ),
-        location: sanitizeImportedLabel(parsedData.contact?.location) || null,
-        ...(parsedData.sectionLabels && Object.keys(parsedData.sectionLabels).length > 0
-          ? { customization: { sectionLabels: parsedData.sectionLabels } }
+        location: sanitizeImportedLabel(data.contact?.location) || null,
+        ...(data.sectionLabels && Object.keys(data.sectionLabels).length > 0
+          ? { customization: { sectionLabels: data.sectionLabels } }
           : {}),
       });
 
@@ -254,7 +171,7 @@ export function ResumeUploader({
                 `${skill.name.toLowerCase()}:${skill.category.toLowerCase()}`,
             ),
       );
-      const importSkills = parsedData.skills
+      const importSkills = data.skills
         .map((skill) => ({
           ...skill,
           name: sanitizeImportedLabel(skill.name, MAX_SKILL_FIELD_CHARS),
@@ -278,7 +195,7 @@ export function ResumeUploader({
             : Math.max(0, MAX_SKILLS - (activePortfolio.skills?.length ?? 0)),
         );
       const importCustomSections = (() => {
-        const prepared = (parsedData.customSections ?? []).flatMap((section) => {
+        const prepared = (data.customSections ?? []).flatMap((section) => {
           const sectionType = sanitizeImportedLabel(section.sectionType);
           const label = sanitizeImportedLabel(section.label);
           if (!sectionType || !label) return [];
@@ -300,7 +217,7 @@ export function ResumeUploader({
 
       // Limits are computed up front, so parallel writes are safe and much faster.
       await Promise.all([
-        ...parsedData.experiences
+        ...data.experiences
           .slice(0, remainingRows(activePortfolio.experiences?.length))
           .flatMap((exp) => {
             const company = sanitizeImportedLabel(exp.company);
@@ -320,7 +237,7 @@ export function ResumeUploader({
               ),
             ];
           }),
-        ...parsedData.education
+        ...data.education
           .slice(0, remainingRows(activePortfolio.educations?.length))
           .flatMap((edu) => {
             const institution = sanitizeImportedLabel(edu.institution);
@@ -351,7 +268,7 @@ export function ResumeUploader({
           : importSkills.map((skill) =>
               postImport("/api/portfolio/skill", skill, "Skill")
             )),
-        ...parsedData.projects
+        ...data.projects
           .slice(0, remainingRows(activePortfolio.projects?.length))
           .flatMap((project) => {
             const title = sanitizeImportedLabel(project.title);
@@ -380,7 +297,7 @@ export function ResumeUploader({
               ),
             ];
           }),
-        ...parsedData.certifications
+        ...data.certifications
           .slice(0, remainingRows(activePortfolio.certifications?.length))
           .flatMap((cert) => {
             const name = sanitizeImportedLabel(cert.name);
@@ -402,7 +319,7 @@ export function ResumeUploader({
               ),
             ];
           }),
-        ...(parsedData.socialProfiles ?? [])
+        ...(data.socialProfiles ?? [])
           .map((social) => normalizeSocialProfile(social))
           .map((normalized) => {
             if (!normalized) return null;
@@ -423,7 +340,7 @@ export function ResumeUploader({
               "Social profile",
             )
           ),
-        ...parsedData.achievements
+        ...data.achievements
           .slice(0, remainingRows(activePortfolio.achievements?.length))
           .flatMap((achievement) => {
             const title = sanitizeImportedLabel(achievement);
@@ -446,7 +363,7 @@ export function ResumeUploader({
       ]);
 
       await queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-      const refreshedPortfolio = await queryClient.fetchQuery({
+      await queryClient.fetchQuery({
         queryKey: ["portfolio"],
         queryFn: async () => {
           const res = await fetch("/api/portfolio", { cache: "no-store" });
@@ -456,18 +373,9 @@ export function ResumeUploader({
         },
       });
 
-      toast.success("Resume data imported to your portfolio");
-
-      const importedLiveProjects =
-        refreshedPortfolio?.projects?.some(
-          (project: { liveUrl?: string | null }) => project.liveUrl
-        ) ?? false;
-
-      if (importedLiveProjects) {
-        setPreviewDialogOpen(true);
-      }
-
       setParsedData(null);
+      toast.success("Resume imported — opening preview");
+      router.push("/dashboard/preview");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to import data",
@@ -475,7 +383,48 @@ export function ResumeUploader({
     } finally {
       setImporting(false);
     }
-  };
+  }, [
+    portfolio,
+    createPortfolio,
+    updatePortfolio,
+    clearBeforeImport,
+    clearImportable,
+    queryClient,
+    router,
+  ]);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (file.type !== "application/pdf") {
+        toast.error("Please upload a PDF file");
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("File size must be less than 10MB");
+        return;
+      }
+
+      parseResume.mutate(file, {
+        onSuccess: (data) => {
+          setParsedData(data);
+          toast.success("Resume parsed — importing to portfolio");
+          void handleImport(data);
+        },
+        onError: (error) => {
+          console.error("Resume parse error:", error);
+          toast.error(error.message);
+        },
+      });
+
+      // Allow re-selecting the same file later.
+      e.target.value = "";
+    },
+    [parseResume, handleImport]
+  );
 
   const handleClearNow = async () => {
     try {
@@ -492,28 +441,25 @@ export function ResumeUploader({
   useEffect(() => {
     if (!onToolbarActionsChange) return;
 
-    if (!parsedData) {
+    // Retry only if parse succeeded but auto-import failed.
+    if (!parsedData || importing) {
       onToolbarActionsChange(null);
       return;
     }
 
     onToolbarActionsChange(
       <Button
-        onClick={() => void handleImport()}
+        onClick={() => void handleImport(parsedData)}
         disabled={importing}
         size="default"
       >
-        {importing ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Check className="mr-2 h-4 w-4" />
-        )}
-        Import to Portfolio
+        <Check className="mr-2 h-4 w-4" />
+        Retry import
       </Button>
     );
 
     return () => onToolbarActionsChange(null);
-  }, [onToolbarActionsChange, parsedData, importing]);
+  }, [onToolbarActionsChange, parsedData, importing, handleImport]);
 
   return (
     <div className="space-y-6">
@@ -525,8 +471,8 @@ export function ResumeUploader({
             Upload Resume
           </CardTitle>
           <CardDescription>
-            Upload your resume as a PDF and we will extract your information
-            using AI.
+            Upload a PDF resume — we parse it with AI, import it into your
+            portfolio, and take you straight to preview.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -571,9 +517,9 @@ export function ResumeUploader({
         <CardHeader>
           <CardTitle className="text-base">Avoid duplicate imports</CardTitle>
           <CardDescription>
-            Re-importing adds new rows on top of what you already have. Clear
-            resume-style sections first, or enable replace-before-import when you
-            import.
+            Re-uploading adds new rows on top of what you already have unless
+            replace-before-import is on. Adjust this before you upload — import
+            starts automatically after parsing.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -666,28 +612,14 @@ export function ResumeUploader({
         </DialogContent>
       </Dialog>
 
-      <LivePreviewSelectionDialog
-        open={previewDialogOpen}
-        onOpenChange={setPreviewDialogOpen}
-        candidates={livePreviewCandidates}
-        selectedProjectIds={selectedLivePreviewProjectIds}
-        subscriptionStatus={subscriptionStatus}
-        onSaved={() => {
-          toast.success("Live preview selection saved");
-          router.push("/dashboard/preview");
-        }}
-      />
-
-      {/* Parsed results */}
-      {parsedData && (
+      {/* Shown only when auto-import fails so the user can retry */}
+      {parsedData && !importing && (
         <div className="space-y-4">
           <div>
             <h3 className="text-lg font-semibold">Parsed Data</h3>
-            {clearBeforeImport && (
-              <p className="text-sm text-muted-foreground">
-                Import will replace existing resume sections first.
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Import didn&apos;t finish. Review the data below, then retry.
+            </p>
           </div>
 
           {/* Basic Info */}
@@ -824,7 +756,7 @@ export function ResumeUploader({
                   Achievements ({parsedData.achievements.length})
                 </CardTitle>
                 <CardDescription>
-                  Parsed successfully — ready to import.
+                  Review these before retrying import.
                 </CardDescription>
               </CardHeader>
               <CardContent>
