@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -61,6 +61,10 @@ import {
   sanitizeImportedStringList,
   sanitizeImportedStoredUrl,
 } from "@/lib/content-policy";
+import {
+  LivePreviewSelectionDialog,
+  type LivePreviewCandidate,
+} from "@/features/resume/components/live-preview-selection-dialog";
 import { RotatingLoader } from "@/components/rotating-loader";
 import {
   PORTFOLIO_IMPORT_MESSAGES,
@@ -103,12 +107,65 @@ export function ResumeUploader({
   const [importing, setImporting] = useState(false);
   const [clearBeforeImport, setClearBeforeImport] = useState(true);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(
+    null
+  );
 
   const parseResume = useParseResume();
   const { data: portfolio } = usePortfolio();
   const createPortfolio = useCreatePortfolio();
   const updatePortfolio = useUpdatePortfolio();
   const clearImportable = useClearImportableContent();
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadBilling = async () => {
+      try {
+        const res = await fetch("/api/billing/me", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json().catch(() => ({}))) as {
+          subscription?: { status?: string | null } | null;
+        };
+        if (cancelled) return;
+        const status = data.subscription?.status ?? null;
+        setSubscriptionStatus(
+          status?.toLowerCase() === "active" ? "active" : "none"
+        );
+      } catch {
+        if (cancelled) return;
+        setSubscriptionStatus("none");
+      }
+    };
+    loadBilling();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const livePreviewCandidates = useMemo<LivePreviewCandidate[]>(() => {
+    return (
+      portfolio?.projects
+        ?.filter((project: { liveUrl?: string | null }) => project.liveUrl)
+        .map((project: { id: string; title: string; liveUrl: string }) => ({
+          id: project.id,
+          title: project.title,
+          liveUrl: project.liveUrl,
+        })) ?? []
+    );
+  }, [portfolio?.projects]);
+
+  const selectedLivePreviewProjectIds = useMemo(
+    () =>
+      Array.isArray(portfolio?.livePreviewProjectIds)
+        ? portfolio.livePreviewProjectIds
+        : [],
+    [portfolio]
+  );
+
+  const goToPreview = useCallback(() => {
+    router.push("/dashboard/preview");
+  }, [router]);
 
   const handleImport = useCallback(async (data: ParsedResume) => {
     setImporting(true);
@@ -363,7 +420,7 @@ export function ResumeUploader({
       ]);
 
       await queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-      await queryClient.fetchQuery({
+      const refreshedPortfolio = await queryClient.fetchQuery({
         queryKey: ["portfolio"],
         queryFn: async () => {
           const res = await fetch("/api/portfolio", { cache: "no-store" });
@@ -374,8 +431,18 @@ export function ResumeUploader({
       });
 
       setParsedData(null);
-      toast.success("Resume imported — opening preview");
-      router.push("/dashboard/preview");
+      toast.success("Resume data imported to your portfolio");
+
+      const importedLiveProjects =
+        refreshedPortfolio?.projects?.some(
+          (project: { liveUrl?: string | null }) => project.liveUrl
+        ) ?? false;
+
+      if (importedLiveProjects) {
+        setPreviewDialogOpen(true);
+      } else {
+        goToPreview();
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to import data",
@@ -390,7 +457,7 @@ export function ResumeUploader({
     clearBeforeImport,
     clearImportable,
     queryClient,
-    router,
+    goToPreview,
   ]);
 
   const handleFileChange = useCallback(
@@ -611,6 +678,21 @@ export function ResumeUploader({
           />
         </DialogContent>
       </Dialog>
+
+      <LivePreviewSelectionDialog
+        open={previewDialogOpen}
+        onOpenChange={(open) => {
+          setPreviewDialogOpen(open);
+          // Import already finished — continue to preview after save or dismiss.
+          if (!open) goToPreview();
+        }}
+        candidates={livePreviewCandidates}
+        selectedProjectIds={selectedLivePreviewProjectIds}
+        subscriptionStatus={subscriptionStatus}
+        onSaved={() => {
+          toast.success("Live preview selection saved");
+        }}
+      />
 
       {/* Shown only when auto-import fails so the user can retry */}
       {parsedData && !importing && (
