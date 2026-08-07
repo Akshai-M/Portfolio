@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/features/landing/components/hero";
+import { SupademoTour } from "@/features/landing/components/supademo-tour";
 import { CompanyShowcase } from "@/features/landing/components/company-showcase";
 import { Features } from "@/features/landing/components/features";
 import { Integrations } from "@/features/landing/components/integrations";
@@ -38,6 +39,7 @@ export default function LandingPage() {
 
         <main id="main">
           <Hero />
+          <SupademoTour />
           <CompanyShowcase />
           <Features />
           <Integrations />

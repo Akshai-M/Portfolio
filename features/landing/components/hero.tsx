@@ -67,7 +67,7 @@ function ResumeToPortfolio() {
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden px-6 pt-[var(--space-9)] pb-[var(--space-8)]">
+    <section className="relative overflow-hidden px-6 pt-[var(--space-9)] pb-[var(--space-10)]">
       <div className="hero-blob" aria-hidden />
 
       <div className="relative mx-auto max-w-[1200px]">
