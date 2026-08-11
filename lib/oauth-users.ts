@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { normalizeOptionalStoredUrl } from "@/lib/content-policy";
+import { sendWelcomeEmailSafe } from "@/lib/email-welcome";
 
 const GENERIC_OAUTH_NAMES = new Set(["GitHub User", "Google User"]);
 
@@ -53,7 +54,7 @@ export async function upsertOAuthUser(params: {
   });
 
   if (!existing) {
-    return prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         name: params.name?.trim() || fallbackName,
         email,
@@ -61,6 +62,15 @@ export async function upsertOAuthUser(params: {
         avatar: avatar ?? undefined,
       },
     });
+
+    // Do not block OAuth on email delivery.
+    void sendWelcomeEmailSafe({
+      id: created.id,
+      email: created.email,
+      name: created.name,
+    });
+
+    return created;
   }
 
   return prisma.user.update({

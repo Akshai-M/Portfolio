@@ -30,10 +30,15 @@ model User {
   subscriptionCancelAtPeriodEnd Boolean   @default(false)
   subscriptionCurrentPeriodEnd  DateTime?
 
+  welcomeEmailSentAt           DateTime?
+  noPortfolioReminderSentAt    DateTime?
+  unpublishedReminderSentAt    DateTime?
+
   portfolio            Portfolio?
   billingSubscriptions BillingSubscription[]
   billingCheckout      BillingCheckoutAttempt?
   billingPayments      BillingPayment[]
+  emailSendLogs        EmailSendLog[]
 
   @@map("users")
 }
@@ -345,4 +350,61 @@ model Template {
   category    String @default("general")
 
   @@map("templates")
+}
+
+// ============================================================
+// EMAIL
+// ============================================================
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  subject   String
+  bodyHtml  String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campaigns EmailCampaign[]
+
+  @@map("email_templates")
+}
+
+model EmailCampaign {
+  id             String   @id @default(uuid())
+  templateId     String?
+  subject        String
+  bodyHtml       String   @db.Text
+  /// draft | sending | sent | failed
+  status         String   @default("draft")
+  createdByEmail String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  template EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  logs     EmailSendLog[]
+
+  @@index([createdAt])
+  @@map("email_campaigns")
+}
+
+model EmailSendLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  toEmail    String
+  /// welcome | no_portfolio | unpublished | blast
+  type       String
+  campaignId String?
+  resendId   String?
+  /// sent | failed
+  status     String
+  error      String?
+  createdAt  DateTime @default(now())
+
+  user     User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  campaign EmailCampaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+
+  @@index([type, createdAt])
+  @@index([toEmail, createdAt])
+  @@index([campaignId])
+  @@map("email_send_logs")
 }
