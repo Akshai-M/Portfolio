@@ -58,7 +58,7 @@ async function syncOAuthUser(
     });
   } catch (error) {
     console.error(`[auth] Failed to upsert ${provider} user`, error);
-    return "/sign-in?error=Configuration";
+    return "/sign-in?error=OAuthCallback";
   }
 
   return true;

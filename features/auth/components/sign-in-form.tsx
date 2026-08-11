@@ -17,7 +17,9 @@ const AUTH_ERRORS: Record<string, string> = {
   OAuthAccountNotLinked:
     "This email is already linked to another sign-in method. Try Google or GitHub instead.",
   Configuration:
-    "Social sign-in is misconfigured. Check server environment variables.",
+    "Social sign-in is misconfigured. Check server environment variables (NEXTAUTH_SECRET, NEXTAUTH_URL, Google/GitHub OAuth).",
+  OAuthCallback:
+    "Sign-in could not finish saving your account. If this persists, the database may be missing a recent migration.",
   AccessDenied: "Sign-in was cancelled or denied.",
   GitHubEmailRequired:
     "GitHub did not share a verified email. Make one primary in GitHub settings and try again.",
