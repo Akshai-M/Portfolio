@@ -63,12 +63,20 @@ function emailShell(
           </tr>
           <tr>
             <td style="padding:28px 28px 12px;">
-              <a href="${homeUrl}" style="display:inline-block;text-decoration:none;color:${brand.primary};">
-                <img src="${logoUrl}" width="40" height="40" alt="" style="display:block;border:0;outline:none;width:40px;height:40px;" />
-              </a>
-              <a href="${homeUrl}" style="display:inline-block;margin-top:12px;text-decoration:none;color:${brand.primary};font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:1.2;">
-                ${siteConfig.name}
-              </a>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="vertical-align:middle;padding-right:12px;">
+                    <a href="${homeUrl}" style="text-decoration:none;border:0;">
+                      <img src="${logoUrl}" width="40" height="40" alt="${siteConfig.name}" style="display:block;border:0;outline:none;width:40px;height:40px;" />
+                    </a>
+                  </td>
+                  <td style="vertical-align:middle;">
+                    <a href="${homeUrl}" style="text-decoration:none;color:${brand.primary};font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:40px;">
+                      ${siteConfig.name}
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
